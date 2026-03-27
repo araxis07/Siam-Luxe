@@ -22,6 +22,11 @@ import { useToast } from "@/hooks/use-toast";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
+import {
+  getLocalizedAddressLabel,
+  getLocalizedPaymentLabel,
+  normalizeSeedGuestName,
+} from "@/lib/user-display";
 import { useCartStore } from "@/store/cart-store";
 import { useExperienceStore } from "@/store/experience-store";
 import { useUserStore } from "@/store/user-store";
@@ -32,7 +37,8 @@ const checkoutEnhancementText = {
     paymentProfiles: "ช่องทางชำระเงินที่บันทึกไว้",
     active: "กำลังใช้",
     apply: "ใช้ข้อมูลนี้",
-    walletTitle: "เครดิตใน wallet",
+    walletTitle: "เครดิตในกระเป๋า",
+    walletEntries: "เครดิตในกระเป๋า {count} รายการ",
   },
   en: {
     savedAddresses: "Saved addresses",
@@ -40,6 +46,7 @@ const checkoutEnhancementText = {
     active: "Active",
     apply: "Apply",
     walletTitle: "Wallet credits",
+    walletEntries: "{count} wallet entries",
   },
   ja: {
     savedAddresses: "保存済み住所",
@@ -47,6 +54,7 @@ const checkoutEnhancementText = {
     active: "使用中",
     apply: "使う",
     walletTitle: "ウォレット残高",
+    walletEntries: "ウォレット {count} 件",
   },
   zh: {
     savedAddresses: "已保存地址",
@@ -54,13 +62,15 @@ const checkoutEnhancementText = {
     active: "当前使用",
     apply: "使用此项",
     walletTitle: "钱包余额",
+    walletEntries: "钱包项目 {count} 条",
   },
   ko: {
     savedAddresses: "저장된 주소",
     paymentProfiles: "저장된 결제 수단",
     active: "사용 중",
     apply: "적용",
-    walletTitle: "월렛 크레딧",
+    walletTitle: "월렛 잔액",
+    walletEntries: "월렛 항목 {count}개",
   },
 } as const;
 
@@ -114,10 +124,17 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
   const activePaymentProfile = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
 
+  const seedName = normalizeSeedGuestName(fullName);
+  const getPaymentKindLabel = (kind: "cash" | "card" | "promptpay") => {
+    if (kind === "card") return t("payments.card");
+    if (kind === "cash") return t("payments.cash");
+    return t("payments.promptpay");
+  };
+
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(createCheckoutSchema(t)),
     defaultValues: {
-      fullName: activeAddress?.recipient || fullName,
+      fullName: normalizeSeedGuestName(activeAddress?.recipient ?? "") || seedName,
       phone: activeAddress?.phone || phone,
       addressLine: activeAddress?.addressLine || addressLine,
       district: activeAddress?.district || district,
@@ -134,7 +151,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     }
 
     form.reset({
-      fullName: activeAddress?.recipient || fullName,
+      fullName: normalizeSeedGuestName(activeAddress?.recipient ?? "") || seedName,
       phone: activeAddress?.phone || phone,
       addressLine: activeAddress?.addressLine || addressLine,
       district: activeAddress?.district || district,
@@ -161,6 +178,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     notes,
     paymentMethod,
     phone,
+    seedName,
   ]);
 
   if (!hydrated) {
@@ -265,8 +283,8 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                     <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-white">{item.label}</p>
-                          <p className="mt-1 text-sm text-[#bcae9b]">{item.recipient}</p>
+                          <p className="text-white">{getLocalizedAddressLabel(locale, item)}</p>
+                          <p className="mt-1 text-sm text-[#bcae9b]">{normalizeSeedGuestName(item.recipient) || experienceCopy.labels.accountGreeting}</p>
                           <p className="mt-2 text-sm text-[#d1c4b2]">{item.addressLine}</p>
                         </div>
                         <Button
@@ -280,7 +298,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                           }
                           onClick={() => {
                             setActiveAddress(item.id);
-                            form.setValue("fullName", item.recipient, { shouldDirty: true });
+                            form.setValue("fullName", normalizeSeedGuestName(item.recipient), { shouldDirty: true });
                             form.setValue("phone", item.phone, { shouldDirty: true });
                             form.setValue("addressLine", item.addressLine, { shouldDirty: true });
                             form.setValue("district", item.district, { shouldDirty: true });
@@ -306,8 +324,8 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                     <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-white">{item.label}</p>
-                          <p className="mt-1 text-sm text-[#bcae9b]">{item.kind}</p>
+                          <p className="text-white">{getLocalizedPaymentLabel(locale, item)}</p>
+                          <p className="mt-1 text-sm text-[#bcae9b]">{getPaymentKindLabel(item.kind)}</p>
                         </div>
                         <Button
                           type="button"
@@ -336,7 +354,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                   <p className="mt-3 font-heading text-[1.8rem] text-white">
                     {formatPrice(giftWallet.reduce((sum, item) => sum + item.amount, 0), locale)}
                   </p>
-                  <p className="mt-2 text-sm text-[#d1c4b2]">{giftWallet.length} wallet entries</p>
+                  <p className="mt-2 text-sm text-[#d1c4b2]">{text.walletEntries.replace("{count}", String(giftWallet.length))}</p>
                 </div>
               ) : null}
             </div>

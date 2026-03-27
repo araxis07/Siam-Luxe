@@ -27,7 +27,7 @@ const branchStories: BranchStoryDefinition[] = [
   {
     id: "bangrak",
     heroTitle: {
-      th: "Bangrak Salon ริมน้ำสำหรับสำรับค่ำและ private dining",
+      th: "Bangrak Salon ริมน้ำสำหรับสำรับค่ำและห้องรับรองส่วนตัว",
       en: "Bangrak Salon for riverfront dinners and private dining",
       ja: "川沿いの夜席と個室が映える Bangrak Salon",
       zh: "适合河畔晚餐与包厢聚会的 Bangrak Salon",
@@ -66,7 +66,7 @@ const branchStories: BranchStoryDefinition[] = [
       },
     ],
     privateDining: {
-      th: "รองรับ private dining 12-18 ท่าน",
+      th: "รองรับห้องรับรองส่วนตัว 12-18 ท่าน",
       en: "Private dining for 12-18 guests",
       ja: "12〜18名向け個室ダイニング",
       zh: "可承接 12-18 位包厢用餐",
@@ -76,7 +76,7 @@ const branchStories: BranchStoryDefinition[] = [
   {
     id: "sukhumvit",
     heroTitle: {
-      th: "Sukhumvit House สำหรับ tasting counter และ pickup ที่เร็วกว่า",
+      th: "Sukhumvit House สำหรับเคาน์เตอร์ชิมเมนูและการรับอาหารที่รวดเร็ว",
       en: "Sukhumvit House for tasting counter nights and fast pickup",
       ja: "テイスティングカウンターと受取導線が強い Sukhumvit House",
       zh: "适合主厨吧台体验与快速自取的 Sukhumvit House",
@@ -100,14 +100,14 @@ const branchStories: BranchStoryDefinition[] = [
     ],
     diningMoments: [
       {
-        th: "chef counter และ tasting menu",
+        th: "เคาน์เตอร์เชฟและชุดชิมเมนู",
         en: "Chef counter tasting menus",
         ja: "シェフカウンターとテイスティング",
         zh: "主厨吧台与品鉴套餐",
         ko: "셰프 카운터와 테이스팅 메뉴",
       },
       {
-        th: "pickup หลังเลิกงาน",
+        th: "รับอาหารกลับหลังเลิกงาน",
         en: "After-work pickup",
         ja: "仕事帰りの受取",
         zh: "下班后自取",
@@ -115,7 +115,7 @@ const branchStories: BranchStoryDefinition[] = [
       },
     ],
     privateDining: {
-      th: "private room ขนาด 8-12 ท่าน",
+      th: "ห้องส่วนตัวขนาด 8-12 ท่าน",
       en: "Private room for 8-12 guests",
       ja: "8〜12名向け個室",
       zh: "可容纳 8-12 位客人的私享空间",
@@ -125,7 +125,7 @@ const branchStories: BranchStoryDefinition[] = [
   {
     id: "chiangmai",
     heroTitle: {
-      th: "Lanna Pavilion สำหรับเมนูเหนือ สวนสงบ และของหวานฤดูกาล",
+      th: "Lanna Pavilion สำหรับเมนูเหนือ สวนสงบ และของหวานตามฤดูกาล",
       en: "Lanna Pavilion for northern plates, calm gardens, and seasonal desserts",
       ja: "北部料理と庭席が魅力の Lanna Pavilion",
       zh: "主打北部风味、花园座位与季节甜品的 Lanna Pavilion",
@@ -164,7 +164,7 @@ const branchStories: BranchStoryDefinition[] = [
       },
     ],
     privateDining: {
-      th: "รองรับ private tasting 10 ท่าน",
+      th: "รองรับการชิมแบบส่วนตัว 10 ท่าน",
       en: "Private tasting room for 10 guests",
       ja: "10名向けプライベートテイスティング",
       zh: "可承接 10 位私享品鉴",
@@ -177,11 +177,11 @@ const festivals: FestivalDefinition[] = [
   {
     slug: "songkran",
     title: {
-      th: "Songkran Garden Supper",
+      th: "สำรับสวนรับสงกรานต์",
       en: "Songkran Garden Supper",
-      ja: "Songkran Garden Supper",
-      zh: "Songkran Garden Supper",
-      ko: "Songkran Garden Supper",
+      ja: "ソンクラーン・ガーデンサパー",
+      zh: "宋干花园晚宴",
+      ko: "송끄란 가든 서퍼",
     },
     season: {
       th: "เทศกาลสงกรานต์",
@@ -209,11 +209,11 @@ const festivals: FestivalDefinition[] = [
   {
     slug: "loy-krathong",
     title: {
-      th: "Loy Krathong Night Table",
+      th: "สำรับค่ำคืนลอยกระทง",
       en: "Loy Krathong Night Table",
-      ja: "Loy Krathong Night Table",
-      zh: "Loy Krathong Night Table",
-      ko: "Loy Krathong Night Table",
+      ja: "ロイクラトン・ナイトテーブル",
+      zh: "水灯夜宴餐桌",
+      ko: "러이끄라통 나이트 테이블",
     },
     season: {
       th: "เทศกาลลอยกระทง",

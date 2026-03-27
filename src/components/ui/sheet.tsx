@@ -2,7 +2,10 @@
 
 import * as React from "react"
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog"
+import { useLocale } from "next-intl"
 
+import type { AppLocale } from "@/i18n/routing"
+import { getUiText } from "@/lib/ui-text"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
@@ -46,6 +49,9 @@ function SheetContent({
   side?: "top" | "right" | "bottom" | "left"
   showCloseButton?: boolean
 }) {
+  const locale = useLocale() as AppLocale
+  const uiText = getUiText(locale)
+
   return (
     <SheetPortal>
       <SheetOverlay />
@@ -72,7 +78,7 @@ function SheetContent({
           >
             <XIcon
             />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{uiText.close}</span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>

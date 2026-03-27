@@ -13,7 +13,7 @@ import { useCartStore } from "@/store/cart-store";
 
 const trackingText = {
   th: {
-    subtitle: "แสดงลำดับสถานะของออเดอร์แบบ frontend mock พร้อมเวลา ETA และสาขาที่รับผิดชอบ",
+    subtitle: "แสดงลำดับสถานะของออเดอร์ พร้อมเวลาโดยประมาณและสาขาที่รับผิดชอบ",
     detailTitle: "รายละเอียดออเดอร์",
     timelineTitle: "ลำดับสถานะ",
     reorder: "สั่งซ้ำทั้งออเดอร์",

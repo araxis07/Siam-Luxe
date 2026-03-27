@@ -19,6 +19,13 @@ export default async function MenuPage({
 
   const appLocale = locale as AppLocale;
   const t = await getTranslations({ locale: appLocale, namespace: "menu" });
+  const menuEyebrow = {
+    th: "เมนูของ Siam Lux",
+    en: "Siam Lux Menu",
+    ja: "Siam Lux メニュー",
+    zh: "Siam Lux 菜单",
+    ko: "Siam Lux 메뉴",
+  }[appLocale];
   const dishes = getLocalizedDishes(appLocale);
   const categories = getLocalizedCategories(appLocale);
   const regions = getLocalizedRegions(appLocale);
@@ -27,7 +34,7 @@ export default async function MenuPage({
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 max-w-3xl">
-          <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[#cdb37d] sm:text-[0.7rem]">Siam Lux Menu</p>
+          <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[#cdb37d] sm:text-[0.7rem]">{menuEyebrow}</p>
           <h1 className="mt-3 font-heading text-[2.85rem] leading-tight text-white sm:text-[3.45rem]">{t("title")}</h1>
           <p className="mt-4 text-[0.98rem] leading-8 text-[#d1c4b2]">{t("subtitle")}</p>
         </div>

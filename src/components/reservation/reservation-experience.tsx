@@ -21,6 +21,7 @@ import { useReservationStore, type ReservationRecord } from "@/store/reservation
 
 const reservationText = {
   th: {
+    eyebrow: "การจองโต๊ะ",
     subtitle: "เลือกสาขา เวลา จำนวนแขก และบรรยากาศที่ต้องการใน flow เดียวแบบร้านจริง",
     formTitle: "รายละเอียดการจอง",
     branch: "สาขา",
@@ -36,7 +37,7 @@ const reservationText = {
     branchTitle: "บรรยากาศของสาขา",
     summaryTitle: "สิ่งที่ลูกค้าจะได้",
     successTitle: "รับคำขอจองโต๊ะแล้ว",
-    successBody: "หน้า frontend ได้จำลอง flow การจองสำเร็จ พร้อมต่อ backend และ availability จริงในภายหลัง",
+    successBody: "หน้าเว็บได้จำลองขั้นตอนการจองสำเร็จ พร้อมต่อระบบหลังบ้านและตารางที่ว่างจริงในภายหลัง",
     viewContact: "ดูข้อมูลสาขา",
     browseMenu: "กลับไปดูเมนู",
     occasions: {
@@ -47,9 +48,9 @@ const reservationText = {
     },
     seatingOptions: {
       salon: "โซนหลักของร้าน",
-      terrace: "มุมสวน / terrace",
-      counter: "chef counter",
-      private: "private room",
+      terrace: "มุมสวน / ระเบียง",
+      counter: "เคาน์เตอร์เชฟ",
+      private: "ห้องส่วนตัว",
     },
     errors: {
       branch: "กรุณาเลือกสาขา",
@@ -63,6 +64,7 @@ const reservationText = {
     },
   },
   en: {
+    eyebrow: "Reservation",
     subtitle: "Choose branch, time, party size, and dining mood in one polished reservation flow.",
     formTitle: "Reservation details",
     branch: "Branch",
@@ -105,6 +107,7 @@ const reservationText = {
     },
   },
   ja: {
+    eyebrow: "予約",
     subtitle: "店舗、時間、人数、利用シーンを一つの予約フローで選べます。",
     formTitle: "予約内容",
     branch: "店舗",
@@ -147,6 +150,7 @@ const reservationText = {
     },
   },
   zh: {
+    eyebrow: "预订",
     subtitle: "在一个完整预约流程中选择门店、时间、人数与用餐场景。",
     formTitle: "预约详情",
     branch: "门店",
@@ -189,6 +193,7 @@ const reservationText = {
     },
   },
   ko: {
+    eyebrow: "예약",
     subtitle: "지점, 시간, 인원, 방문 목적을 하나의 예약 흐름에서 선택합니다.",
     formTitle: "예약 정보",
     branch: "지점",
@@ -234,11 +239,11 @@ const reservationText = {
 
 const reservationLiveText = {
   th: {
-    seatingPreview: "แผนผังที่นั่งแบบ interactive",
-    waitlistHint: "รอบนี้เต็มตามรูปแบบที่นั่งที่เลือก ระบบจะบันทึกเป็น waitlist ให้แทน",
-    waitlistTitle: "อยู่ใน waitlist แล้ว",
-    waitlistBody: "คำขอนี้ถูกบันทึกเป็น waitlist เพื่อรอคิวจากสาขาและรูปแบบที่นั่งที่คุณเลือก",
-    waitlistSubmitted: "เพิ่มเข้า waitlist แล้ว",
+    seatingPreview: "แผนผังที่นั่งแบบโต้ตอบ",
+    waitlistHint: "รอบนี้เต็มตามรูปแบบที่นั่งที่เลือก ระบบจะบันทึกเป็นรายชื่อรอให้แทน",
+    waitlistTitle: "อยู่ในรายชื่อรอแล้ว",
+    waitlistBody: "คำขอนี้ถูกบันทึกเป็นรายการรอคิวตามสาขา เวลา และรูปแบบที่นั่งที่คุณเลือก",
+    waitlistSubmitted: "เพิ่มเข้ารายชื่อรอแล้ว",
     seatsLeft: "เหลือ {count} ที่",
     full: "เต็มรอบนี้",
     reserveSummary: "ภาพรวมของรอบนี้",
@@ -281,7 +286,7 @@ const reservationLiveText = {
     waitlistSubmitted: "웨이트리스트에 추가되었습니다",
     seatsLeft: "{count}석 남음",
     full: "이 시간대는 만석",
-    reserveSummary: "현재 슬롯 요약",
+    reserveSummary: "현재 시간대 요약",
   },
 } as const;
 
@@ -427,7 +432,7 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
       <div className="lux-panel rounded-[2.25rem] p-6 sm:p-8">
         <div className="mb-8">
           <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
-            {feature?.eyebrow ?? "Reservation"}
+            {feature?.eyebrow ?? copy.eyebrow}
           </p>
           <h1 className="mt-3 font-heading text-[2.55rem] leading-tight text-white sm:text-[3rem]">
             {feature?.title ?? experienceCopy.labels.reservationTitle}

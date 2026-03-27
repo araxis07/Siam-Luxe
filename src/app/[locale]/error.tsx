@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo } from "react";
+import { useLocale } from "next-intl";
 
-import { inferLocaleFromPathname } from "@/lib/locale-detect";
+import { Link } from "@/i18n/navigation";
+import type { AppLocale } from "@/i18n/routing";
 
 const errorText = {
   th: {
@@ -16,7 +16,7 @@ const errorText = {
   en: {
     eyebrow: "Unexpected error",
     title: "Something broke in the frontend layer",
-    fallback: "An unknown rendering error occurred. You can retry the current route or go back home.",
+    fallback: "An unknown rendering error occurred. You can retry this route or go back home.",
     retry: "Try again",
     home: "Back to home",
   },
@@ -43,45 +43,41 @@ const errorText = {
   },
 } as const;
 
-export default function GlobalError({
+export default function LocaleError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const locale = useMemo(
-    () => inferLocaleFromPathname(typeof window === "undefined" ? "" : window.location.pathname),
-    [],
-  );
+  const locale = useLocale() as AppLocale;
   const text = errorText[locale];
 
   return (
-    <html lang={locale}>
-      <body className="min-h-screen bg-[#0b0909] px-4 text-white">
-        <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center text-center">
-          <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[#d6b26a]">{text.eyebrow}</p>
-          <h1 className="mt-4 font-heading text-[3rem] leading-tight">{text.title}</h1>
-          <p className="mt-4 max-w-xl text-[#d1c4b2]">
-            {error.message || text.fallback}
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={reset}
-              className="button-shine inline-flex h-12 items-center justify-center rounded-full bg-[#d6b26a] px-6 text-sm font-semibold text-[#1b130f] transition-colors hover:bg-[#e4c987]"
-            >
-              {text.retry}
-            </button>
-            <Link
-              href={`/${locale}`}
-              className="inline-flex h-12 items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              {text.home}
-            </Link>
-          </div>
-        </main>
-      </body>
-    </html>
+    <section className="scene-section px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl lux-panel rounded-[2.4rem] px-6 py-16 text-center sm:px-10">
+        <p className="text-[0.7rem] uppercase tracking-[0.22em] text-[#d6b26a]">{text.eyebrow}</p>
+        <h1 className="mt-4 font-heading text-[3rem] leading-tight text-white">{text.title}</h1>
+        <p className="mt-4 max-w-xl text-[#d1c4b2] mx-auto">
+          {error.message || text.fallback}
+        </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <button
+            type="button"
+            onClick={reset}
+            className="button-shine inline-flex h-12 items-center justify-center rounded-full bg-[#d6b26a] px-6 text-sm font-semibold text-[#1b130f] transition-colors hover:bg-[#e4c987]"
+          >
+            {text.retry}
+          </button>
+          <Link
+            href="/"
+            locale={locale}
+            className="inline-flex h-12 items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+          >
+            {text.home}
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }

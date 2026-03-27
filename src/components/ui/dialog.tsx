@@ -2,7 +2,10 @@
 
 import * as React from "react"
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
+import { useLocale } from "next-intl"
 
+import type { AppLocale } from "@/i18n/routing"
+import { getUiText } from "@/lib/ui-text"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
@@ -47,6 +50,9 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
 }) {
+  const locale = useLocale() as AppLocale
+  const uiText = getUiText(locale)
+
   return (
     <DialogPortal>
       <DialogOverlay />
@@ -72,7 +78,7 @@ function DialogContent({
           >
             <XIcon
             />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{uiText.close}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -98,6 +104,9 @@ function DialogFooter({
 }: React.ComponentProps<"div"> & {
   showCloseButton?: boolean
 }) {
+  const locale = useLocale() as AppLocale
+  const uiText = getUiText(locale)
+
   return (
     <div
       data-slot="dialog-footer"
@@ -110,7 +119,7 @@ function DialogFooter({
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close render={<Button variant="outline" />}>
-          Close
+          {uiText.close}
         </DialogPrimitive.Close>
       )}
     </div>

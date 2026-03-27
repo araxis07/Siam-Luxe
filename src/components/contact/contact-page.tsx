@@ -9,7 +9,7 @@ const contactText = {
   th: {
     body: "ทีมบริการของร้านจะช่วยแนะนำสาขาที่เหมาะกับการนั่งทาน รับเอง หรือจัดส่งตามพื้นที่ของคุณ",
     branchStory: "ดูรายละเอียดสาขา",
-    privateDining: "จัดเลี้ยง / private dining",
+    privateDining: "จัดเลี้ยง / ห้องส่วนตัว",
   },
   en: {
     body: "House service can guide guests to the best branch for dine-in, pickup, or delivery-ready ordering.",

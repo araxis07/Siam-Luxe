@@ -28,7 +28,7 @@ export function SiteFooter({ locale }: { locale: AppLocale }) {
               {tNav("menu")}
             </Link>
             <Link href="/specials" locale={locale} className="transition-colors hover:text-white">
-              {specialsLink?.title ?? "Specials"}
+              {specialsLink?.title ?? copy.labels.specialsTitle}
             </Link>
             <Link href="/heritage" locale={locale} className="transition-colors hover:text-white">
               {tNav("heritage")}

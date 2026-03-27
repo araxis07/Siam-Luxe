@@ -26,6 +26,12 @@ import {
   getLocalizedOrders,
   getLoyaltySnapshot,
 } from "@/lib/experience";
+import {
+  getLocalizedAddressLabel,
+  getLocalizedPaymentLabel,
+  getLocalizedWalletTitle,
+  normalizeSeedGuestName,
+} from "@/lib/user-display";
 import { useCartStore } from "@/store/cart-store";
 import { useExperienceStore } from "@/store/experience-store";
 import { useFavoritesStore } from "@/store/favorites-store";
@@ -42,7 +48,7 @@ const accountText = {
     helpCenter: "ศูนย์ช่วยเหลือ",
     addressesTitle: "ที่อยู่ที่บันทึกไว้",
     paymentsTitle: "ช่องทางชำระเงิน",
-    walletTitle: "gift card และ voucher wallet",
+    walletTitle: "กระเป๋าบัตรของขวัญและบัตรกำนัล",
     reservationsTitle: "การจองของฉัน",
     useThis: "ใช้ชุดนี้",
     active: "กำลังใช้งาน",
@@ -51,7 +57,7 @@ const accountText = {
     reschedule: "เลื่อนเวลา +30 นาที",
     cancel: "ยกเลิกการจอง",
     confirmed: "ยืนยันแล้ว",
-    waitlist: "อยู่ใน waitlist",
+    waitlist: "อยู่ในรายชื่อรอ",
     cancelled: "ยกเลิกแล้ว",
     expires: "หมดอายุ",
     noReservations: "ยังไม่มีรายการจองใหม่",
@@ -215,6 +221,19 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const sortedReservations = [...reservations].sort((left, right) =>
     `${left.date}T${left.timeSlot}`.localeCompare(`${right.date}T${right.timeSlot}`),
   );
+  const displayName = normalizeSeedGuestName(fullName);
+  const paymentKindLabels = {
+    th: { cash: "เงินสด", card: "บัตรเครดิต / เดบิต", promptpay: "PromptPay" },
+    en: { cash: "Cash", card: "Credit / Debit Card", promptpay: "PromptPay" },
+    ja: { cash: "現金", card: "クレジット / デビットカード", promptpay: "PromptPay" },
+    zh: { cash: "现金", card: "信用卡 / 借记卡", promptpay: "PromptPay" },
+    ko: { cash: "현금", card: "신용 / 체크카드", promptpay: "PromptPay" },
+  } as const;
+  const getPaymentKindLabel = (kind: "cash" | "card" | "promptpay") => {
+    if (kind === "card") return paymentKindLabels[locale].card;
+    if (kind === "cash") return paymentKindLabels[locale].cash;
+    return paymentKindLabels[locale].promptpay;
+  };
 
   return (
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
@@ -231,7 +250,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
           <div className="space-y-6">
             <div className="lux-panel rounded-[2.2rem] p-6 sm:p-8">
               <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.profileTitle}</p>
-              <h2 className="mt-3 font-heading text-[2rem] leading-tight text-white">{fullName || copy.labels.accountGreeting}</h2>
+              <h2 className="mt-3 font-heading text-[2rem] leading-tight text-white">{displayName || copy.labels.accountGreeting}</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <div className="rounded-[1.7rem] border border-white/10 bg-white/4 p-5">
                   <p className="text-sm text-[#bcae9b]">{phone || "—"}</p>
@@ -247,7 +266,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                     {copy.serviceModes[serviceMode]} · {favoriteDishIds.length} {labels.favorites}
                   </p>
                   <p className="mt-3 text-sm text-[#ecd8a0]">
-                    {labels.activePayment}: {activePayment?.label ?? "—"}
+                    {labels.activePayment}: {activePayment ? getLocalizedPaymentLabel(locale, activePayment) : "—"}
                   </p>
                 </div>
               </div>
@@ -292,8 +311,8 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                     className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                     onClick={() => {
                       addSavedAddress({
-                        label: "Studio",
-                        recipient: fullName || "Siam Lux Guest",
+                        label: locale === "th" ? "สตูดิโอ" : locale === "ja" ? "スタジオ" : locale === "zh" ? "工作室" : locale === "ko" ? "스튜디오" : "Studio",
+                        recipient: displayName || copy.labels.accountGreeting,
                         phone,
                         addressLine: "88 Sathorn Square",
                         district: "Bang Rak",
@@ -317,8 +336,8 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                       <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="text-white">{item.label}</p>
-                            <p className="mt-1 text-sm text-[#bcae9b]">{item.recipient}</p>
+                            <p className="text-white">{getLocalizedAddressLabel(locale, item)}</p>
+                            <p className="mt-1 text-sm text-[#bcae9b]">{normalizeSeedGuestName(item.recipient) || copy.labels.accountGreeting}</p>
                             <p className="mt-2 text-sm text-[#d1c4b2]">{item.addressLine}</p>
                             <p className="mt-1 text-sm text-[#bcae9b]">{item.district} {item.city}</p>
                           </div>
@@ -359,7 +378,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                     className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                     onClick={() => {
                       addPaymentProfile({
-                        label: "Mastercard ending 2401",
+                        label: locale === "th" ? "Mastercard ลงท้าย 2401" : locale === "ja" ? "Mastercard 下4桁 2401" : locale === "zh" ? "Mastercard 尾号 2401" : locale === "ko" ? "Mastercard 끝자리 2401" : "Mastercard ending 2401",
                         kind: "card",
                         last4: "2401",
                       });
@@ -385,8 +404,8 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                               <CreditCard className="size-4" />
                             </div>
                             <div>
-                              <p className="text-white">{item.label}</p>
-                              <p className="mt-1 text-sm text-[#bcae9b]">{item.kind}</p>
+                              <p className="text-white">{getLocalizedPaymentLabel(locale, item)}</p>
+                              <p className="mt-1 text-sm text-[#bcae9b]">{getPaymentKindLabel(item.kind)}</p>
                             </div>
                           </div>
                           <Button
@@ -401,11 +420,11 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                             onClick={() => {
                               setActivePaymentProfile(item.id);
                               toast({
-                                title: labels.paymentsTitle,
-                                description: item.label,
-                                tone: "success",
-                              });
-                            }}
+                                    title: labels.paymentsTitle,
+                                    description: getLocalizedPaymentLabel(locale, item),
+                                    tone: "success",
+                                  });
+                                }}
                           >
                             {isActive ? labels.active : labels.useThis}
                           </Button>
@@ -572,7 +591,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                     <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
-                          <p className="text-white">{item.title}</p>
+                          <p className="text-white">{getLocalizedWalletTitle(locale, item)}</p>
                           <p className="mt-1 text-sm text-[#bcae9b]">{item.code}</p>
                         </div>
                         <span className="font-heading text-[1.5rem] text-[#ecd8a0]">{formatPrice(item.amount, locale)}</span>

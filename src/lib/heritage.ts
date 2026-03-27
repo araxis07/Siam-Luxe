@@ -51,7 +51,7 @@ interface SupportRoleDefinition {
 
 const pageCopy = {
   overviewEyebrow: {
-    th: "The House Heritage of Siam Lux",
+    th: "มรดกของบ้าน Siam Lux",
     en: "The House Heritage of Siam Lux",
     ja: "Siam Lux の系譜",
     zh: "Siam Lux 的传承故事",
@@ -86,7 +86,7 @@ const pageCopy = {
     ko: "하우스 팀 보기",
   },
   storyEyebrow: {
-    th: "Chronicle",
+    th: "ลำดับเรื่องราว",
     en: "Chronicle",
     ja: "年譜",
     zh: "传承时间线",
@@ -100,7 +100,7 @@ const pageCopy = {
     ko: "천천히, 단정하게, 오래 기억되도록 설계한 환대의 의식 같은 레스토랑 이야기.",
   },
   valuesEyebrow: {
-    th: "House Standards",
+    th: "มาตรฐานของร้าน",
     en: "House Standards",
     ja: "店の基準",
     zh: "店内准则",
@@ -114,7 +114,7 @@ const pageCopy = {
     ko: "모든 접시는 절제된 아름다움, 또렷한 맛, 리듬 있는 서비스라는 오래된 원칙을 따릅니다.",
   },
   teamEyebrow: {
-    th: "Culinary House",
+    th: "เรือนครัว",
     en: "Culinary House",
     ja: "厨房チーム",
     zh: "厨房核心团队",
@@ -135,7 +135,7 @@ const pageCopy = {
     ko: "주방 브리게이드는 7명의 셰프와 3명의 어시스턴트로 구성되며 육수, 화력, 커리, 디저트, 가니시, 최종 패스까지 세밀하게 나눠 맡습니다.",
   },
   supportEyebrow: {
-    th: "Front & Back of House",
+    th: "หน้าร้านและหลังร้าน",
     en: "Front & Back of House",
     ja: "店舗運営チーム",
     zh: "前场与后场运营",
@@ -856,7 +856,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "reservation-concierge",
     title: {
-      th: "Reservation Concierge",
+      th: "ผู้ดูแลการจองและคำขอพิเศษ",
       en: "Reservation concierge",
       ja: "予約コンシェルジュ",
       zh: "预订礼宾",
@@ -924,7 +924,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "tea-beverage",
     title: {
-      th: "Tea & Beverage Steward",
+      th: "ผู้ดูแลชาและเครื่องดื่ม",
       en: "Tea and beverage steward",
       ja: "茶と飲料のスチュワード",
       zh: "茶饮与饮品管家",
@@ -958,7 +958,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "quality-hygiene",
     title: {
-      th: "Quality, Hygiene & Inventory Control",
+      th: "ควบคุมคุณภาพ สุขอนามัย และสต็อก",
       en: "Quality, hygiene, and inventory control",
       ja: "品質・衛生・在庫管理",
       zh: "质量、卫生与库存管理",

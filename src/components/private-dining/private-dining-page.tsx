@@ -15,16 +15,16 @@ import { useToast } from "@/hooks/use-toast";
 
 const pageText = {
   th: {
-    eyebrow: "private dining & catering",
+    eyebrow: "ห้องส่วนตัวและจัดเลี้ยง",
     title: "ฟอร์มสำหรับห้องส่วนตัว งานฉลอง และรับรองลูกค้า",
-    body: "หน้านี้ถูกออกแบบให้เป็น lead-quality frontend สำหรับ event inquiry, chef table buyout และงานดินเนอร์มูลค่าสูง",
+    body: "หน้านี้ถูกออกแบบให้เป็นฟอร์มคุณภาพสูงฝั่งหน้าเว็บ สำหรับสอบถามงานอีเวนต์ เหมาปิดเชฟเทเบิล และดินเนอร์มูลค่าสูง",
     bullets: [
-      "รองรับ private dining 8-18 ท่าน",
-      "รับ corporate lunch และ hosted dinner",
-      "มี tasting sequence และ celebration menu",
+      "รองรับห้องส่วนตัว 8-18 ท่าน",
+      "รับงานเลี้ยงกลางวันองค์กรและมื้อรับรองลูกค้า",
+      "มีลำดับชุดชิมเมนูและเมนูฉลอง",
     ],
     successTitle: "ส่งคำขอจัดเลี้ยงแล้ว",
-    successBody: "ทีมหน้าบ้านสามารถเชื่อมหน้า UI นี้เข้ากับ CRM, workflow งานอีเวนต์ และ availability ของแต่ละสาขาได้ภายหลัง",
+    successBody: "ทีมหน้าบ้านสามารถเชื่อมหน้า UI นี้เข้ากับ CRM ขั้นตอนงานอีเวนต์ และตารางความพร้อมของแต่ละสาขาได้ภายหลัง",
     submit: "ส่งคำขอ",
     fields: {
       name: "ชื่อผู้ติดต่อ",

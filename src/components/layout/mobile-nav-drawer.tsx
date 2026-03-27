@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranch } from "@/lib/experience";
+import { getUiText } from "@/lib/ui-text";
 import { useExperienceStore } from "@/store/experience-store";
 
 const primaryLinks = {
@@ -56,6 +57,7 @@ const primaryLinks = {
 export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
   const [open, setOpen] = useState(false);
   const copy = getExperienceCopy(locale);
+  const uiText = getUiText(locale);
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
   const branch = getLocalizedBranch(locale, selectedBranchId);
@@ -67,7 +69,7 @@ export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
         type="button"
         variant="outline"
         size="icon-sm"
-        aria-label="Open navigation"
+        aria-label={uiText.openNavigation}
         className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10 md:hidden"
         onClick={() => setOpen(true)}
       >

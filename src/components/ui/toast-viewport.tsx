@@ -2,9 +2,12 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
+import { useLocale } from "next-intl";
 
+import type { AppLocale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { getUiText } from "@/lib/ui-text";
 import { useToastStore } from "@/store/toast-store";
 
 const iconMap = {
@@ -21,6 +24,8 @@ const toneClasses = {
 
 export function ToastViewport() {
   const hydrated = useHydrated();
+  const locale = useLocale() as AppLocale;
+  const uiText = getUiText(locale);
   const toasts = useToastStore((state) => state.toasts);
   const dismissToast = useToastStore((state) => state.dismissToast);
 
@@ -58,7 +63,7 @@ export function ToastViewport() {
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    aria-label="Dismiss toast"
+                    aria-label={uiText.dismissToast}
                     className="rounded-full text-current hover:bg-black/10"
                     onClick={() => dismissToast(toast.id)}
                   >

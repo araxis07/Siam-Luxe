@@ -9,9 +9,9 @@ import { getFestivals } from "@/lib/premium";
 const festivalText = {
   th: {
     eyebrow: "เทศกาลไทย",
-    title: "แคมเปญและ landing page ตามเทศกาล",
-    body: "หน้าชุดนี้ถูกออกแบบให้เป็น seasonal frontend สำหรับผูกกับโปรโมชัน การจอง และ set menu ในภายหลัง",
-    viewSpecials: "ดู seasonal specials",
+    title: "แคมเปญและหน้าพิเศษตามเทศกาล",
+    body: "หน้าชุดนี้ถูกออกแบบให้เป็นประสบการณ์ตามฤดูกาลสำหรับผูกกับโปรโมชัน การจอง และชุดเมนูในภายหลัง",
+    viewSpecials: "ดูเมนูพิเศษตามฤดูกาล",
     bookTable: "จองโต๊ะช่วงเทศกาล",
   },
   en: {

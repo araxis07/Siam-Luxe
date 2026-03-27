@@ -20,6 +20,13 @@ import { useExperienceStore } from "@/store/experience-store";
 export function CartDrawer({ locale }: { locale: AppLocale }) {
   const t = useTranslations("cart");
   const tDish = useTranslations("dish");
+  const a11yText = {
+    th: { decrease: "ลดจำนวน", increase: "เพิ่มจำนวน" },
+    en: { decrease: "Decrease quantity", increase: "Increase quantity" },
+    ja: { decrease: "数量を減らす", increase: "数量を増やす" },
+    zh: { decrease: "减少数量", increase: "增加数量" },
+    ko: { decrease: "수량 줄이기", increase: "수량 늘리기" },
+  }[locale];
   const hydrated = useHydrated();
   const experienceCopy = getExperienceCopy(locale);
   const items = useCartStore((state) => state.items);
@@ -141,7 +148,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
                               onClick={() => updateQuantity(item.key, item.quantity - 1)}
                             >
                               <Minus className="size-3" />
-                              <span className="sr-only">Decrease</span>
+                              <span className="sr-only">{a11yText.decrease}</span>
                             </Button>
                             <span className="min-w-5 text-center text-sm">{item.quantity}</span>
                             <Button
@@ -152,7 +159,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
                               onClick={() => updateQuantity(item.key, item.quantity + 1)}
                             >
                               <Plus className="size-3" />
-                              <span className="sr-only">Increase</span>
+                              <span className="sr-only">{a11yText.increase}</span>
                             </Button>
                           </div>
                           <span className="font-medium text-[#f0d58f]">
