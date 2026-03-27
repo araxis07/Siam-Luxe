@@ -62,7 +62,7 @@ export function MenuExperience({
       <div className="lux-panel rounded-[2rem] p-4 sm:p-5">
         <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr_0.6fr_0.7fr]">
           <label className="space-y-2">
-            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
               {t("searchLabel")}
             </span>
             <div className="relative">
@@ -79,7 +79,7 @@ export function MenuExperience({
             </div>
           </label>
           <label className="space-y-2">
-            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
               {t("categoryLabel")}
             </span>
             <Select
@@ -100,7 +100,7 @@ export function MenuExperience({
             </Select>
           </label>
           <label className="space-y-2">
-            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
               {t("spiceLabel")}
             </span>
             <Select
@@ -119,7 +119,7 @@ export function MenuExperience({
             </Select>
           </label>
           <label className="space-y-2">
-            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
               {t("sortLabel")}
             </span>
             <Select
@@ -178,7 +178,7 @@ export function MenuExperience({
 
       {filteredDishes.length === 0 ? (
         <div className="lux-panel rounded-[2rem] px-6 py-14 text-center">
-          <p className="font-heading text-4xl text-white">{t("emptyTitle")}</p>
+          <p className="font-heading text-[2.1rem] leading-tight text-white">{t("emptyTitle")}</p>
           <p className="mx-auto mt-3 max-w-lg text-[#cdbfae]">{t("emptyBody")}</p>
         </div>
       ) : (

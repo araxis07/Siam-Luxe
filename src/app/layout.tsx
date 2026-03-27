@@ -1,4 +1,11 @@
 import type { Metadata } from "next";
+import "@fontsource/sarabun/400.css";
+import "@fontsource/sarabun/500.css";
+import "@fontsource/sarabun/600.css";
+import "@fontsource/sarabun/700.css";
+import "@fontsource/pridi/500.css";
+import "@fontsource/pridi/600.css";
+import "@fontsource/pridi/700.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

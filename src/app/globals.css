@@ -50,11 +50,11 @@
 
 :root {
   --font-body:
-    "Sukhumvit Set", "Thonburi", "Leelawadee UI", "Noto Sans Thai", "Avenir Next",
-    "Segoe UI", sans-serif;
+    "Sarabun", "Noto Sans Thai", "IBM Plex Sans Thai", "Sukhumvit Set",
+    "Thonburi", "Leelawadee UI", "Avenir Next", "Segoe UI", sans-serif;
   --font-display:
-    "Cormorant Garamond", "Iowan Old Style", "Baskerville", "Palatino Linotype",
-    "Book Antiqua", serif;
+    "Pridi", "Noto Serif Thai", "Sarabun", "Iowan Old Style", "Baskerville",
+    "Palatino Linotype", "Book Antiqua", serif;
   --background: oklch(0.12 0.014 32);
   --foreground: oklch(0.95 0.014 86);
   --card: oklch(0.16 0.02 26 / 92%);
@@ -100,6 +100,12 @@
     @apply min-h-screen overflow-x-clip bg-background text-foreground;
     position: relative;
     isolation: isolate;
+    font-size: 15px;
+    line-height: 1.65;
+    font-weight: 400;
+    letter-spacing: 0.002em;
+    text-rendering: optimizeLegibility;
+    font-synthesis-weight: none;
     background-image:
       radial-gradient(circle at 0% 0%, rgba(154, 31, 43, 0.28), transparent 28%),
       radial-gradient(circle at 100% 10%, rgba(17, 70, 53, 0.24), transparent 24%),
@@ -127,6 +133,12 @@
   ::selection {
     background: rgba(214, 178, 106, 0.24);
     color: white;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: 0.01em;
   }
 }
 

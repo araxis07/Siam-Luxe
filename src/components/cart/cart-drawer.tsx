@@ -45,7 +45,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
         className="w-full max-w-[100vw] border-l border-white/10 bg-[#120c0d]/96 p-0 text-white sm:max-w-lg"
       >
         <SheetHeader className="border-b border-white/8 bg-white/3 pb-5 pr-14">
-          <SheetTitle className="font-heading text-3xl text-white">{t("title")}</SheetTitle>
+          <SheetTitle className="font-heading text-[2rem] text-white">{t("title")}</SheetTitle>
           <SheetDescription className="max-w-sm text-[#c9bcad]">
             {t("subtitle")}
           </SheetDescription>
@@ -60,7 +60,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
           ) : items.length === 0 ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-5 px-6 py-12 text-center">
               <div className="lux-panel-soft rounded-3xl px-6 py-5">
-                <p className="font-heading text-3xl text-white">{t("emptyTitle")}</p>
+                <p className="font-heading text-[2rem] leading-tight text-white">{t("emptyTitle")}</p>
                 <p className="mt-2 max-w-sm text-[#c9bcad]">{t("emptyBody")}</p>
               </div>
               <Button
@@ -188,10 +188,10 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
               </div>
               <div className="thai-divider my-4" />
               <div className="flex items-center justify-between">
-                <span className="text-sm uppercase tracking-[0.18em] text-[#cdb37d]">
+                <span className="text-[0.7rem] uppercase tracking-[0.14em] text-[#cdb37d]">
                   {t("total")}
                 </span>
-                <span className="font-heading text-3xl text-white">
+                <span className="font-heading text-[2rem] text-white">
                   {formatPrice(totals.total, locale)}
                 </span>
               </div>

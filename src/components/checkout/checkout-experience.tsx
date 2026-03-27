@@ -106,7 +106,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     return (
       <div className="lux-panel mx-auto max-w-3xl rounded-[2.25rem] px-6 py-16 text-center sm:px-10">
         <CheckCircle2 className="mx-auto size-16 text-[#d6b26a]" />
-        <h2 className="mt-6 font-heading text-5xl text-white">{t("successTitle")}</h2>
+        <h2 className="mt-6 font-heading text-[2.5rem] leading-tight text-white sm:text-[3rem]">{t("successTitle")}</h2>
         <p className="mx-auto mt-4 max-w-2xl text-[#d1c4b2]">{t("successBody")}</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button
@@ -132,7 +132,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   if (items.length === 0) {
     return (
       <div className="lux-panel rounded-[2.25rem] px-6 py-16 text-center sm:px-10">
-        <h2 className="font-heading text-5xl text-white">{t("emptyTitle")}</h2>
+        <h2 className="font-heading text-[2.5rem] leading-tight text-white sm:text-[3rem]">{t("emptyTitle")}</h2>
         <p className="mx-auto mt-4 max-w-2xl text-[#d1c4b2]">{t("emptyBody")}</p>
         <Button
           type="button"
@@ -154,11 +154,11 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     <div className="grid gap-8 xl:grid-cols-[1.02fr_0.98fr]">
       <div className="lux-panel rounded-[2.25rem] p-6 sm:p-8">
         <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.24em] text-[#cdb37d]">
+          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d] sm:text-[0.7rem]">
             {t("deliveryDetails")}
           </p>
-          <h2 className="mt-3 font-heading text-5xl text-white">{t("title")}</h2>
-          <p className="mt-3 max-w-2xl text-[#d1c4b2]">{t("subtitle")}</p>
+          <h2 className="mt-3 font-heading text-[2.5rem] leading-tight text-white sm:text-[3rem]">{t("title")}</h2>
+          <p className="mt-3 max-w-2xl text-[0.96rem] leading-7 text-[#d1c4b2]">{t("subtitle")}</p>
         </div>
 
         <form
@@ -307,10 +307,10 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
 
       <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
         <div className="lux-panel rounded-[2.25rem] p-6 sm:p-8">
-          <p className="text-xs uppercase tracking-[0.24em] text-[#cdb37d]">
+          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d] sm:text-[0.7rem]">
             {t("summaryTitle")}
           </p>
-          <h3 className="mt-3 font-heading text-4xl text-white">{t("summarySubtitle")}</h3>
+          <h3 className="mt-3 font-heading text-[2rem] leading-tight text-white sm:text-[2.25rem]">{t("summarySubtitle")}</h3>
 
           <div className="mt-6 space-y-4">
             {items.map((item) => {
@@ -370,10 +370,10 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
           </div>
           <div className="thai-divider my-6" />
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-[0.24em] text-[#cdb37d]">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d] sm:text-[0.7rem]">
               {tCart("total")}
             </span>
-            <span className="font-heading text-4xl text-white">
+            <span className="font-heading text-[2rem] text-white sm:text-[2.25rem]">
               {formatPrice(total, locale)}
             </span>
           </div>

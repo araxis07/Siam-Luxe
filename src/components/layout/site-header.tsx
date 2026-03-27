@@ -23,10 +23,10 @@ export function SiteHeader({ locale }: { locale: AppLocale }) {
               <Sparkles className="size-4" />
             </span>
             <span className="flex flex-col">
-              <span className="font-heading text-xl leading-none tracking-[0.18em] text-white uppercase">
+              <span className="font-heading text-[1.05rem] leading-none tracking-[0.12em] text-white uppercase sm:text-[1.12rem]">
                 {tCommon("brand")}
               </span>
-              <span className="text-[0.68rem] tracking-[0.22em] text-[#d6c9b6] uppercase">
+              <span className="text-[0.6rem] tracking-[0.16em] text-[#d6c9b6] uppercase sm:text-[0.64rem]">
                 {tCommon("tagline")}
               </span>
             </span>

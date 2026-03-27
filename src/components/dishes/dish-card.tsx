@@ -52,11 +52,11 @@ export function DishCard({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#070505] via-transparent to-transparent" />
               <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                <span className="glass-chip rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.22em] text-[#ecd8a0]">
+                <span className="glass-chip rounded-full px-3 py-1 text-[0.64rem] uppercase tracking-[0.18em] text-[#ecd8a0]">
                   {dish.categoryLabel}
                 </span>
                 {dish.featured ? (
-                  <span className="rounded-full bg-[#d6b26a] px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#1b130f]">
+                  <span className="rounded-full bg-[#d6b26a] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#1b130f]">
                     {t("featuredBadge")}
                   </span>
                 ) : null}
@@ -67,18 +67,18 @@ export function DishCard({
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="font-heading text-3xl leading-none text-white">
+                    <h3 className="font-heading text-[1.78rem] leading-tight text-white">
                       {dish.name}
                     </h3>
-                    <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#d4c7b5]">
+                    <p className="mt-2 line-clamp-2 text-[0.9rem] leading-6 text-[#d4c7b5]">
                       {dish.description}
                     </p>
                   </div>
-                  <span className="font-heading text-2xl text-[#f2d78d]">
+                  <span className="font-heading text-[1.55rem] text-[#f2d78d]">
                     {formatPrice(dish.price, locale)}
                   </span>
                 </div>
-                <div className="flex flex-wrap gap-4 text-xs uppercase tracking-[0.18em] text-[#cdb37d]">
+                <div className="flex flex-wrap gap-4 text-[0.68rem] uppercase tracking-[0.14em] text-[#cdb37d]">
                   <span className="inline-flex items-center gap-1.5">
                     <Star className="size-3.5 fill-current text-[#d6b26a]" />
                     {dish.rating.toFixed(1)}

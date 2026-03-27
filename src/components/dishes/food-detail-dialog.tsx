@@ -74,13 +74,13 @@ export function FoodDetailDialog({
           </div>
           <div className="flex flex-col">
             <DialogHeader className="border-b border-white/8 px-6 pt-6 pb-5">
-              <div className="glass-chip mb-3 inline-flex w-fit rounded-full px-3 py-1 text-xs uppercase tracking-[0.22em] text-[#d8c48e]">
+              <div className="glass-chip mb-3 inline-flex w-fit rounded-full px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-[#d8c48e]">
                 {dish.categoryLabel}
               </div>
-              <DialogTitle className="font-heading text-4xl text-white">
+              <DialogTitle className="font-heading text-[2.1rem] leading-tight text-white sm:text-[2.35rem]">
                 {dish.name}
               </DialogTitle>
-              <DialogDescription className="max-w-lg text-base leading-relaxed text-[#d1c3b1]">
+              <DialogDescription className="max-w-lg text-[0.96rem] leading-7 text-[#d1c3b1]">
                 {dish.description}
               </DialogDescription>
               <div className="mt-3 flex flex-wrap gap-3 text-sm text-[#d6c9b6]">
@@ -190,7 +190,7 @@ export function FoodDetailDialog({
                   className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <p className="text-xs uppercase tracking-[0.22em] text-[#c8b37a]">
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#c8b37a]">
                       {t("selectedToppings")}
                     </p>
                     <p className="mt-1 text-sm text-[#d6c9b6]">
@@ -206,7 +206,7 @@ export function FoodDetailDialog({
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-heading text-3xl text-white">
+                    <span className="font-heading text-[1.9rem] text-white">
                       {formatPrice((dish.price + toppingTotal) * quantity, locale)}
                     </span>
                     <Button
