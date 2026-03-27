@@ -83,7 +83,7 @@ export default async function HomePage({
             </div>
           </div>
 
-          <div className="relative min-h-[420px] lg:min-h-[560px]">
+          <div className="relative h-[420px] lg:h-[560px]">
             <div className="depth-layer depth-0 absolute inset-x-8 top-10 h-72 rounded-full bg-[#7d1821]/30 blur-3xl" />
             <div className="depth-layer depth-1 absolute right-8 top-16 h-52 w-52 rounded-full bg-[#14563e]/22 blur-3xl" />
               <div className="float-delayed glass-chip absolute left-3 top-10 z-10 rounded-3xl px-4 py-3 text-sm text-[#f2e2b1] shadow-xl shadow-black/25">

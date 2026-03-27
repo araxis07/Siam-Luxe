@@ -4,7 +4,7 @@ import Image from "next/image";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -48,27 +48,25 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
-  const userProfile = useUserStore((state) => ({
-    fullName: state.fullName,
-    phone: state.phone,
-    addressLine: state.addressLine,
-    district: state.district,
-    city: state.city,
-    notes: state.notes,
-    paymentMethod: state.paymentMethod,
-  }));
+  const fullName = useUserStore((state) => state.fullName);
+  const phone = useUserStore((state) => state.phone);
+  const addressLine = useUserStore((state) => state.addressLine);
+  const district = useUserStore((state) => state.district);
+  const city = useUserStore((state) => state.city);
+  const notes = useUserStore((state) => state.notes);
+  const paymentMethod = useUserStore((state) => state.paymentMethod);
   const saveCheckoutProfile = useUserStore((state) => state.saveCheckoutProfile);
 
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(createCheckoutSchema(t)),
     defaultValues: {
-      fullName: userProfile.fullName,
-      phone: userProfile.phone,
-      addressLine: userProfile.addressLine,
-      district: userProfile.district,
-      city: userProfile.city,
-      notes: userProfile.notes,
-      paymentMethod: userProfile.paymentMethod,
+      fullName,
+      phone,
+      addressLine,
+      district,
+      city,
+      notes,
+      paymentMethod,
       deliveryTime: "asap",
     },
   });
@@ -78,19 +76,27 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
       return;
     }
 
-    startTransition(() => {
-      form.reset({
-        fullName: userProfile.fullName,
-        phone: userProfile.phone,
-        addressLine: userProfile.addressLine,
-        district: userProfile.district,
-        city: userProfile.city,
-        notes: userProfile.notes,
-        paymentMethod: userProfile.paymentMethod,
-        deliveryTime: "asap",
-      });
+    form.reset({
+      fullName,
+      phone,
+      addressLine,
+      district,
+      city,
+      notes,
+      paymentMethod,
+      deliveryTime: "asap",
     });
-  }, [form, hydrated, userProfile]);
+  }, [
+    addressLine,
+    city,
+    district,
+    form,
+    fullName,
+    hydrated,
+    notes,
+    paymentMethod,
+    phone,
+  ]);
 
   if (!hydrated) {
     return <div className="h-[520px] animate-pulse rounded-[2rem] bg-white/5" />;
