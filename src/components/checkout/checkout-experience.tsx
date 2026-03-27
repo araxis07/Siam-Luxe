@@ -18,12 +18,51 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { useToast } from "@/hooks/use-toast";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
 import { useExperienceStore } from "@/store/experience-store";
 import { useUserStore } from "@/store/user-store";
+
+const checkoutEnhancementText = {
+  th: {
+    savedAddresses: "ที่อยู่ที่บันทึกไว้",
+    paymentProfiles: "ช่องทางชำระเงินที่บันทึกไว้",
+    active: "กำลังใช้",
+    apply: "ใช้ข้อมูลนี้",
+    walletTitle: "เครดิตใน wallet",
+  },
+  en: {
+    savedAddresses: "Saved addresses",
+    paymentProfiles: "Saved payment methods",
+    active: "Active",
+    apply: "Apply",
+    walletTitle: "Wallet credits",
+  },
+  ja: {
+    savedAddresses: "保存済み住所",
+    paymentProfiles: "保存済み支払い方法",
+    active: "使用中",
+    apply: "使う",
+    walletTitle: "ウォレット残高",
+  },
+  zh: {
+    savedAddresses: "已保存地址",
+    paymentProfiles: "已保存支付方式",
+    active: "当前使用",
+    apply: "使用此项",
+    walletTitle: "钱包余额",
+  },
+  ko: {
+    savedAddresses: "저장된 주소",
+    paymentProfiles: "저장된 결제 수단",
+    active: "사용 중",
+    apply: "적용",
+    walletTitle: "월렛 크레딧",
+  },
+} as const;
 
 function createCheckoutSchema(t: ReturnType<typeof useTranslations<"checkout">>) {
   return z.object({
@@ -50,6 +89,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const [isPending, startOrderTransition] = useTransition();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const experienceCopy = getExperienceCopy(locale);
+  const { toast } = useToast();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
@@ -62,18 +102,28 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const city = useUserStore((state) => state.city);
   const notes = useUserStore((state) => state.notes);
   const paymentMethod = useUserStore((state) => state.paymentMethod);
+  const savedAddresses = useUserStore((state) => state.savedAddresses);
+  const paymentProfiles = useUserStore((state) => state.paymentProfiles);
+  const giftWallet = useUserStore((state) => state.giftWallet);
+  const activeAddressId = useUserStore((state) => state.activeAddressId);
+  const activePaymentProfileId = useUserStore((state) => state.activePaymentProfileId);
+  const setActiveAddress = useUserStore((state) => state.setActiveAddress);
+  const setActivePaymentProfile = useUserStore((state) => state.setActivePaymentProfile);
   const saveCheckoutProfile = useUserStore((state) => state.saveCheckoutProfile);
+  const text = checkoutEnhancementText[locale];
+  const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
+  const activePaymentProfile = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
 
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(createCheckoutSchema(t)),
     defaultValues: {
-      fullName,
-      phone,
-      addressLine,
-      district,
-      city,
+      fullName: activeAddress?.recipient || fullName,
+      phone: activeAddress?.phone || phone,
+      addressLine: activeAddress?.addressLine || addressLine,
+      district: activeAddress?.district || district,
+      city: activeAddress?.city || city,
       notes,
-      paymentMethod,
+      paymentMethod: activePaymentProfile?.kind || paymentMethod,
       deliveryTime: "asap",
     },
   });
@@ -84,16 +134,24 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     }
 
     form.reset({
-      fullName,
-      phone,
-      addressLine,
-      district,
-      city,
+      fullName: activeAddress?.recipient || fullName,
+      phone: activeAddress?.phone || phone,
+      addressLine: activeAddress?.addressLine || addressLine,
+      district: activeAddress?.district || district,
+      city: activeAddress?.city || city,
       notes,
-      paymentMethod,
+      paymentMethod: activePaymentProfile?.kind || paymentMethod,
       deliveryTime: "asap",
     });
   }, [
+    activeAddress?.addressLine,
+    activeAddress?.city,
+    activeAddress?.district,
+    activeAddress?.id,
+    activeAddress?.phone,
+    activeAddress?.recipient,
+    activePaymentProfile?.id,
+    activePaymentProfile?.kind,
     addressLine,
     city,
     district,
@@ -188,9 +246,102 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
               });
               clearCart();
               setOrderPlaced(true);
+              toast({
+                title: t("successTitle"),
+                description: t("successBody"),
+                tone: "success",
+              });
             });
           })}
         >
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div className="space-y-3">
+              <Label className="text-[#d9ccbb]">{text.savedAddresses}</Label>
+              <div className="space-y-3">
+                {savedAddresses.map((item) => {
+                  const isActive = item.id === activeAddress?.id;
+
+                  return (
+                    <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-white">{item.label}</p>
+                          <p className="mt-1 text-sm text-[#bcae9b]">{item.recipient}</p>
+                          <p className="mt-2 text-sm text-[#d1c4b2]">{item.addressLine}</p>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={isActive ? "default" : "outline"}
+                          className={
+                            isActive
+                              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          }
+                          onClick={() => {
+                            setActiveAddress(item.id);
+                            form.setValue("fullName", item.recipient, { shouldDirty: true });
+                            form.setValue("phone", item.phone, { shouldDirty: true });
+                            form.setValue("addressLine", item.addressLine, { shouldDirty: true });
+                            form.setValue("district", item.district, { shouldDirty: true });
+                            form.setValue("city", item.city, { shouldDirty: true });
+                          }}
+                        >
+                          {isActive ? text.active : text.apply}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="text-[#d9ccbb]">{text.paymentProfiles}</Label>
+              <div className="space-y-3">
+                {paymentProfiles.map((item) => {
+                  const isActive = item.id === activePaymentProfile?.id;
+
+                  return (
+                    <div key={item.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-white">{item.label}</p>
+                          <p className="mt-1 text-sm text-[#bcae9b]">{item.kind}</p>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={isActive ? "default" : "outline"}
+                          className={
+                            isActive
+                              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          }
+                          onClick={() => {
+                            setActivePaymentProfile(item.id);
+                            form.setValue("paymentMethod", item.kind, { shouldDirty: true });
+                          }}
+                        >
+                          {isActive ? text.active : text.apply}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {giftWallet.length > 0 ? (
+                <div className="rounded-[1.5rem] border border-white/10 bg-black/15 p-4">
+                  <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{text.walletTitle}</p>
+                  <p className="mt-3 font-heading text-[1.8rem] text-white">
+                    {formatPrice(giftWallet.reduce((sum, item) => sum + item.amount, 0), locale)}
+                  </p>
+                  <p className="mt-2 text-sm text-[#d1c4b2]">{giftWallet.length} wallet entries</p>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <Label className="text-[#d9ccbb]">{t("fields.fullName")}</Label>

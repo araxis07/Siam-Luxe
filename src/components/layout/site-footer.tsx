@@ -9,9 +9,7 @@ export function SiteFooter({ locale }: { locale: AppLocale }) {
   const tFooter = useTranslations("footer");
   const tNav = useTranslations("nav");
   const copy = getExperienceCopy(locale);
-  const featureLinks = getFeatureLinks(locale).filter((item) =>
-    ["specials", "reservation", "tracking", "favorites", "account", "contact", "help"].includes(item.id),
-  );
+  const featureLinks = getFeatureLinks(locale);
   const specialsLink = featureLinks.find((item) => item.id === "specials");
 
   return (
@@ -39,7 +37,7 @@ export function SiteFooter({ locale }: { locale: AppLocale }) {
         </div>
         <div className="space-y-2">
           <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{copy.labels.quickAccess}</p>
-          <div className="flex flex-col gap-2 text-[#d6c9b6]">
+          <div className="grid gap-2 text-[#d6c9b6] sm:grid-cols-2">
             {featureLinks.map((item) => (
               <Link key={item.id} href={item.href} locale={locale} className="transition-colors hover:text-white">
                 {item.title}

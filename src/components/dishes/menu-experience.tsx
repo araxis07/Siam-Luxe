@@ -12,15 +12,53 @@ import type {
   LocalizedRegion,
   RegionId,
 } from "@/lib/catalog";
-import { getExperienceCopy } from "@/lib/experience";
+import { getAllDietaryLabels, getDietaryLabels, getExperienceCopy } from "@/lib/experience";
 import { ChefRecommendations } from "@/components/dishes/chef-recommendations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DishCard } from "@/components/dishes/dish-card";
+import type { DietaryTagId } from "@/lib/experience";
+import type { DishStatusId } from "@/lib/premium";
+import { getDishStatus } from "@/lib/premium";
 
 type SpiceFilter = "all" | "mild" | "medium" | "hot";
 type SortMode = "recommended" | "price" | "rating" | "spicy";
+type DietaryFilter = "all" | DietaryTagId;
+type StatusFilter = "all" | DishStatusId;
+
+const menuFiltersText = {
+  th: {
+    dietary: "ตัวกรองอาหาร",
+    status: "สถานะเมนู",
+    allDietary: "ทุกแบบ",
+    allStatuses: "ทุกสถานะ",
+  },
+  en: {
+    dietary: "Dietary filter",
+    status: "Availability",
+    allDietary: "All dietary",
+    allStatuses: "All statuses",
+  },
+  ja: {
+    dietary: "食事条件フィルター",
+    status: "提供状況",
+    allDietary: "すべて",
+    allStatuses: "すべての状態",
+  },
+  zh: {
+    dietary: "饮食条件筛选",
+    status: "菜单状态",
+    allDietary: "全部条件",
+    allStatuses: "全部状态",
+  },
+  ko: {
+    dietary: "식단 필터",
+    status: "메뉴 상태",
+    allDietary: "전체 조건",
+    allStatuses: "모든 상태",
+  },
+} as const;
 
 function matchesSpiceFilter(baseSpice: number, filter: SpiceFilter) {
   if (filter === "all") return true;
@@ -47,8 +85,20 @@ export function MenuExperience({
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [spiceFilter, setSpiceFilter] = useState<SpiceFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("recommended");
+  const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
+  const text = menuFiltersText[locale];
+  const dietaryLabels = getAllDietaryLabels(locale).filter((item) =>
+    ["vegetarian", "seafood", "containsNuts", "halalFriendly", "spicy"].includes(item.id),
+  );
+  const statusOptions: Array<{ id: StatusFilter; label: string }> = [
+    { id: "all", label: text.allStatuses },
+    { id: "limited", label: getDishStatus(locale, "fire-basil-wagyu").label },
+    { id: "soldOut", label: getDishStatus(locale, "southern-roti-mataba").label },
+    { id: "chefToday", label: getDishStatus(locale, "royal-tom-yum").label },
+  ];
 
   const suggestions =
     normalizedQuery.length === 0
@@ -73,8 +123,12 @@ export function MenuExperience({
       const matchesRegion = region === "all" || dish.region === region;
       const matchesCategory = category === "all" || dish.category === category;
       const matchesSpice = matchesSpiceFilter(dish.baseSpice, spiceFilter);
+      const matchesDietary =
+        dietaryFilter === "all" || getDietaryLabels(locale, dish.id).some((item) => item.id === dietaryFilter);
+      const matchesStatus =
+        statusFilter === "all" || getDishStatus(locale, dish.id).id === statusFilter;
 
-      return matchesQuery && matchesRegion && matchesCategory && matchesSpice;
+      return matchesQuery && matchesRegion && matchesCategory && matchesSpice && matchesDietary && matchesStatus;
     })
     .sort((left, right) => {
       if (sortMode === "price") return left.price - right.price;
@@ -213,6 +267,67 @@ export function MenuExperience({
       <div className="space-y-4">
         <div>
           <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {text.dietary}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              size="sm"
+              variant={dietaryFilter === "all" ? "default" : "outline"}
+              className={
+                dietaryFilter === "all"
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+              }
+              onClick={() => setDietaryFilter("all")}
+            >
+              {text.allDietary}
+            </Button>
+            {dietaryLabels.map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={dietaryFilter === item.id ? "default" : "outline"}
+                className={
+                  dietaryFilter === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setDietaryFilter(item.id)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {text.status}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {statusOptions.map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={statusFilter === item.id ? "default" : "outline"}
+                className={
+                  statusFilter === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setStatusFilter(item.id)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
             {t("quickRegions")}
           </p>
           <div className="flex flex-wrap items-center gap-3">
@@ -297,6 +412,16 @@ export function MenuExperience({
           {category !== "all" ? (
             <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
               {categories.find((item) => item.id === category)?.label}
+            </span>
+          ) : null}
+          {dietaryFilter !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {dietaryLabels.find((item) => item.id === dietaryFilter)?.label}
+            </span>
+          ) : null}
+          {statusFilter !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {statusOptions.find((item) => item.id === statusFilter)?.label}
             </span>
           ) : null}
         </div>

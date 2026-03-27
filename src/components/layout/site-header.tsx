@@ -5,6 +5,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { CartTrigger } from "@/components/cart/cart-trigger";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { MobileNavDrawer } from "@/components/layout/mobile-nav-drawer";
 
 export function SiteHeader({ locale }: { locale: AppLocale }) {
   const tCommon = useTranslations("common");
@@ -104,6 +105,7 @@ export function SiteHeader({ locale }: { locale: AppLocale }) {
           </nav>
         </div>
         <div className="flex items-center gap-3">
+          <MobileNavDrawer locale={locale} />
           <LanguageSwitcher />
           <CartTrigger />
         </div>

@@ -11,8 +11,11 @@ import type { LocalizedMenuDish } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DietaryBadges } from "@/components/dishes/dietary-badges";
+import { DishStatusBadge } from "@/components/dishes/dish-status-badge";
 import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { formatPrice } from "@/lib/format";
+import { useToast } from "@/hooks/use-toast";
+import { getDishStatus } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
 import { FoodDetailDialog } from "@/components/dishes/food-detail-dialog";
 
@@ -29,7 +32,10 @@ export function DishCard({
   const reduceMotion = useReducedMotion();
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const status = getDishStatus(locale, dish.id);
+  const isSoldOut = status.id === "soldOut";
 
   return (
     <>
@@ -60,6 +66,7 @@ export function DishCard({
                 <span className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[0.62rem] uppercase tracking-[0.16em] text-white/90">
                   {dish.regionLabel}
                 </span>
+                <DishStatusBadge dishId={dish.id} locale={locale} />
                 {dish.featured ? (
                   <span className="rounded-full bg-[#d6b26a] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#1b130f]">
                     {t("featuredBadge")}
@@ -111,7 +118,11 @@ export function DishCard({
                 <Button
                   type="button"
                   className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  disabled={isSoldOut}
                   onClick={() => {
+                    if (isSoldOut) {
+                      return;
+                    }
                     addItem({
                       dishId: dish.id,
                       quantity: 1,
@@ -120,9 +131,14 @@ export function DishCard({
                       unitPrice: dish.price,
                     });
                     openCart();
+                    toast({
+                      title: t("quickAdd"),
+                      description: dish.name,
+                      tone: "success",
+                    });
                   }}
                 >
-                  {t("quickAdd")}
+                  {isSoldOut ? status.label : t("quickAdd")}
                 </Button>
               </div>
             </CardContent>

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/format";
 import { getDiscountValue, getExperienceCopy, getPromoOfferByCode, getPromoOffers } from "@/lib/experience";
 import { useExperienceStore } from "@/store/experience-store";
@@ -20,28 +21,40 @@ export function PromoCodePanel({
   const setAppliedPromoCode = useExperienceStore((state) => state.setAppliedPromoCode);
   const copy = getExperienceCopy(locale);
   const offers = getPromoOffers(locale);
+  const { toast } = useToast();
   const [draftValue, setDraftValue] = useState<string | null>(null);
   const [error, setError] = useState("");
   const value = draftValue ?? appliedPromoCode ?? "";
 
   const appliedOffer = useMemo(
-    () => getPromoOfferByCode(appliedPromoCode),
-    [appliedPromoCode],
+    () => offers.find((offer) => offer.code === appliedPromoCode),
+    [appliedPromoCode, offers],
   );
   const discount = getDiscountValue(subtotal, appliedPromoCode);
 
   function applyPromo(code: string) {
     const normalizedCode = code.trim().toUpperCase();
     const offer = getPromoOfferByCode(normalizedCode);
+    const localizedOffer = offers.find((entry) => entry.code === normalizedCode);
 
     if (!offer || subtotal < offer.minimumSubtotal) {
       setError(copy.labels.invalidPromo);
+      toast({
+        title: copy.labels.promoTitle,
+        description: copy.labels.invalidPromo,
+        tone: "error",
+      });
       return;
     }
 
     setAppliedPromoCode(normalizedCode);
     setDraftValue(normalizedCode);
     setError("");
+    toast({
+      title: copy.labels.promoApplied.replace("{code}", normalizedCode),
+      description: localizedOffer?.description ?? copy.labels.promoTitle,
+      tone: "success",
+    });
   }
 
   return (
@@ -84,6 +97,11 @@ export function PromoCodePanel({
                 setAppliedPromoCode(null);
                 setDraftValue("");
                 setError("");
+                toast({
+                  title: copy.labels.clearPromo,
+                  description: copy.labels.promoTitle,
+                  tone: "info",
+                });
               }}
             >
               {copy.labels.clearPromo}

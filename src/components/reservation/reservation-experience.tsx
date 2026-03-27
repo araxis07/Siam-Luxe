@@ -13,8 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import type { BranchId } from "@/lib/experience";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranches } from "@/lib/experience";
 import { useExperienceStore } from "@/store/experience-store";
+import { useReservationStore, type ReservationRecord } from "@/store/reservation-store";
 
 const reservationText = {
   th: {
@@ -229,6 +232,87 @@ const reservationText = {
   },
 } as const;
 
+const reservationLiveText = {
+  th: {
+    seatingPreview: "แผนผังที่นั่งแบบ interactive",
+    waitlistHint: "รอบนี้เต็มตามรูปแบบที่นั่งที่เลือก ระบบจะบันทึกเป็น waitlist ให้แทน",
+    waitlistTitle: "อยู่ใน waitlist แล้ว",
+    waitlistBody: "คำขอนี้ถูกบันทึกเป็น waitlist เพื่อรอคิวจากสาขาและรูปแบบที่นั่งที่คุณเลือก",
+    waitlistSubmitted: "เพิ่มเข้า waitlist แล้ว",
+    seatsLeft: "เหลือ {count} ที่",
+    full: "เต็มรอบนี้",
+    reserveSummary: "ภาพรวมของรอบนี้",
+  },
+  en: {
+    seatingPreview: "Interactive seating preview",
+    waitlistHint: "This seating style is currently full for the selected slot. The flow will capture a waitlist request instead.",
+    waitlistTitle: "Joined the waitlist",
+    waitlistBody: "This request has been recorded as a waitlist entry for the selected branch, time, and seating style.",
+    waitlistSubmitted: "Added to waitlist",
+    seatsLeft: "{count} seats left",
+    full: "Full for this slot",
+    reserveSummary: "Live slot summary",
+  },
+  ja: {
+    seatingPreview: "席タイプのライブプレビュー",
+    waitlistHint: "この席タイプは選択中の時間帯で満席です。予約ではなくウェイトリストとして受け付けます。",
+    waitlistTitle: "ウェイトリストに追加しました",
+    waitlistBody: "選択した店舗、時間、席タイプでウェイトリストとして記録されました。",
+    waitlistSubmitted: "ウェイトリストに追加しました",
+    seatsLeft: "残り {count} 席",
+    full: "この時間帯は満席",
+    reserveSummary: "現在の空席サマリー",
+  },
+  zh: {
+    seatingPreview: "互动座位预览",
+    waitlistHint: "当前所选座位类型在该时间段已满，系统会改为记录候补请求。",
+    waitlistTitle: "已加入候补名单",
+    waitlistBody: "这条请求已按所选门店、时间与座位类型记录为候补。",
+    waitlistSubmitted: "已加入候补名单",
+    seatsLeft: "剩余 {count} 个座位",
+    full: "该时段已满",
+    reserveSummary: "当前档期概览",
+  },
+  ko: {
+    seatingPreview: "좌석 프리뷰",
+    waitlistHint: "선택한 좌석 유형이 해당 시간대에 가득 찼습니다. 예약 대신 웨이트리스트 요청으로 저장됩니다.",
+    waitlistTitle: "웨이트리스트에 등록되었습니다",
+    waitlistBody: "선택한 지점, 시간, 좌석 유형 기준으로 웨이트리스트 항목이 저장되었습니다.",
+    waitlistSubmitted: "웨이트리스트에 추가되었습니다",
+    seatsLeft: "{count}석 남음",
+    full: "이 시간대는 만석",
+    reserveSummary: "현재 슬롯 요약",
+  },
+} as const;
+
+const seatingCapacities = {
+  salon: 20,
+  terrace: 10,
+  counter: 8,
+  private: 16,
+} as const;
+
+const seatingLoads: Record<BranchId, Record<string, Partial<Record<keyof typeof seatingCapacities, number>>>> = {
+  bangrak: {
+    "18:00": { salon: 11, terrace: 4, counter: 4, private: 8 },
+    "19:00": { salon: 17, terrace: 8, counter: 7, private: 15 },
+    "20:30": { salon: 18, terrace: 10, counter: 8, private: 16 },
+    "21:30": { salon: 12, terrace: 6, counter: 4, private: 12 },
+  },
+  sukhumvit: {
+    "18:00": { salon: 8, terrace: 2, counter: 5, private: 4 },
+    "19:00": { salon: 15, terrace: 5, counter: 7, private: 9 },
+    "20:30": { salon: 18, terrace: 8, counter: 8, private: 12 },
+    "21:30": { salon: 10, terrace: 3, counter: 5, private: 6 },
+  },
+  chiangmai: {
+    "18:00": { salon: 7, terrace: 3, counter: 2, private: 4 },
+    "19:00": { salon: 13, terrace: 6, counter: 4, private: 8 },
+    "20:30": { salon: 16, terrace: 8, counter: 5, private: 11 },
+    "21:30": { salon: 9, terrace: 4, counter: 3, private: 6 },
+  },
+};
+
 function createSchema(locale: AppLocale) {
   const copy = reservationText[locale];
 
@@ -249,13 +333,17 @@ type ReservationValues = z.infer<ReturnType<typeof createSchema>>;
 
 export function ReservationExperience({ locale }: { locale: AppLocale }) {
   const copy = reservationText[locale];
+  const liveText = reservationLiveText[locale];
   const experienceCopy = getExperienceCopy(locale);
   const feature = getFeatureLinks(locale).find((item) => item.id === "reservation");
   const branches = getLocalizedBranches(locale);
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const setSelectedBranchId = useExperienceStore((state) => state.setSelectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
-  const [submitted, setSubmitted] = useState<ReservationValues | null>(null);
+  const createReservation = useReservationStore((state) => state.createReservation);
+  const joinWaitlist = useReservationStore((state) => state.joinWaitlist);
+  const { toast } = useToast();
+  const [submitted, setSubmitted] = useState<ReservationRecord | null>(null);
 
   const form = useForm<ReservationValues>({
     resolver: zodResolver(createSchema(locale)),
@@ -273,16 +361,39 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
   });
 
   const branchId = useWatch({ control: form.control, name: "branchId" });
+  const timeSlot = useWatch({ control: form.control, name: "timeSlot" });
+  const seating = useWatch({ control: form.control, name: "seating" });
+  const guestCount = Number(useWatch({ control: form.control, name: "guestCount" }) ?? 2);
   const activeBranch = branches.find((branch) => branch.id === branchId) ?? branches[0];
+  const seatPreview = (Object.entries(copy.seatingOptions) as Array<
+    [keyof typeof seatingCapacities, string]
+  >).map(([id, label]) => {
+    const reserved = seatingLoads[branchId as BranchId]?.[timeSlot]?.[id] ?? 0;
+    const capacity = seatingCapacities[id];
+    const remaining = Math.max(0, capacity - reserved);
+
+    return {
+      id,
+      label,
+      reserved,
+      capacity,
+      remaining,
+      isFull: remaining < guestCount,
+    };
+  });
+  const activeSeat = seatPreview.find((item) => item.id === seating);
+  const waitlistMode = activeSeat?.isFull ?? false;
 
   if (submitted) {
     const branch = branches.find((item) => item.id === submitted.branchId) ?? branches[0];
+    const successTitle = submitted.status === "waitlist" ? liveText.waitlistTitle : copy.successTitle;
+    const successBody = submitted.status === "waitlist" ? liveText.waitlistBody : copy.successBody;
 
     return (
       <div className="lux-panel mx-auto max-w-3xl rounded-[2.25rem] px-6 py-16 text-center sm:px-10">
         <CheckCircle2 className="mx-auto size-16 text-[#d6b26a]" />
-        <h1 className="mt-6 font-heading text-[2.4rem] leading-tight text-white sm:text-[2.9rem]">{copy.successTitle}</h1>
-        <p className="mx-auto mt-4 max-w-2xl text-[#d1c4b2]">{copy.successBody}</p>
+        <h1 className="mt-6 font-heading text-[2.4rem] leading-tight text-white sm:text-[2.9rem]">{successTitle}</h1>
+        <p className="mx-auto mt-4 max-w-2xl text-[#d1c4b2]">{successBody}</p>
         <div className="mx-auto mt-8 max-w-xl rounded-[1.8rem] border border-white/10 bg-white/4 p-5 text-left">
           <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{branch.name}</p>
           <p className="mt-2 text-white">
@@ -328,7 +439,24 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
           className="space-y-6"
           onSubmit={form.handleSubmit((values) => {
             setSelectedBranchId(values.branchId as typeof selectedBranchId);
-            setSubmitted(values);
+            const payload = {
+              branchId: values.branchId as BranchId,
+              guestCount: Number(values.guestCount),
+              date: values.date,
+              timeSlot: values.timeSlot,
+              occasion: values.occasion,
+              seating: values.seating,
+              contactName: values.contactName,
+              phone: values.phone,
+              notes: values.notes ?? "",
+            };
+            const reservation = waitlistMode ? joinWaitlist(payload) : createReservation(payload);
+            setSubmitted(reservation);
+            toast({
+              title: waitlistMode ? liveText.waitlistSubmitted : experienceCopy.labels.reservationSubmitted,
+              description: `${activeBranch.name} · ${values.date} · ${values.timeSlot}`,
+              tone: "success",
+            });
           })}
         >
           <div className="grid gap-5 md:grid-cols-2">
@@ -436,22 +564,44 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
                 control={form.control}
                 name="seating"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="h-12 w-full rounded-2xl border-white/10 bg-white/4 px-4 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-white/10 bg-[#120d0d]/96 text-white">
-                      {Object.entries(copy.seatingOptions).map(([key, value]) => (
-                        <SelectItem key={key} value={key}>
-                          {value}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {(Object.entries(copy.seatingOptions) as Array<[keyof typeof seatingCapacities, string]>).map(
+                      ([key, value]) => {
+                        const preview = seatPreview.find((item) => item.id === key);
+                        const isActive = field.value === key;
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            className={`rounded-[1.4rem] border px-4 py-4 text-left transition-colors ${
+                              isActive
+                                ? "border-[#d6b26a]/35 bg-[#d6b26a]/10"
+                                : "border-white/10 bg-white/4 hover:bg-white/8"
+                            }`}
+                            onClick={() => field.onChange(key)}
+                          >
+                            <span className="block text-white">{value}</span>
+                            <span className="mt-2 block text-sm text-[#bcae9b]">
+                              {preview?.isFull
+                                ? liveText.full
+                                : liveText.seatsLeft.replace("{count}", String(preview?.remaining ?? 0))}
+                            </span>
+                          </button>
+                        );
+                      },
+                    )}
+                  </div>
                 )}
               />
             </div>
           </div>
+
+          {waitlistMode ? (
+            <div className="rounded-[1.6rem] border border-[#d6b26a]/20 bg-[#d6b26a]/10 px-4 py-4 text-sm text-[#ecd8a0]">
+              {liveText.waitlistHint}
+            </div>
+          ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
@@ -489,7 +639,7 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
             size="lg"
             className="button-shine h-12 rounded-full bg-[#d6b26a] px-6 text-[#1b130f] hover:bg-[#e4c987]"
           >
-            {copy.submit}
+            {waitlistMode ? liveText.waitlistSubmitted : copy.submit}
           </Button>
         </form>
       </div>
@@ -511,13 +661,46 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
         </div>
 
         <div className="lux-panel-soft rounded-[2rem] p-6">
-          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{copy.summaryTitle}</p>
+          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{liveText.seatingPreview}</p>
+          <div className="mt-4 space-y-3">
+            {seatPreview.map((item) => (
+              <div
+                key={item.id}
+                className={`rounded-[1.5rem] border p-4 ${
+                  item.id === seating
+                    ? "border-[#d6b26a]/30 bg-[#d6b26a]/10"
+                    : "border-white/10 bg-white/4"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-white">{item.label}</p>
+                  <span className="text-sm text-[#ecd8a0]">{item.capacity}</span>
+                </div>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
+                  <div
+                    className={`h-full rounded-full ${item.isFull ? "bg-[#9b1d27]" : "bg-gradient-to-r from-[#d6b26a] to-[#1d624b]"}`}
+                    style={{ width: `${Math.min(100, (item.reserved / item.capacity) * 100)}%` }}
+                  />
+                </div>
+                <p className="mt-3 text-sm text-[#d1c4b2]">
+                  {item.isFull
+                    ? liveText.full
+                    : liveText.seatsLeft.replace("{count}", String(item.remaining))}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="lux-panel-soft rounded-[2rem] p-6">
+          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{liveText.reserveSummary}</p>
           <ul className="mt-4 space-y-3 text-sm leading-7 text-[#d0c3b1]">
             {activeBranch.features.map((feature) => (
               <li key={feature}>• {feature}</li>
             ))}
             <li>• {feature?.description}</li>
             <li>• {experienceCopy.labels.pickupHint}</li>
+            <li>• {activeSeat?.label}: {waitlistMode ? liveText.full : liveText.seatsLeft.replace("{count}", String(activeSeat?.remaining ?? 0))}</li>
           </ul>
         </div>
       </aside>

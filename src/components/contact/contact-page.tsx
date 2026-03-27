@@ -6,11 +6,31 @@ import { Button } from "@/components/ui/button";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranches } from "@/lib/experience";
 
 const contactText = {
-  th: "ทีมบริการของร้านจะช่วยแนะนำสาขาที่เหมาะกับการนั่งทาน รับเอง หรือจัดส่งตามพื้นที่ของคุณ",
-  en: "House service can guide guests to the best branch for dine-in, pickup, or delivery-ready ordering.",
-  ja: "店舗サービスチームが、来店、受取、配送に最適な店舗選びを案内します。",
-  zh: "门店服务团队会协助客人选择最适合堂食、自取或配送的门店。",
-  ko: "매장 서비스 팀이 식사, 픽업, 배달에 가장 적합한 지점을 안내합니다.",
+  th: {
+    body: "ทีมบริการของร้านจะช่วยแนะนำสาขาที่เหมาะกับการนั่งทาน รับเอง หรือจัดส่งตามพื้นที่ของคุณ",
+    branchStory: "ดูรายละเอียดสาขา",
+    privateDining: "จัดเลี้ยง / private dining",
+  },
+  en: {
+    body: "House service can guide guests to the best branch for dine-in, pickup, or delivery-ready ordering.",
+    branchStory: "View branch details",
+    privateDining: "Private dining inquiry",
+  },
+  ja: {
+    body: "店舗サービスチームが、来店、受取、配送に最適な店舗選びを案内します。",
+    branchStory: "店舗詳細を見る",
+    privateDining: "個室・イベント相談",
+  },
+  zh: {
+    body: "门店服务团队会协助客人选择最适合堂食、自取或配送的门店。",
+    branchStory: "查看门店详情",
+    privateDining: "包厢 / 宴会咨询",
+  },
+  ko: {
+    body: "매장 서비스 팀이 식사, 픽업, 배달에 가장 적합한 지점을 안내합니다.",
+    branchStory: "지점 상세 보기",
+    privateDining: "프라이빗 다이닝 문의",
+  },
 } as const;
 
 export function ContactPage({ locale }: { locale: AppLocale }) {
@@ -53,6 +73,23 @@ export function ContactPage({ locale }: { locale: AppLocale }) {
                   <li key={item}>• {item}</li>
                 ))}
               </ul>
+              <div className="mt-5 flex flex-col gap-3">
+                <Button
+                  type="button"
+                  className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  render={<Link href={`/branches/${branch.id}`} locale={locale} />}
+                >
+                  {contactText[locale].branchStory}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  render={<Link href="/private-dining" locale={locale} />}
+                >
+                  {contactText[locale].privateDining}
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -76,7 +113,7 @@ export function ContactPage({ locale }: { locale: AppLocale }) {
           <div className="lux-panel-soft rounded-[2rem] p-6 sm:p-8">
             <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{copy.labels.supportLine}</p>
             <h2 className="mt-3 font-heading text-[2rem] leading-tight text-white">+66 2 118 4500</h2>
-            <p className="mt-4 text-[0.96rem] leading-7 text-[#d1c4b2]">{contactText[locale]}</p>
+            <p className="mt-4 text-[0.96rem] leading-7 text-[#d1c4b2]">{contactText[locale].body}</p>
             <div className="mt-6 flex flex-col gap-3">
               <Button
                 type="button"
@@ -92,6 +129,14 @@ export function ContactPage({ locale }: { locale: AppLocale }) {
                 render={<Link href="/tracking" locale={locale} />}
               >
                 {copy.labels.trackingTitle}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                render={<Link href="/private-dining" locale={locale} />}
+              >
+                {contactText[locale].privateDining}
               </Button>
             </div>
           </div>

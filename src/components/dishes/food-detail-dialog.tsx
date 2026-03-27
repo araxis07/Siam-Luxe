@@ -11,10 +11,13 @@ import type { LocalizedMenuDish, ToppingId } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DietaryBadges } from "@/components/dishes/dietary-badges";
+import { DishStatusBadge } from "@/components/dishes/dish-status-badge";
 import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedDishReviews } from "@/lib/experience";
+import { useToast } from "@/hooks/use-toast";
+import { getDishStatus } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
 
 export function FoodDetailDialog({
@@ -32,10 +35,13 @@ export function FoodDetailDialog({
   const experienceCopy = getExperienceCopy(locale);
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
+  const { toast } = useToast();
   const [spiceLevel, setSpiceLevel] = useState(dish.baseSpice);
   const [quantity, setQuantity] = useState(1);
   const [selectedToppings, setSelectedToppings] = useState<ToppingId[]>([]);
   const reviews = getLocalizedDishReviews(locale, dish.id).slice(0, 2);
+  const status = getDishStatus(locale, dish.id);
+  const isSoldOut = status.id === "soldOut";
 
   const resetSelections = useEffectEvent(() => {
     setSpiceLevel(dish.baseSpice);
@@ -87,6 +93,7 @@ export function FoodDetailDialog({
                 <div className="inline-flex w-fit rounded-full border border-white/12 bg-white/5 px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/85">
                   {dish.regionLabel}
                 </div>
+                <DishStatusBadge dishId={dish.id} locale={locale} />
                 <FavoriteButton dishId={dish.id} locale={locale} className="ml-auto" />
               </div>
               <DialogTitle className="font-heading text-[2.1rem] leading-tight text-white sm:text-[2.35rem]">
@@ -248,7 +255,11 @@ export function FoodDetailDialog({
                     <Button
                       type="button"
                       className="button-shine rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
+                      disabled={isSoldOut}
                       onClick={() => {
+                        if (isSoldOut) {
+                          return;
+                        }
                         addItem({
                           dishId: dish.id,
                           quantity,
@@ -257,10 +268,15 @@ export function FoodDetailDialog({
                           unitPrice: dish.price + toppingTotal,
                         });
                         openCart();
+                        toast({
+                          title: t("addToCart"),
+                          description: dish.name,
+                          tone: "success",
+                        });
                         onOpenChange(false);
                       }}
                     >
-                      {t("addToCart")}
+                      {isSoldOut ? status.label : t("addToCart")}
                     </Button>
                   </div>
                 </motion.div>

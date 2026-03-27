@@ -3,9 +3,11 @@ import type { ReactNode } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileCartBar } from "@/components/cart/mobile-cart-bar";
+import { PwaRegister } from "@/components/app/pwa-register";
 import { ExperienceBar } from "@/components/layout/experience-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { ToastViewport } from "@/components/ui/toast-viewport";
 
 export function SiteShell({
   children,
@@ -26,6 +28,8 @@ export function SiteShell({
       <SiteFooter locale={locale} />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />
+      <ToastViewport />
+      <PwaRegister />
     </div>
   );
 }
