@@ -10,6 +10,8 @@ import type { AppLocale } from "@/i18n/routing";
 import type { LocalizedMenuDish } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DietaryBadges } from "@/components/dishes/dietary-badges";
+import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { formatPrice } from "@/lib/format";
 import { useCartStore } from "@/store/cart-store";
 import { FoodDetailDialog } from "@/components/dishes/food-detail-dialog";
@@ -64,6 +66,9 @@ export function DishCard({
                   </span>
                 ) : null}
               </div>
+              <div className="absolute right-4 top-4 z-10">
+                <FavoriteButton dishId={dish.id} locale={locale} />
+              </div>
             </div>
 
             <CardContent className="relative space-y-4 px-5 pt-5 pb-5">
@@ -91,6 +96,7 @@ export function DishCard({
                     {t("prepTime", { minutes: dish.prepMinutes })}
                   </span>
                 </div>
+                <DietaryBadges dishId={dish.id} locale={locale} />
               </div>
 
               <div className="flex flex-wrap gap-3">

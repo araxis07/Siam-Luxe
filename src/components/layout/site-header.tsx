@@ -9,6 +9,33 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 export function SiteHeader({ locale }: { locale: AppLocale }) {
   const tCommon = useTranslations("common");
   const tNav = useTranslations("nav");
+  const extraNavLabels = {
+    th: {
+      specials: "ชุดพิเศษ",
+      reservation: "จองโต๊ะ",
+      account: "บัญชี",
+    },
+    en: {
+      specials: "Specials",
+      reservation: "Reservation",
+      account: "Account",
+    },
+    ja: {
+      specials: "特集",
+      reservation: "予約",
+      account: "アカウント",
+    },
+    zh: {
+      specials: "精选套餐",
+      reservation: "预订",
+      account: "账户",
+    },
+    ko: {
+      specials: "스페셜",
+      reservation: "예약",
+      account: "계정",
+    },
+  } as const;
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/6 bg-[#0f0a0b]/75 backdrop-blur-xl">
@@ -47,6 +74,13 @@ export function SiteHeader({ locale }: { locale: AppLocale }) {
               {tNav("menu")}
             </Link>
             <Link
+              href="/specials"
+              locale={locale}
+              className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"
+            >
+              {extraNavLabels[locale].specials}
+            </Link>
+            <Link
               href="/heritage"
               locale={locale}
               className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"
@@ -54,11 +88,18 @@ export function SiteHeader({ locale }: { locale: AppLocale }) {
               {tNav("heritage")}
             </Link>
             <Link
-              href="/checkout"
+              href="/reservation"
               locale={locale}
               className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"
             >
-              {tNav("checkout")}
+              {extraNavLabels[locale].reservation}
+            </Link>
+            <Link
+              href="/account"
+              locale={locale}
+              className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"
+            >
+              {extraNavLabels[locale].account}
             </Link>
           </nav>
         </div>

@@ -6,27 +6,22 @@ import { useTranslations } from "next-intl";
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { PromoCodePanel } from "@/components/cart/promo-code-panel";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
+import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
-
-function getOrderTotals(items: ReturnType<typeof useCartStore.getState>["items"]) {
-  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const delivery = subtotal === 0 ? 0 : subtotal >= 1600 ? 0 : 79;
-  const service = subtotal === 0 ? 0 : Math.round(subtotal * 0.05);
-  const total = subtotal + delivery + service;
-
-  return { subtotal, delivery, service, total };
-}
+import { useExperienceStore } from "@/store/experience-store";
 
 export function CartDrawer({ locale }: { locale: AppLocale }) {
   const t = useTranslations("cart");
   const tDish = useTranslations("dish");
   const hydrated = useHydrated();
+  const experienceCopy = getExperienceCopy(locale);
   const items = useCartStore((state) => state.items);
   const isOpen = useCartStore((state) => state.isOpen);
   const setCartOpen = useCartStore((state) => state.setCartOpen);
@@ -34,9 +29,13 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
   const removeItem = useCartStore((state) => state.removeItem);
   const clearCart = useCartStore((state) => state.clearCart);
   const closeCart = useCartStore((state) => state.closeCart);
+  const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
+  const serviceMode = useExperienceStore((state) => state.serviceMode);
+  const appliedPromoCode = useExperienceStore((state) => state.appliedPromoCode);
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totals = getOrderTotals(items);
+  const totals = getOrderTotals(items, appliedPromoCode);
+  const branch = getLocalizedBranch(locale, selectedBranchId);
 
   return (
     <Sheet open={isOpen} onOpenChange={setCartOpen}>
@@ -76,7 +75,9 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
             <>
               <div className="flex items-center justify-between px-4 py-3 text-sm text-[#d8cbbb]">
                 <span>{t("items", { count: itemCount })}</span>
-                <span className="text-[#a89b8d]">{t("freeDelivery")}</span>
+                <span className="text-right text-[#a89b8d]">
+                  {branch.name} · {experienceCopy.serviceModes[serviceMode]}
+                </span>
               </div>
               <Separator className="bg-white/8" />
               <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
@@ -170,11 +171,26 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
         {items.length > 0 && hydrated && (
           <SheetFooter className="border-t border-white/8 bg-[#120c0d] p-4">
             <div className="lux-panel-soft w-full rounded-3xl p-4">
+              <div className="mb-4 rounded-[1.5rem] border border-white/10 bg-black/15 px-4 py-3 text-sm text-[#d1c4b2]">
+                <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
+                  {experienceCopy.labels.branch}
+                </p>
+                <p className="mt-2 text-white">{branch.name}</p>
+                <p className="mt-1 text-sm text-[#bcae9b]">{experienceCopy.serviceModes[serviceMode]}</p>
+              </div>
+              <PromoCodePanel locale={locale} subtotal={totals.subtotal} />
+              <div className="my-4" />
               <div className="space-y-2 text-sm text-[#d8cbbb]">
                 <div className="flex items-center justify-between">
                   <span>{t("subtotal")}</span>
                   <span>{formatPrice(totals.subtotal, locale)}</span>
                 </div>
+                {totals.discount > 0 ? (
+                  <div className="flex items-center justify-between">
+                    <span>{experienceCopy.labels.discount}</span>
+                    <span>-{formatPrice(totals.discount, locale)}</span>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <span>{t("delivery")}</span>
                   <span>

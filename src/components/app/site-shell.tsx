@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileCartBar } from "@/components/cart/mobile-cart-bar";
+import { ExperienceBar } from "@/components/layout/experience-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 
@@ -20,6 +21,7 @@ export function SiteShell({
         <div className="depth-layer depth-1 ml-auto mt-20 h-60 w-60 rounded-full bg-[#15563f]/28 blur-3xl" />
       </div>
       <SiteHeader locale={locale} />
+      <ExperienceBar locale={locale} />
       <main className="relative z-10 flex-1">{children}</main>
       <SiteFooter locale={locale} />
       <CartDrawer locale={locale} />

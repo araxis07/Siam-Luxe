@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -9,8 +10,11 @@ import type { AppLocale } from "@/i18n/routing";
 import type { LocalizedMenuDish, ToppingId } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DietaryBadges } from "@/components/dishes/dietary-badges";
+import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/format";
+import { getExperienceCopy, getLocalizedDishReviews } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
 
 export function FoodDetailDialog({
@@ -25,11 +29,13 @@ export function FoodDetailDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("dish");
+  const experienceCopy = getExperienceCopy(locale);
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
   const [spiceLevel, setSpiceLevel] = useState(dish.baseSpice);
   const [quantity, setQuantity] = useState(1);
   const [selectedToppings, setSelectedToppings] = useState<ToppingId[]>([]);
+  const reviews = getLocalizedDishReviews(locale, dish.id).slice(0, 2);
 
   const resetSelections = useEffectEvent(() => {
     setSpiceLevel(dish.baseSpice);
@@ -72,7 +78,7 @@ export function FoodDetailDialog({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#080505] via-transparent to-transparent" />
           </div>
-            <div className="flex flex-col">
+          <div className="flex flex-col">
             <DialogHeader className="border-b border-white/8 px-6 pt-6 pb-5">
               <div className="mb-3 flex flex-wrap gap-2">
                 <div className="glass-chip inline-flex w-fit rounded-full px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-[#d8c48e]">
@@ -81,6 +87,7 @@ export function FoodDetailDialog({
                 <div className="inline-flex w-fit rounded-full border border-white/12 bg-white/5 px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/85">
                   {dish.regionLabel}
                 </div>
+                <FavoriteButton dishId={dish.id} locale={locale} className="ml-auto" />
               </div>
               <DialogTitle className="font-heading text-[2.1rem] leading-tight text-white sm:text-[2.35rem]">
                 {dish.name}
@@ -95,6 +102,7 @@ export function FoodDetailDialog({
                 <span>•</span>
                 <span>{t("premiumFinish")}</span>
               </div>
+              <DietaryBadges dishId={dish.id} locale={locale} className="mt-4" />
             </DialogHeader>
 
             <div className="space-y-6 px-6 py-6">
@@ -183,6 +191,29 @@ export function FoodDetailDialog({
                   </div>
                 </div>
               </section>
+
+              {reviews.length > 0 ? (
+                <section className="space-y-3">
+                  <h3 className="font-medium text-white">{experienceCopy.labels.reviewsTitle}</h3>
+                  <div className="space-y-3">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-white">{review.guest}</p>
+                            <p className="text-sm text-[#bcae9b]">{review.region}</p>
+                          </div>
+                          <span className="inline-flex items-center gap-1 text-sm text-[#ecd8a0]">
+                            <Star className="size-3.5 fill-current" />
+                            {review.rating.toFixed(1)}
+                          </span>
+                        </div>
+                        <p className="mt-3 text-sm leading-6 text-[#d4c7b5]">{review.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </div>
 
             <div className="border-t border-white/8 bg-black/10 px-6 py-5">

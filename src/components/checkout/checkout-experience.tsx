@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { PromoCodePanel } from "@/components/cart/promo-code-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +20,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
+import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
+import { useExperienceStore } from "@/store/experience-store";
 import { useUserStore } from "@/store/user-store";
 
 function createCheckoutSchema(t: ReturnType<typeof useTranslations<"checkout">>) {
@@ -46,8 +49,12 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const hydrated = useHydrated();
   const [isPending, startOrderTransition] = useTransition();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const experienceCopy = getExperienceCopy(locale);
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
+  const serviceMode = useExperienceStore((state) => state.serviceMode);
+  const appliedPromoCode = useExperienceStore((state) => state.appliedPromoCode);
   const fullName = useUserStore((state) => state.fullName);
   const phone = useUserStore((state) => state.phone);
   const addressLine = useUserStore((state) => state.addressLine);
@@ -145,10 +152,8 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     );
   }
 
-  const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const delivery = subtotal >= 1600 ? 0 : 79;
-  const service = Math.round(subtotal * 0.05);
-  const total = subtotal + delivery + service;
+  const branch = getLocalizedBranch(locale, selectedBranchId);
+  const totals = getOrderTotals(items, appliedPromoCode);
 
   return (
     <div className="grid gap-8 xl:grid-cols-[1.02fr_0.98fr]">
@@ -159,6 +164,13 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
           </p>
           <h2 className="mt-3 font-heading text-[2.5rem] leading-tight text-white sm:text-[3rem]">{t("title")}</h2>
           <p className="mt-3 max-w-2xl text-[0.96rem] leading-7 text-[#d1c4b2]">{t("subtitle")}</p>
+          <div className="mt-5 rounded-[1.6rem] border border-white/10 bg-white/4 px-4 py-4 text-sm text-[#d1c4b2]">
+            <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{experienceCopy.labels.branch}</p>
+            <p className="mt-2 text-white">{branch.name}</p>
+            <p className="mt-1 text-sm text-[#bcae9b]">
+              {experienceCopy.serviceModes[serviceMode]} · {branch.neighborhood}
+            </p>
+          </div>
         </div>
 
         <form
@@ -354,18 +366,26 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
           </div>
 
           <div className="thai-divider my-6" />
+          <PromoCodePanel locale={locale} subtotal={totals.subtotal} />
+          <div className="thai-divider my-6" />
           <div className="space-y-3 text-sm text-[#d1c4b2]">
             <div className="flex items-center justify-between">
               <span>{tCart("subtotal")}</span>
-              <span>{formatPrice(subtotal, locale)}</span>
+              <span>{formatPrice(totals.subtotal, locale)}</span>
             </div>
+            {totals.discount > 0 ? (
+              <div className="flex items-center justify-between">
+                <span>{experienceCopy.labels.discount}</span>
+                <span>-{formatPrice(totals.discount, locale)}</span>
+              </div>
+            ) : null}
             <div className="flex items-center justify-between">
               <span>{tCart("delivery")}</span>
-              <span>{formatPrice(delivery, locale)}</span>
+              <span>{formatPrice(totals.delivery, locale)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>{tCart("service")}</span>
-              <span>{formatPrice(service, locale)}</span>
+              <span>{formatPrice(totals.service, locale)}</span>
             </div>
           </div>
           <div className="thai-divider my-6" />
@@ -374,7 +394,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
               {tCart("total")}
             </span>
             <span className="font-heading text-[2rem] text-white sm:text-[2.25rem]">
-              {formatPrice(total, locale)}
+              {formatPrice(totals.total, locale)}
             </span>
           </div>
         </div>

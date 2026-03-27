@@ -20,7 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" data-scroll-behavior="smooth" className="h-full antialiased">
-      <body className="min-h-full font-sans text-foreground">{children}</body>
+      <body suppressHydrationWarning className="min-h-full font-sans text-foreground">
+        {children}
+      </body>
     </html>
   );
 }

@@ -12,6 +12,8 @@ import type {
   LocalizedRegion,
   RegionId,
 } from "@/lib/catalog";
+import { getExperienceCopy } from "@/lib/experience";
+import { ChefRecommendations } from "@/components/dishes/chef-recommendations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,22 +41,34 @@ export function MenuExperience({
   locale: AppLocale;
 }) {
   const t = useTranslations("menu");
+  const copy = getExperienceCopy(locale);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState<RegionId | "all">("all");
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [spiceFilter, setSpiceFilter] = useState<SpiceFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("recommended");
   const deferredQuery = useDeferredValue(query);
+  const normalizedQuery = deferredQuery.trim().toLowerCase();
+
+  const suggestions =
+    normalizedQuery.length === 0
+      ? []
+      : dishes
+          .filter(
+            (dish) =>
+              dish.name.toLowerCase().includes(normalizedQuery) ||
+              dish.description.toLowerCase().includes(normalizedQuery),
+          )
+          .slice(0, 5);
 
   const filteredDishes = dishes
     .filter((dish) => {
-      const search = deferredQuery.trim().toLowerCase();
       const matchesQuery =
-        search.length === 0 ||
-        dish.name.toLowerCase().includes(search) ||
-        dish.description.toLowerCase().includes(search) ||
-        dish.categoryLabel.toLowerCase().includes(search) ||
-        dish.regionLabel.toLowerCase().includes(search);
+        normalizedQuery.length === 0 ||
+        dish.name.toLowerCase().includes(normalizedQuery) ||
+        dish.description.toLowerCase().includes(normalizedQuery) ||
+        dish.categoryLabel.toLowerCase().includes(normalizedQuery) ||
+        dish.regionLabel.toLowerCase().includes(normalizedQuery);
 
       const matchesRegion = region === "all" || dish.region === region;
       const matchesCategory = category === "all" || dish.category === category;
@@ -88,6 +102,29 @@ export function MenuExperience({
                 placeholder={t("searchPlaceholder")}
                 className="h-12 rounded-full border-white/10 bg-white/4 pl-11 text-white placeholder:text-[#8f8579]"
               />
+              {suggestions.length > 0 ? (
+                <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 rounded-[1.5rem] border border-white/10 bg-[#120d0d]/96 p-2 shadow-2xl shadow-black/30">
+                  <p className="px-3 py-2 text-[0.64rem] uppercase tracking-[0.18em] text-[#cdb37d]">
+                    {copy.labels.suggestions}
+                  </p>
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      type="button"
+                      className="flex w-full items-start justify-between gap-3 rounded-[1rem] px-3 py-3 text-left transition-colors hover:bg-white/7"
+                      onClick={() => setQuery(suggestion.name)}
+                    >
+                      <span>
+                        <span className="block text-white">{suggestion.name}</span>
+                        <span className="mt-1 block text-sm text-[#bdaa99]">
+                          {suggestion.regionLabel} · {suggestion.categoryLabel}
+                        </span>
+                      </span>
+                      <span className="text-sm text-[#ecd8a0]">{suggestion.rating.toFixed(1)}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </label>
           <label className="space-y-2">
@@ -271,10 +308,13 @@ export function MenuExperience({
           <p className="mx-auto mt-3 max-w-lg text-[#cdbfae]">{t("emptyBody")}</p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredDishes.map((dish) => (
-            <DishCard key={dish.id} dish={dish} locale={locale} />
-          ))}
+        <div className="space-y-10">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {filteredDishes.map((dish) => (
+              <DishCard key={dish.id} dish={dish} locale={locale} />
+            ))}
+          </div>
+          <ChefRecommendations locale={locale} region={region} />
         </div>
       )}
     </div>
