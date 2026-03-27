@@ -1,0 +1,24 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="232" cy="165" r="170" fill="#D8B56D" fill-opacity="0.14"/>
+  <circle cx="947" cy="725" r="220" fill="#15563F" fill-opacity="0.24"/>
+  <ellipse cx="596" cy="470" rx="280" ry="214" fill="#F3EEE4"/>
+  <ellipse cx="596" cy="470" rx="246" ry="186" fill="#174638"/>
+  <ellipse cx="596" cy="470" rx="178" ry="136" fill="#61A16D"/>
+  <path d="M470 444C521 389 624 383 694 424C746 456 762 512 744 569C679 597 589 610 516 578C449 548 424 496 470 444Z" fill="#90C78D"/>
+  <circle cx="500" cy="402" r="22" fill="#F0E6D2"/>
+  <circle cx="715" cy="521" r="26" fill="#F0E6D2"/>
+  <circle cx="620" cy="607" r="20" fill="#F0E6D2"/>
+  <path d="M444 381C463 351 489 334 526 331C516 365 490 383 444 381Z" fill="#0F5C42"/>
+  <path d="M747 408C725 373 695 352 656 344C670 385 700 405 747 408Z" fill="#2C825D"/>
+  <path d="M451 590C490 562 531 554 578 565C545 604 500 614 451 590Z" fill="#146148"/>
+  <path d="M720 602C683 573 643 564 598 572C631 609 675 619 720 602Z" fill="#1E7253"/>
+  <ellipse cx="598" cy="768" rx="198" ry="34" fill="#080708" fill-opacity="0.35"/>
+  <defs>
+    <linearGradient id="bg" x1="164" y1="104" x2="1044" y2="798" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17392F"/>
+      <stop offset="0.56" stop-color="#0D0F0D"/>
+      <stop offset="1" stop-color="#16100E"/>
+    </linearGradient>
+  </defs>
+</svg>

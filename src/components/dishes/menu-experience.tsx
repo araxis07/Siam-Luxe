@@ -1,0 +1,193 @@
+"use client";
+
+import { Search } from "lucide-react";
+import { startTransition, useDeferredValue, useState } from "react";
+import { useTranslations } from "next-intl";
+
+import type { AppLocale } from "@/i18n/routing";
+import type { CategoryId, LocalizedCategory, LocalizedMenuDish } from "@/lib/catalog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DishCard } from "@/components/dishes/dish-card";
+
+type SpiceFilter = "all" | "mild" | "medium" | "hot";
+type SortMode = "recommended" | "price" | "rating" | "spicy";
+
+function matchesSpiceFilter(baseSpice: number, filter: SpiceFilter) {
+  if (filter === "all") return true;
+  if (filter === "mild") return baseSpice <= 2;
+  if (filter === "medium") return baseSpice >= 3 && baseSpice <= 4;
+  return baseSpice >= 5;
+}
+
+export function MenuExperience({
+  dishes,
+  categories,
+  locale,
+}: {
+  dishes: LocalizedMenuDish[];
+  categories: LocalizedCategory[];
+  locale: AppLocale;
+}) {
+  const t = useTranslations("menu");
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<CategoryId | "all">("all");
+  const [spiceFilter, setSpiceFilter] = useState<SpiceFilter>("all");
+  const [sortMode, setSortMode] = useState<SortMode>("recommended");
+  const deferredQuery = useDeferredValue(query);
+
+  const filteredDishes = dishes
+    .filter((dish) => {
+      const search = deferredQuery.trim().toLowerCase();
+      const matchesQuery =
+        search.length === 0 ||
+        dish.name.toLowerCase().includes(search) ||
+        dish.description.toLowerCase().includes(search);
+
+      const matchesCategory = category === "all" || dish.category === category;
+      const matchesSpice = matchesSpiceFilter(dish.baseSpice, spiceFilter);
+
+      return matchesQuery && matchesCategory && matchesSpice;
+    })
+    .sort((left, right) => {
+      if (sortMode === "price") return left.price - right.price;
+      if (sortMode === "rating") return right.rating - left.rating;
+      if (sortMode === "spicy") return right.baseSpice - left.baseSpice;
+      return Number(right.featured) - Number(left.featured) || right.rating - left.rating;
+    });
+
+  return (
+    <div className="space-y-6">
+      <div className="lux-panel rounded-[2rem] p-4 sm:p-5">
+        <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr_0.6fr_0.7fr]">
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+              {t("searchLabel")}
+            </span>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#a99883]" />
+              <Input
+                value={query}
+                onChange={(event) => {
+                  const nextQuery = event.target.value;
+                  startTransition(() => setQuery(nextQuery));
+                }}
+                placeholder={t("searchPlaceholder")}
+                className="h-12 rounded-full border-white/10 bg-white/4 pl-11 text-white placeholder:text-[#8f8579]"
+              />
+            </div>
+          </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+              {t("categoryLabel")}
+            </span>
+            <Select
+              value={category}
+              onValueChange={(value) => startTransition(() => setCategory(value as CategoryId | "all"))}
+            >
+              <SelectTrigger className="h-12 w-full rounded-full border-white/10 bg-white/4 px-4 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-[#120d0d]/96 text-white">
+                <SelectItem value="all">{t("allCategories")}</SelectItem>
+                {categories.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+              {t("spiceLabel")}
+            </span>
+            <Select
+              value={spiceFilter}
+              onValueChange={(value) => startTransition(() => setSpiceFilter(value as SpiceFilter))}
+            >
+              <SelectTrigger className="h-12 w-full rounded-full border-white/10 bg-white/4 px-4 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-[#120d0d]/96 text-white">
+                <SelectItem value="all">{t("allSpice")}</SelectItem>
+                <SelectItem value="mild">{t("spiceMild")}</SelectItem>
+                <SelectItem value="medium">{t("spiceMedium")}</SelectItem>
+                <SelectItem value="hot">{t("spiceHot")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </label>
+          <label className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.22em] text-[#cdb37d]">
+              {t("sortLabel")}
+            </span>
+            <Select
+              value={sortMode}
+              onValueChange={(value) => startTransition(() => setSortMode(value as SortMode))}
+            >
+              <SelectTrigger className="h-12 w-full rounded-full border-white/10 bg-white/4 px-4 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-[#120d0d]/96 text-white">
+                <SelectItem value="recommended">{t("sortRecommended")}</SelectItem>
+                <SelectItem value="price">{t("sortPriceLow")}</SelectItem>
+                <SelectItem value="rating">{t("sortRating")}</SelectItem>
+                <SelectItem value="spicy">{t("sortSpicy")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </label>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Button
+          type="button"
+          size="sm"
+          variant={category === "all" ? "default" : "outline"}
+          className={
+            category === "all"
+              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+          }
+          onClick={() => setCategory("all")}
+        >
+          {t("allCategories")}
+        </Button>
+        {categories.map((item) => (
+          <Button
+            key={item.id}
+            type="button"
+            size="sm"
+            variant={category === item.id ? "default" : "outline"}
+            className={
+              category === item.id
+                ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+            }
+            onClick={() => setCategory(item.id)}
+          >
+            {item.label}
+          </Button>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-[#cabda9]">{t("results", { count: filteredDishes.length })}</p>
+      </div>
+
+      {filteredDishes.length === 0 ? (
+        <div className="lux-panel rounded-[2rem] px-6 py-14 text-center">
+          <p className="font-heading text-4xl text-white">{t("emptyTitle")}</p>
+          <p className="mx-auto mt-3 max-w-lg text-[#cdbfae]">{t("emptyBody")}</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {filteredDishes.map((dish) => (
+            <DishCard key={dish.id} dish={dish} locale={locale} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
