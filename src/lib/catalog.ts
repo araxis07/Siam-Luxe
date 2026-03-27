@@ -1,9 +1,6 @@
 import type { AppLocale } from "@/i18n/routing";
 
-type LocalizedText = Partial<Record<AppLocale, string>> & {
-  th: string;
-  en: string;
-};
+type LocalizedText = Record<AppLocale, string>;
 
 export type CategoryId =
   | "signature"
@@ -210,10 +207,16 @@ const regions: RegionDefinition[] = [
     label: {
       th: "อาหารไทยคลาสสิก",
       en: "Thai Classics",
+      ja: "タイ定番料理",
+      zh: "泰国经典菜",
+      ko: "태국 클래식",
     },
     description: {
       th: "จานประจำชาติที่คนทั่วโลกรู้จักและสั่งซ้ำได้ทุกโอกาส",
       en: "National favorites that define the most recognizable Thai table.",
+      ja: "世界的に知られるタイの定番料理を集めた、最も親しみやすいカテゴリです。",
+      zh: "汇集最具代表性的泰国国民菜与经典热门菜，最容易上手的一组风味。",
+      ko: "전 세계적으로 알려진 태국 대표 메뉴를 모아 둔 가장 익숙한 클래식 카테고리입니다.",
     },
   },
   {
@@ -221,10 +224,16 @@ const regions: RegionDefinition[] = [
     label: {
       th: "ภาคกลาง",
       en: "Central Thailand",
+      ja: "タイ中部",
+      zh: "泰国中部",
+      ko: "태국 중부",
     },
     description: {
       th: "รสกลมกล่อมแบบราชสำนัก กรุงเทพฯ และลุ่มเจ้าพระยา",
       en: "Balanced royal-style flavors from Bangkok and the Chao Phraya heartland.",
+      ja: "バンコクとチャオプラヤー流域を思わせる、王宮料理由来の上品で均整の取れた味わい。",
+      zh: "带有曼谷与昭披耶河流域气质的中部菜系，口味均衡细腻，带一点皇室料理风格。",
+      ko: "방콕과 차오프라야 강 유역을 닮은, 왕실 요리풍의 균형 잡힌 중부 풍미입니다.",
     },
   },
   {
@@ -232,10 +241,16 @@ const regions: RegionDefinition[] = [
     label: {
       th: "ภาคเหนือ",
       en: "Northern Thailand",
+      ja: "タイ北部",
+      zh: "泰国北部",
+      ko: "태국 북부",
     },
     description: {
       th: "กลิ่นเครื่องเทศลานนา ซุปเส้นเข้มข้น และของหวานละมุนจากวัตถุดิบพื้นถิ่น",
       en: "Lanna spice, comforting broths, and softer sweets shaped by mountain ingredients.",
+      ja: "ラーンナー由来の香り高いスパイス、滋味深い麺料理、山の食材を活かしたやさしい甘味が特徴です。",
+      zh: "以兰纳香料、浓郁汤面与带有山地食材气息的柔和甜品为特色的北部风味。",
+      ko: "란나 향신료, 진한 국물 면요리, 산지 재료로 만든 부드러운 디저트가 돋보이는 북부 스타일입니다.",
     },
   },
   {
@@ -243,10 +258,16 @@ const regions: RegionDefinition[] = [
     label: {
       th: "อีสาน",
       en: "Northeastern Thailand",
+      ja: "イサーン",
+      zh: "泰国东北",
+      ko: "이산",
     },
     description: {
       th: "รสจัด เปรี้ยว เค็ม หอมข้าวคั่ว เหมาะกับสายอาหารแซ่บแบบจริงจัง",
       en: "Bold Isan flavors with roasted rice, lime, herbs, and unapologetic heat.",
+      ja: "煎り米の香ばしさ、ライムの酸味、ハーブ、はっきりした辛さが魅力の力強いイサーン料理です。",
+      zh: "以烤米香、青柠酸香、香草与直接有力的辣味著称，是风格鲜明的依善料理。",
+      ko: "볶은 쌀의 고소함, 라임 산미, 허브, 직선적인 매운맛이 살아 있는 강렬한 이산 풍미입니다.",
     },
   },
   {
@@ -254,10 +275,16 @@ const regions: RegionDefinition[] = [
     label: {
       th: "ภาคใต้",
       en: "Southern Thailand",
+      ja: "タイ南部",
+      zh: "泰国南部",
+      ko: "태국 남부",
     },
     description: {
       th: "รสเครื่องเทศหนักแน่น ซีฟู้ดจัดจ้าน และขนมจากมะพร้าวกับโรตี",
       en: "Spice-driven southern cooking with bright seafood and coconut-rich sweets.",
+      ja: "濃厚なスパイス使い、鮮烈なシーフード、ココナッツやロティを使った甘味が印象的な南部料理です。",
+      zh: "以浓烈香料、鲜明海鲜风味，以及椰子和罗蒂甜品构成的南部菜单。",
+      ko: "강한 향신료, 또렷한 해산물 풍미, 코코넛과 로티 디저트가 어우러진 남부 요리입니다.",
     },
   },
 ];
@@ -450,10 +477,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ข้าวซอยลานนา",
       en: "Lanna Khao Soi",
+      ja: "ラーンナー カオソーイ",
+      zh: "兰纳咖喱面",
+      ko: "란나 카오소이",
     },
     description: {
       th: "เส้นไข่ในน้ำแกงกะทิเครื่องเทศเหนือ เสิร์ฟกับเส้นกรอบ ผักดอง และหอมเจียว",
       en: "Northern egg noodles in a rich coconut curry, finished with crispy noodles, pickled mustard greens, and shallots.",
+      ja: "北部らしい香辛料とココナッツが香るスープに、卵麺、揚げ麺、漬物、エシャロットを合わせた一杯です。",
+      zh: "北部风味椰香咖喱汤配蛋面、脆面、酸菜与红葱头，层次浓郁。",
+      ko: "북부 향신료와 코코넛이 어우러진 국물에 계란면, 바삭한 면, 절임채소, 샬롯을 더한 메뉴입니다.",
     },
   },
   {
@@ -472,10 +505,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "คั่วกลิ้งเนื้อใต้",
       en: "Southern Kua Kling Beef",
+      ja: "南部クアクリン ビーフ",
+      zh: "南部干炒咖喱牛肉",
+      ko: "남부 쿠아클링 비프",
     },
     description: {
       th: "เนื้อผัดพริกแกงใต้แห้ง ๆ หอมตะไคร้ ใบมะกรูด และความเผ็ดจัดแบบภาคใต้",
       en: "Dry southern curry beef with lemongrass, kaffir lime leaf, and the signature deep heat of the south.",
+      ja: "レモングラスとこぶみかんの葉を効かせた南部式のドライカレー炒めで、力強い辛さが際立ちます。",
+      zh: "以香茅、卡菲尔酸橙叶与南部咖喱酱大火干炒牛肉，辣味深沉鲜明。",
+      ko: "레몬그라스와 카피르 라임 잎 향을 살린 남부식 드라이 커리 볶음으로, 깊고 강한 매운맛이 특징입니다.",
     },
   },
   {
@@ -606,10 +645,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ทับทิมกรอบน้ำกะทิ",
       en: "Ruby Water Chestnut",
+      ja: "ルビー ウォーターチェスナッツ",
+      zh: "红宝石马蹄甜品",
+      ko: "루비 워터체스트넛",
     },
     description: {
       th: "แห้วกรุบในเสื้อทับทิม เสิร์ฟกับน้ำกะทิเย็นและน้ำแข็งใสแบบหวานสดชื่น",
       en: "Classic ruby water chestnuts over chilled coconut milk for a crisp, cooling Thai dessert.",
+      ja: "ルビー色の衣をまとったくわいを冷たいココナッツミルクに合わせた、清涼感のあるタイ定番甘味です。",
+      zh: "裹上红宝石外衣的马蹄配冰凉椰奶，清脆又解暑，是经典泰式甜品。",
+      ko: "루비색 옷을 입힌 워터체스트넛을 차가운 코코넛 밀크와 함께 즐기는 시원한 태국식 디저트입니다.",
     },
   },
   {
@@ -628,10 +673,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ไข่เจียวปูทอง",
       en: "Golden Crab Omelette",
+      ja: "ゴールデン クラブオムレツ",
+      zh: "黄金蟹肉蛋饼",
+      ko: "골든 게살 오믈렛",
     },
     description: {
       th: "ไข่เจียวฟูกรอบนอกนุ่มใน อัดแน่นเนื้อปูก้อน เสิร์ฟสไตล์ครัวภาคกลางร่วมสมัย",
       en: "A plush golden omelette packed with crab, inspired by the polished seafood kitchens of central Thailand.",
+      ja: "外は香ばしく中はふんわり。蟹身をたっぷり包み込んだ、中部スタイルの上品な卵料理です。",
+      zh: "外层微脆、内部松软，包入大量蟹肉，呈现中部海鲜料理的精致感。",
+      ko: "겉은 고소하고 속은 폭신한 달걀에 게살을 가득 채운, 중부풍의 세련된 해산물 요리입니다.",
     },
   },
   {
@@ -650,10 +701,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ก๋วยเตี๋ยวเรือเข้มข้น",
       en: "Boat Noodles Au Jus",
+      ja: "濃厚ボートヌードル",
+      zh: "浓汤船面",
+      ko: "진한 보트 누들",
     },
     description: {
       th: "ก๋วยเตี๋ยวเรือน้ำซุปเข้ม หอมเครื่องเทศและเลือดหมู ปรับลุคให้นิ่งแต่ยังได้รสจัดจ้าน",
       en: "Concentrated boat noodles with spice, depth, and a cleaner luxury finish for central Thai comfort.",
+      ja: "香辛料と深い旨みを凝縮したスープで仕上げる、余韻の強い中部の定番麺料理です。",
+      zh: "以香料与浓厚肉汤为核心，保留船面灵魂同时让整体更精致干净。",
+      ko: "향신료와 진한 육수의 깊이를 살리면서도 보다 정제된 마무리로 풀어낸 중부 대표 면요리입니다.",
     },
   },
   {
@@ -672,10 +729,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "มัสมั่นซี่โครงตุ๋น",
       en: "Massaman Short Rib",
+      ja: "マッサマン ショートリブ",
+      zh: "玛莎曼炖牛小排",
+      ko: "마사만 쇼트립",
     },
     description: {
       th: "แกงมัสมั่นหอมเครื่องเทศ ถั่ว มันฝรั่ง และซี่โครงเนื้อตุ๋นนุ่มในโทนภาคกลางแบบร่วมสมัย",
       en: "Slow-braised short rib in an aromatic massaman with potato and warm spice from the central table.",
+      ja: "じゃがいもとスパイスを効かせた芳醇なマッサマンで、やわらかく煮込んだショートリブを味わえます。",
+      zh: "在香气温润的玛莎曼咖喱中慢炖牛小排，配土豆与香料，厚实而圆润。",
+      ko: "감자와 따뜻한 향신료가 어우러진 마사만 커리에 부드럽게 조린 쇼트립을 담아낸 메뉴입니다.",
     },
   },
   {
@@ -750,10 +813,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ขนมเบื้องกรอบทอง",
       en: "Royal Kanom Buang",
+      ja: "ロイヤル カノムブアン",
+      zh: "皇家脆皮泰式薄饼",
+      ko: "로열 카놈 부앙",
     },
     description: {
       th: "แป้งกรอบบาง ไส้ครีมมะพร้าวและฝอยทอง ตีความของหวานภาคกลางให้ดูเบาและหรูขึ้น",
       en: "Crisp Thai crepes with coconut cream and golden threads, refined from a beloved central dessert.",
+      ja: "薄く香ばしい生地にココナッツクリームと卵黄の糸をのせた、中部の人気菓子を上品に仕立てた一品です。",
+      zh: "酥脆薄皮包裹椰香奶油与金丝蛋黄，把中部人气甜点做得更轻盈精致。",
+      ko: "얇고 바삭한 크레이프에 코코넛 크림과 황금빛 달걀 실을 올려 중부 디저트를 우아하게 재해석했습니다.",
     },
   },
   {
@@ -772,10 +841,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ฝอยทองคัสตาร์ดมะพร้าว",
       en: "Foi Thong Coconut Custard",
+      ja: "フォイトーン ココナッツカスタード",
+      zh: "金丝蛋黄椰香布丁",
+      ko: "포이통 코코넛 커스터드",
     },
     description: {
       th: "ฝอยทองเส้นละเอียดบนคัสตาร์ดมะพร้าวเนื้อเนียน กลิ่นหอมแบบขนมไทยภาคกลาง",
       en: "Delicate egg yolk threads over silk-smooth coconut custard for a polished central Thai sweet.",
+      ja: "なめらかなココナッツカスタードに繊細なフォイトーンを重ねた、華やかな中部の甘味です。",
+      zh: "细致金丝蛋黄铺在丝滑椰香布丁上，呈现带有中部宫廷气质的泰式甜品。",
+      ko: "실크처럼 부드러운 코코넛 커스터드 위에 섬세한 포이통을 올린 화사한 중부 스타일 디저트입니다.",
     },
   },
   {
@@ -794,10 +869,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ไส้อั่วถ่านลานนา",
       en: "Lanna Charcoal Sai Ua",
+      ja: "炭火サイウア",
+      zh: "炭烤泰北香肠",
+      ko: "숯불 사이우아",
     },
     description: {
       th: "ไส้อั่วสมุนไพรเหนือย่างหอม เสิร์ฟกับผักสดและข้าวเหนียวแบบกินง่ายแต่ยังคงกลิ่นอายล้านนา",
       en: "Herb-packed northern sausage grilled over charcoal with fresh vegetables and sticky rice.",
+      ja: "北部らしいハーブを練り込んだソーセージを炭火で香ばしく焼き、野菜ともち米を添えました。",
+      zh: "泰北香草香肠经炭火烤出香气，搭配新鲜蔬菜与糯米，保留兰纳风味。",
+      ko: "북부 허브를 듬뿍 넣은 소시지를 숯불에 구워 신선한 채소와 찹쌀과 함께 내는 메뉴입니다.",
     },
   },
   {
@@ -816,10 +897,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "แกงฮังเลหมูนุ่ม",
       en: "Northern Gaeng Hang Lay",
+      ja: "北部ゲーンハンレー",
+      zh: "泰北姜香炖肉咖喱",
+      ko: "북부 갱항레",
     },
     description: {
       th: "หมูตุ๋นในแกงฮังเลรสเปรี้ยวหวานหอมขิง กระเทียม และเครื่องเทศเหนือ",
       en: "Slow-cooked pork in a sweet-sour northern curry scented with ginger, garlic, and warm spice.",
+      ja: "生姜、にんにく、北部スパイスを効かせた甘酸っぱいカレーで豚肉をやわらかく煮込んでいます。",
+      zh: "以姜、蒜与北部香料慢炖猪肉，酸甜平衡，是泰北代表性咖喱之一。",
+      ko: "생강, 마늘, 북부 향신료를 더한 달콤새콤한 커리에 돼지고기를 부드럽게 조린 요리입니다.",
     },
   },
   {
@@ -838,10 +925,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ขนมจีนน้ำเงี้ยว",
       en: "Khanom Jeen Nam Ngiao",
+      ja: "カノムジーン ナムギアオ",
+      zh: "卡侬金南诰",
+      ko: "카놈진 남응이아오",
     },
     description: {
       th: "ซุปรสเข้มแบบเหนือจากมะเขือเทศและหมูสับ เสิร์ฟกับขนมจีนและผักสด",
       en: "Northern fermented rice noodles in a savory tomato pork broth finished with fresh herbs.",
+      ja: "トマトと豚の旨みを重ねた北部の濃厚スープに、発酵米麺とハーブを合わせた一皿です。",
+      zh: "以番茄与猪肉熬出浓郁汤底，搭配发酵米线和新鲜香草，是北部特色面食。",
+      ko: "토마토와 돼지고기의 감칠맛을 더한 북부식 진한 국물에 발효 쌀국수와 허브를 곁들였습니다.",
     },
   },
   {
@@ -860,10 +953,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "น้ำพริกหนุ่มชุดผักลวก",
       en: "Nam Prik Noom Set",
+      ja: "ナムプリックヌム セット",
+      zh: "青椒蘸酱拼盘",
+      ko: "남프릭눔 세트",
     },
     description: {
       th: "น้ำพริกหนุ่มย่างหอม เสิร์ฟคู่แคบหมู ผักลวก และข้าวเหนียวในสไตล์โต๊ะเหนือ",
       en: "Roasted green chili dip with pork crackling, vegetables, and sticky rice for a classic northern set.",
+      ja: "香ばしく焼いた青唐辛子のディップに、豚皮揚げ、温野菜、もち米を添えた北部らしいセットです。",
+      zh: "炭烤青椒蘸酱配猪皮脆、蔬菜与糯米，是典型的北部分享式组合。",
+      ko: "구운 풋고추 딥에 돼지껍질 튀김, 데친 채소, 찹쌀을 곁들인 전형적인 북부식 세트입니다.",
     },
   },
   {
@@ -882,10 +981,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ข้าวแต๋นลำไยคาราเมล",
       en: "Khao Taen with Longan Caramel",
+      ja: "カオテン ロンガンキャラメル",
+      zh: "龙眼焦糖锅巴米饼",
+      ko: "카오땐 롱안 캐러멜",
     },
     description: {
       th: "ข้าวแต๋นกรอบเคลือบคาราเมลลำไย ให้กลิ่นผลไม้ภาคเหนือในรูปแบบของหวานเบา ๆ",
       en: "Crisp northern rice cakes glazed with longan caramel for a light Lanna-style finish.",
+      ja: "さくっと軽い米菓にロンガンキャラメルをまとわせた、北部らしいやさしい甘味です。",
+      zh: "酥脆米饼裹上龙眼焦糖，呈现带有北部水果气息的轻盈收尾。",
+      ko: "가볍고 바삭한 쌀 과자에 롱안 캐러멜을 입혀 북부의 부드러운 과일 향을 살린 디저트입니다.",
     },
   },
   {
@@ -904,10 +1009,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ส้มตำอีสาน",
       en: "Isan Som Tum",
+      ja: "イサーン ソムタム",
+      zh: "依善青木瓜沙拉",
+      ko: "이산 쏨땀",
     },
     description: {
       th: "ส้มตำรสจัด เปรี้ยว เค็ม เผ็ด หอมปลาร้าและมะนาวสดในแบบอีสานแท้",
       en: "A bold northeastern papaya salad with lime, chilies, and the savory edge that makes Isan cuisine distinct.",
+      ja: "ライム、唐辛子、独特の旨みが立つ、イサーンらしい力強い青パパイヤサラダです。",
+      zh: "酸、辣、咸与发酵鲜味都很直接，是最具代表性的依善风味青木瓜沙拉。",
+      ko: "라임, 고추, 진한 감칠맛이 또렷한 이산식 청파파야 샐러드입니다.",
     },
   },
   {
@@ -926,10 +1037,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ลาบหมูคั่วข้าวคั่ว",
       en: "Larb Moo Khua",
+      ja: "ラープムー クア",
+      zh: "烤米香猪肉拉拌",
+      ko: "라브 무 쿠아",
     },
     description: {
       th: "หมูสับคลุกข้าวคั่ว หอมแดง สะระแหน่ และพริกป่น กลิ่นอีสานชัดเจนทุกคำ",
       en: "Minced pork larb with toasted rice, shallots, mint, and that unmistakable Isan perfume.",
+      ja: "煎り米、赤玉ねぎ、ミント、唐辛子をまとわせた、香りの立つイサーン風豚ラープです。",
+      zh: "猪肉末拌入烤米粉、红葱头、薄荷与辣椒粉，每一口都有鲜明依善香气。",
+      ko: "볶은 쌀가루, 샬롯, 민트, 고춧가루를 더해 향이 선명하게 살아나는 이산식 돼지고기 라브입니다.",
     },
   },
   {
@@ -948,10 +1065,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ไก่ย่างข้าวเหนียว",
       en: "Isan Grilled Chicken Set",
+      ja: "イサーン風焼き鶏セット",
+      zh: "依善烤鸡糯米套餐",
+      ko: "이산식 닭구이 세트",
     },
     description: {
       th: "ไก่ย่างหนังหอม เสิร์ฟคู่ข้าวเหนียวและน้ำจิ้มแจ่ว เหมาะกับคนชอบรสแซ่บแบบอีสาน",
       en: "Charcoal grilled chicken with sticky rice and jaew dipping sauce, built for a proper Isan meal.",
+      ja: "香ばしく焼いた鶏にもち米とแจ่วソースを添えた、イサーンらしい満足感の高いセットです。",
+      zh: "炭烤鸡搭配糯米和แจ่ว蘸酱，是非常完整的依善式一餐。",
+      ko: "숯불에 구운 닭과 찹쌀, 재우 소스를 곁들인 든든한 이산식 한 상입니다.",
     },
   },
   {
@@ -970,10 +1093,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "น้ำตกเนื้อย่าง",
       en: "Nam Tok Beef",
+      ja: "ナムトック ビーフ",
+      zh: "炭烤牛肉香草拌",
+      ko: "남똑 비프",
     },
     description: {
       th: "เนื้อย่างคลุกน้ำปลา มะนาว พริกป่น และข้าวคั่ว ให้รสเปรี้ยวเผ็ดหอมแบบอีสาน",
       en: "Grilled beef tossed with lime, fish sauce, chili, and toasted rice in a vibrant northeastern salad style.",
+      ja: "炙った牛肉をライム、ナンプラー、唐辛子、煎り米で和えた、鮮烈なイサーン風サラダです。",
+      zh: "炙烤牛肉拌入青柠、鱼露、辣椒与烤米粉，酸辣鲜香都很有存在感。",
+      ko: "구운 소고기에 라임, 피시소스, 고추, 볶은 쌀가루를 더해 산뜻하고 강렬하게 마무리한 이산식 샐러드입니다.",
     },
   },
   {
@@ -992,10 +1121,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ต้มแซ่บซี่โครงอ่อน",
       en: "Tom Saep Pork Ribs",
+      ja: "トムセープ ポークリブ",
+      zh: "酸辣猪肋汤",
+      ko: "똠쌥 폭립",
     },
     description: {
       th: "ซุปต้มแซ่บซี่โครงน้ำใส เปรี้ยวร้อนหอมสมุนไพร เหมาะกับคนชอบอาหารอีสานแบบซดคล่องคอ",
       en: "Clear hot-and-sour rib soup with herbs and full Isan intensity in every sip.",
+      ja: "ハーブを効かせた澄んだ酸辣スープに豚スペアリブを合わせた、後味の鋭いイサーンスープです。",
+      zh: "清透酸辣汤底配软嫩猪肋排，草本香气和依善式刺激感都很到位。",
+      ko: "허브 향이 살아 있는 맑은 새콤매운 국물에 돼지갈비를 더한, 이산 특유의 강한 매력이 담긴 수프입니다.",
     },
   },
   {
@@ -1014,10 +1149,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ข้าวเหนียวดำเผือกกะทิ",
       en: "Black Sticky Rice with Taro",
+      ja: "黒もち米とタロイモ",
+      zh: "黑糯米芋头椰香甜品",
+      ko: "흑찹쌀 타로 디저트",
     },
     description: {
       th: "ข้าวเหนียวดำเนื้อหนึบกับเผือกและกะทิหวานเค็มแบบขนมพื้นบ้านที่กินง่าย",
       en: "Chewy black sticky rice with taro and coconut, inspired by homestyle northeastern sweets.",
+      ja: "もちっとした黒もち米にタロイモとココナッツを合わせた、素朴で食べやすい甘味です。",
+      zh: "黑糯米的嚼感、芋头的绵密和椰奶的柔和甜咸组合成家常感十足的东北甜品。",
+      ko: "쫀득한 흑찹쌀에 토란과 코코넛을 더해 담백하고 편안하게 즐길 수 있는 디저트입니다.",
     },
   },
   {
@@ -1036,10 +1177,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "แกงส้มปลากะพงใต้",
       en: "Southern Gaeng Som Seabass",
+      ja: "南部ゲーンソム シーバス",
+      zh: "南部酸辣鲈鱼咖喱",
+      ko: "남부 갱쏨 농어",
     },
     description: {
       th: "แกงส้มใต้รสจัดกับปลากะพงและผักพื้นบ้าน ให้ความเปรี้ยวเผ็ดคมชัดแบบภาคใต้",
       en: "Bright southern sour curry with seabass and vegetables, built on sharp turmeric heat and acidity.",
+      ja: "ターメリックの辛味と鋭い酸味が立つ南部式サワーカレーに、シーバスと野菜を合わせました。",
+      zh: "以姜黄辛香与明亮酸味为核心的南部酸辣咖喱，搭配鲈鱼与蔬菜。",
+      ko: "강한 강황 향과 또렷한 산미가 특징인 남부식 사워 커리에 농어와 채소를 더했습니다.",
     },
   },
   {
@@ -1058,10 +1205,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "กุ้งผัดสะตอพริกแกง",
       en: "Prawn Stir-Fried Sataw",
+      ja: "サトーと海老の炒め",
+      zh: "臭豆辣炒虾",
+      ko: "사또 새우 볶음",
     },
     description: {
       th: "กุ้งผัดพริกแกงใต้กับสะตอ หอมฉุนแบบเสน่ห์อาหารใต้แท้ ๆ",
       en: "Prawns stir-fried with southern curry paste and stink beans for an unmistakably southern bite.",
+      ja: "南部カレーペーストで海老とサトーを炒めた、個性の強い香りが魅力の一皿です。",
+      zh: "大火快炒虾与臭豆，裹上南部咖喱酱，香气鲜明且极具辨识度。",
+      ko: "남부 커리 페이스트로 새우와 사또를 볶아낸, 뚜렷한 향이 매력적인 남부 스타일 요리입니다.",
     },
   },
   {
@@ -1080,10 +1233,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "โรตีมะตะบะเป็ด",
       en: "Duck Roti Mataba",
+      ja: "ダック ロティマタバ",
+      zh: "鸭肉马塔巴煎饼",
+      ko: "덕 로티 마타바",
     },
     description: {
       th: "โรตีสอดไส้เครื่องเทศและเนื้อเป็ดฉีก เสิร์ฟกับอาจาดแตงกวาในแบบครัวมุสลิมภาคใต้",
       en: "A southern Muslim-style roti stuffed with spiced duck and paired with bright cucumber relish.",
+      ja: "香辛料を効かせた鴨肉を包んだロティに、きゅうりのレリッシュを添えた南部ムスリム風の一品です。",
+      zh: "将香料鸭肉包进煎饼中，配清爽黄瓜小菜，体现南部穆斯林厨房风格。",
+      ko: "향신료로 맛을 낸 오리고기를 로티에 감싸 오이 렐리시와 함께 내는 남부 무슬림풍 메뉴입니다.",
     },
   },
   {
@@ -1102,10 +1261,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ขนมจีนน้ำยาปักษ์ใต้",
       en: "Southern Khanom Jeen Nam Ya",
+      ja: "南部カノムジーン ナムヤー",
+      zh: "南部鱼咖喱米线",
+      ko: "남부 카놈진 남야",
     },
     description: {
       th: "ขนมจีนน้ำยาปลารสเข้มข้น หอมขมิ้นและเครื่องแกงใต้ เสิร์ฟกับผักสดหลากชนิด",
       en: "Fermented rice noodles with bold southern fish curry, turmeric, and a full herb-and-vegetable side set.",
+      ja: "魚の旨みを効かせた濃厚な南部カレーを発酵米麺にかけ、たっぷりの生野菜とともに楽しむ一皿です。",
+      zh: "发酵米线淋上浓厚南部鱼咖喱，姜黄与香料鲜明，并搭配丰富蔬菜。",
+      ko: "생선의 깊은 맛을 살린 진한 남부 커리를 발효 쌀국수에 붓고 다양한 생채소와 함께 즐기는 메뉴입니다.",
     },
   },
   {
@@ -1124,10 +1289,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "โรตีกายาทอง",
       en: "Roti with Kaya Gold",
+      ja: "ロティとカヤゴールド",
+      zh: "金色咖椰酱罗蒂",
+      ko: "카야 골드 로티",
     },
     description: {
       th: "โรตีกรอบนุ่มเสิร์ฟกับสังขยาใบเตยและกะทิ ตีความของหวานใต้ให้ดูสะอาดและพรีเมียม",
       en: "Warm roti with pandan kaya and coconut, a polished take on a beloved southern sweet pairing.",
+      ja: "温かなロティをパンダン香るカヤとココナッツで仕上げた、南部らしい洗練デザートです。",
+      zh: "温热罗蒂搭配班兰咖椰与椰香元素，把南部经典甜口组合做得更精致。",
+      ko: "따뜻한 로티에 판단 카야와 코코넛을 곁들여 남부의 익숙한 달콤함을 세련되게 풀어냈습니다.",
     },
   },
   {
@@ -1146,10 +1317,16 @@ const dishes: DishDefinition[] = [
     name: {
       th: "ไอศกรีมมะพร้าวน้ำตาลโตนด",
       en: "Palm Sugar Coconut Ice",
+      ja: "パームシュガー ココナッツアイス",
+      zh: "棕榈糖椰子冰淇淋",
+      ko: "팜슈거 코코넛 아이스",
     },
     description: {
       th: "ไอศกรีมมะพร้าวหอมมันกับซอสน้ำตาลโตนด ให้กลิ่นอายชายฝั่งใต้แบบหวานนุ่ม",
       en: "Coconut ice cream with palm sugar syrup for a cool southern finish inspired by coastal desserts.",
+      ja: "ココナッツアイスにパームシュガーソースを重ねた、南部の海辺を思わせる穏やかな甘味です。",
+      zh: "椰子冰淇淋淋上棕榈糖酱，带来柔和清凉、带海岸感的南部式收尾。",
+      ko: "코코넛 아이스크림 위에 팜슈거 시럽을 더해 남부 해안가 디저트 같은 부드러운 마무리를 전합니다.",
     },
   },
 ];
