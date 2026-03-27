@@ -1,8 +1,12 @@
 import { useTranslations } from "next-intl";
 
-export function SiteFooter() {
+import type { AppLocale } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
+
+export function SiteFooter({ locale }: { locale: AppLocale }) {
   const tCommon = useTranslations("common");
   const tFooter = useTranslations("footer");
+  const tNav = useTranslations("nav");
 
   return (
     <footer className="border-t border-white/6 bg-[#0a0909]/90">
@@ -12,6 +16,17 @@ export function SiteFooter() {
             {tCommon("brand")}
           </p>
           <p className="max-w-xl text-[#c9bda9]">{tFooter("note")}</p>
+          <div className="flex flex-wrap gap-3 pt-1 text-[0.82rem] text-[#d6c9b6]">
+            <Link href="/" locale={locale} className="transition-colors hover:text-white">
+              {tNav("home")}
+            </Link>
+            <Link href="/menu" locale={locale} className="transition-colors hover:text-white">
+              {tNav("menu")}
+            </Link>
+            <Link href="/heritage" locale={locale} className="transition-colors hover:text-white">
+              {tNav("heritage")}
+            </Link>
+          </div>
         </div>
         <div className="space-y-2 md:text-right">
           <p>{tFooter("hours")}</p>

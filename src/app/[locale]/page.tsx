@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { FeaturedDishes } from "@/components/dishes/featured-dishes";
+import { HeritageTeaser } from "@/components/heritage/heritage-teaser";
 import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getLocalizedCategories, getLocalizedDishes, getLocalizedPromotions } from "@/lib/catalog";
@@ -144,6 +145,8 @@ export default async function HomePage({
           <FeaturedDishes dishes={featuredDishes} locale={appLocale} />
         </div>
       </section>
+
+      <HeritageTeaser locale={appLocale} />
 
       <section className="scene-section px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">

@@ -47,6 +47,13 @@ export function SiteHeader({ locale }: { locale: AppLocale }) {
               {tNav("menu")}
             </Link>
             <Link
+              href="/heritage"
+              locale={locale}
+              className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"
+            >
+              {tNav("heritage")}
+            </Link>
+            <Link
               href="/checkout"
               locale={locale}
               className="rounded-full px-4 py-2 text-sm text-[#e8ddd0] transition-colors hover:bg-white/6 hover:text-white"

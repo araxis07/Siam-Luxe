@@ -21,7 +21,7 @@ export function SiteShell({
       </div>
       <SiteHeader locale={locale} />
       <main className="relative z-10 flex-1">{children}</main>
-      <SiteFooter />
+      <SiteFooter locale={locale} />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />
     </div>

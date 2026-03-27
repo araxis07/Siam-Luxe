@@ -9,6 +9,7 @@ export const messages = {
     nav: {
       home: "หน้าแรก",
       menu: "เมนู",
+      heritage: "เรื่องราวร้าน",
       checkout: "ชำระเงิน",
     },
     language: {
@@ -172,6 +173,7 @@ export const messages = {
     nav: {
       home: "Home",
       menu: "Menu",
+      heritage: "Heritage",
       checkout: "Checkout",
     },
     language: {
@@ -336,6 +338,7 @@ export const messages = {
     nav: {
       home: "ホーム",
       menu: "メニュー",
+      heritage: "物語",
       checkout: "決済",
     },
     language: {
@@ -500,6 +503,7 @@ export const messages = {
     nav: {
       home: "首页",
       menu: "菜单",
+      heritage: "品牌故事",
       checkout: "结账",
     },
     language: {
@@ -661,6 +665,7 @@ export const messages = {
     nav: {
       home: "홈",
       menu: "메뉴",
+      heritage: "스토리",
       checkout: "결제",
     },
     language: {

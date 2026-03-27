@@ -1,0 +1,43 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="48" fill="url(#paint0_linear_1_2)"/>
+  <rect x="34" y="34" width="1132" height="832" rx="34" stroke="url(#paint1_linear_1_2)" stroke-opacity="0.35" stroke-width="2"/>
+  <circle cx="248" cy="214" r="136" fill="#CFA65C" fill-opacity="0.14"/>
+  <circle cx="932" cy="204" r="118" fill="#1F6B51" fill-opacity="0.14"/>
+  <circle cx="894" cy="668" r="146" fill="#8C202D" fill-opacity="0.16"/>
+  <path d="M0 690C164 646 276 626 420 632C548 638 730 690 1200 626V900H0V690Z" fill="#100A0B"/>
+  <path d="M0 724C148 694 266 682 402 690C570 700 746 754 1200 702V900H0V724Z" fill="#140E0F"/>
+  <path d="M120 610L212 566L266 490L322 566L414 610V664H120V610Z" fill="#221414"/>
+  <path d="M448 576L540 518L596 402L650 518L744 576V664H448V576Z" fill="#2A1715"/>
+  <path d="M792 610L884 566L938 490L994 566L1086 610V664H792V610Z" fill="#221414"/>
+  <path d="M572 402L596 326L620 402H572Z" fill="#D5B26C"/>
+  <path d="M266 490L288 428L310 490H266Z" fill="#B58A46"/>
+  <path d="M938 490L960 428L982 490H938Z" fill="#B58A46"/>
+  <rect x="580" y="664" width="30" height="102" rx="15" fill="#31211C"/>
+  <rect x="252" y="664" width="24" height="88" rx="12" fill="#281B18"/>
+  <rect x="924" y="664" width="24" height="88" rx="12" fill="#281B18"/>
+  <path d="M222 710C260 660 330 656 370 710" stroke="#7B5C34" stroke-opacity="0.8" stroke-width="3"/>
+  <path d="M514 748C566 686 640 686 692 748" stroke="#A98543" stroke-opacity="0.8" stroke-width="3"/>
+  <path d="M854 710C892 660 962 656 1002 710" stroke="#7B5C34" stroke-opacity="0.8" stroke-width="3"/>
+  <g opacity="0.38">
+    <path d="M170 762C194 714 248 698 294 716C252 726 224 750 206 790" stroke="#D9BA76" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M240 804C258 766 298 754 334 770C302 778 280 796 268 828" stroke="#D9BA76" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M846 762C870 714 924 698 970 716C928 726 900 750 882 790" stroke="#D9BA76" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M916 804C934 766 974 754 1010 770C978 778 956 796 944 828" stroke="#D9BA76" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M532 794C556 740 614 722 662 742C618 754 590 782 574 822" stroke="#E3C98B" stroke-width="2.8" stroke-linecap="round"/>
+  </g>
+  <rect x="144" y="118" width="242" height="132" rx="24" fill="#120D0D" fill-opacity="0.42"/>
+  <text x="176" y="168" fill="#F0DFAE" font-family="Georgia, serif" font-size="24" letter-spacing="5">SIAM LUX</text>
+  <text x="176" y="208" fill="#D7C2A4" font-family="Georgia, serif" font-size="18" letter-spacing="3">FROM THE COURT</text>
+  <text x="176" y="238" fill="#D7C2A4" font-family="Georgia, serif" font-size="18" letter-spacing="3">TO THE MODERN TABLE</text>
+  <defs>
+    <linearGradient id="paint0_linear_1_2" x1="122" y1="94" x2="1006" y2="824" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B1218"/>
+      <stop offset="0.42" stop-color="#1B1211"/>
+      <stop offset="1" stop-color="#0B0909"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_1_2" x1="34" y1="34" x2="1166" y2="866" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E4C57F"/>
+      <stop offset="1" stop-color="#6F4C1F"/>
+    </linearGradient>
+  </defs>
+</svg>
