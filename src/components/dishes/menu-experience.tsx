@@ -5,7 +5,13 @@ import { startTransition, useDeferredValue, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import type { AppLocale } from "@/i18n/routing";
-import type { CategoryId, LocalizedCategory, LocalizedMenuDish } from "@/lib/catalog";
+import type {
+  CategoryId,
+  LocalizedCategory,
+  LocalizedMenuDish,
+  LocalizedRegion,
+  RegionId,
+} from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,14 +30,17 @@ function matchesSpiceFilter(baseSpice: number, filter: SpiceFilter) {
 export function MenuExperience({
   dishes,
   categories,
+  regions,
   locale,
 }: {
   dishes: LocalizedMenuDish[];
   categories: LocalizedCategory[];
+  regions: LocalizedRegion[];
   locale: AppLocale;
 }) {
   const t = useTranslations("menu");
   const [query, setQuery] = useState("");
+  const [region, setRegion] = useState<RegionId | "all">("all");
   const [category, setCategory] = useState<CategoryId | "all">("all");
   const [spiceFilter, setSpiceFilter] = useState<SpiceFilter>("all");
   const [sortMode, setSortMode] = useState<SortMode>("recommended");
@@ -43,12 +52,15 @@ export function MenuExperience({
       const matchesQuery =
         search.length === 0 ||
         dish.name.toLowerCase().includes(search) ||
-        dish.description.toLowerCase().includes(search);
+        dish.description.toLowerCase().includes(search) ||
+        dish.categoryLabel.toLowerCase().includes(search) ||
+        dish.regionLabel.toLowerCase().includes(search);
 
+      const matchesRegion = region === "all" || dish.region === region;
       const matchesCategory = category === "all" || dish.category === category;
       const matchesSpice = matchesSpiceFilter(dish.baseSpice, spiceFilter);
 
-      return matchesQuery && matchesCategory && matchesSpice;
+      return matchesQuery && matchesRegion && matchesCategory && matchesSpice;
     })
     .sort((left, right) => {
       if (sortMode === "price") return left.price - right.price;
@@ -60,7 +72,7 @@ export function MenuExperience({
   return (
     <div className="space-y-6">
       <div className="lux-panel rounded-[2rem] p-4 sm:p-5">
-        <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr_0.6fr_0.7fr]">
+        <div className="grid gap-4 xl:grid-cols-[1.2fr_0.76fr_0.76fr_0.58fr_0.7fr]">
           <label className="space-y-2">
             <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
               {t("searchLabel")}
@@ -77,6 +89,27 @@ export function MenuExperience({
                 className="h-12 rounded-full border-white/10 bg-white/4 pl-11 text-white placeholder:text-[#8f8579]"
               />
             </div>
+          </label>
+          <label className="space-y-2">
+            <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
+              {t("regionLabel")}
+            </span>
+            <Select
+              value={region}
+              onValueChange={(value) => startTransition(() => setRegion(value as RegionId | "all"))}
+            >
+              <SelectTrigger className="h-12 w-full rounded-full border-white/10 bg-white/4 px-4 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-white/10 bg-[#120d0d]/96 text-white">
+                <SelectItem value="all">{t("allRegions")}</SelectItem>
+                {regions.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
           <label className="space-y-2">
             <span className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
@@ -140,40 +173,96 @@ export function MenuExperience({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          type="button"
-          size="sm"
-          variant={category === "all" ? "default" : "outline"}
-          className={
-            category === "all"
-              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
-              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-          }
-          onClick={() => setCategory("all")}
-        >
-          {t("allCategories")}
-        </Button>
-        {categories.map((item) => (
-          <Button
-            key={item.id}
-            type="button"
-            size="sm"
-            variant={category === item.id ? "default" : "outline"}
-            className={
-              category === item.id
-                ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
-                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-            }
-            onClick={() => setCategory(item.id)}
-          >
-            {item.label}
-          </Button>
-        ))}
+      <div className="space-y-4">
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {t("quickRegions")}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              size="sm"
+              variant={region === "all" ? "default" : "outline"}
+              className={
+                region === "all"
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+              }
+              onClick={() => setRegion("all")}
+            >
+              {t("allRegions")}
+            </Button>
+            {regions.map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={region === item.id ? "default" : "outline"}
+                className={
+                  region === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setRegion(item.id)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {t("quickCategories")}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              size="sm"
+              variant={category === "all" ? "default" : "outline"}
+              className={
+                category === "all"
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+              }
+              onClick={() => setCategory("all")}
+            >
+              {t("allCategories")}
+            </Button>
+            {categories.map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={category === item.id ? "default" : "outline"}
+                className={
+                  category === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setCategory(item.id)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[#cabda9]">{t("results", { count: filteredDishes.length })}</p>
+        <div className="flex flex-wrap items-center gap-2 text-[0.72rem] uppercase tracking-[0.16em] text-[#bca16a]">
+          {region !== "all" ? (
+            <span className="rounded-full border border-[#d6b26a]/20 bg-[#d6b26a]/10 px-3 py-1 text-[#ecd8a0]">
+              {regions.find((item) => item.id === region)?.label}
+            </span>
+          ) : null}
+          {category !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {categories.find((item) => item.id === category)?.label}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {filteredDishes.length === 0 ? (

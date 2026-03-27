@@ -37,7 +37,7 @@ export function DishCard({
         className="h-full"
       >
         <Card
-          className={`lux-panel relative h-full overflow-hidden rounded-[2rem] border-0 bg-transparent p-0 ${dish.accentClass}`}
+          className={`group/card lux-panel relative h-full overflow-hidden rounded-[2rem] border-0 bg-transparent p-0 ${dish.accentClass}`}
         >
           <div className="absolute inset-0 bg-gradient-to-br opacity-80" />
           <div className="relative">
@@ -54,6 +54,9 @@ export function DishCard({
               <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                 <span className="glass-chip rounded-full px-3 py-1 text-[0.64rem] uppercase tracking-[0.18em] text-[#ecd8a0]">
                   {dish.categoryLabel}
+                </span>
+                <span className="rounded-full border border-white/12 bg-black/30 px-3 py-1 text-[0.62rem] uppercase tracking-[0.16em] text-white/90">
+                  {dish.regionLabel}
                 </span>
                 {dish.featured ? (
                   <span className="rounded-full bg-[#d6b26a] px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[#1b130f]">

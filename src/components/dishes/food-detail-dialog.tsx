@@ -72,10 +72,15 @@ export function FoodDetailDialog({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#080505] via-transparent to-transparent" />
           </div>
-          <div className="flex flex-col">
+            <div className="flex flex-col">
             <DialogHeader className="border-b border-white/8 px-6 pt-6 pb-5">
-              <div className="glass-chip mb-3 inline-flex w-fit rounded-full px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-[#d8c48e]">
-                {dish.categoryLabel}
+              <div className="mb-3 flex flex-wrap gap-2">
+                <div className="glass-chip inline-flex w-fit rounded-full px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-[#d8c48e]">
+                  {dish.categoryLabel}
+                </div>
+                <div className="inline-flex w-fit rounded-full border border-white/12 bg-white/5 px-3 py-1 text-[0.66rem] uppercase tracking-[0.18em] text-white/85">
+                  {dish.regionLabel}
+                </div>
               </div>
               <DialogTitle className="font-heading text-[2.1rem] leading-tight text-white sm:text-[2.35rem]">
                 {dish.name}
