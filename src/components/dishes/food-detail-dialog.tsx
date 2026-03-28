@@ -19,6 +19,7 @@ import { getExperienceCopy, getLocalizedDishReviews } from "@/lib/experience";
 import { useToast } from "@/hooks/use-toast";
 import { getDishStatus } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
+import { useRecentlyViewedStore } from "@/store/recently-viewed-store";
 
 export function FoodDetailDialog({
   dish,
@@ -35,6 +36,7 @@ export function FoodDetailDialog({
   const experienceCopy = getExperienceCopy(locale);
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
+  const pushDish = useRecentlyViewedStore((state) => state.pushDish);
   const { toast } = useToast();
   const [spiceLevel, setSpiceLevel] = useState(dish.baseSpice);
   const [quantity, setQuantity] = useState(1);
@@ -52,8 +54,9 @@ export function FoodDetailDialog({
   useEffect(() => {
     if (open) {
       resetSelections();
+      pushDish(dish.id);
     }
-  }, [dish.id, open]);
+  }, [dish.id, open, pushDish]);
 
   const toppingTotal = useMemo(
     () =>

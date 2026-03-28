@@ -3,10 +3,13 @@
 import {
   CalendarDays,
   CircleHelp,
+  Gift,
   Heart,
   LocateFixed,
   MapPinHouse,
+  PartyPopper,
   Sparkles,
+  TicketPercent,
   UserRound,
 } from "lucide-react";
 
@@ -19,6 +22,10 @@ import { useExperienceStore } from "@/store/experience-store";
 
 const iconMap = {
   specials: Sparkles,
+  "build-set": Sparkles,
+  "gift-cards": Gift,
+  rewards: TicketPercent,
+  catering: PartyPopper,
   reservation: CalendarDays,
   tracking: LocateFixed,
   favorites: Heart,
@@ -35,7 +42,19 @@ export function ExperienceBar({ locale }: { locale: AppLocale }) {
   const copy = getExperienceCopy(locale);
   const branches = getLocalizedBranches(locale);
   const featureLinks = getFeatureLinks(locale).filter((item) =>
-    ["reservation", "tracking", "favorites", "account", "contact", "help", "specials"].includes(item.id),
+    [
+      "specials",
+      "build-set",
+      "gift-cards",
+      "rewards",
+      "catering",
+      "reservation",
+      "tracking",
+      "favorites",
+      "account",
+      "contact",
+      "help",
+    ].includes(item.id),
   );
   const selectedBranch = branches.find((branch) => branch.id === selectedBranchId) ?? branches[0];
 

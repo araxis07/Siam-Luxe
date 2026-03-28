@@ -11,6 +11,8 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ReservationCalendarPanel } from "@/components/reservation/reservation-calendar-panel";
+import { SeatMapVisual } from "@/components/reservation/seat-map-visual";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -355,7 +357,7 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
     defaultValues: {
       branchId: selectedBranchId,
       guestCount: "2",
-      date: "",
+      date: "2026-04-03",
       timeSlot: "19:00",
       occasion: "casual",
       seating: "salon",
@@ -366,6 +368,7 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
   });
 
   const branchId = useWatch({ control: form.control, name: "branchId" });
+  const selectedDate = useWatch({ control: form.control, name: "date" });
   const timeSlot = useWatch({ control: form.control, name: "timeSlot" });
   const seating = useWatch({ control: form.control, name: "seating" });
   const guestCount = Number(useWatch({ control: form.control, name: "guestCount" }) ?? 2);
@@ -508,6 +511,13 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
               />
             </div>
           </div>
+
+          <ReservationCalendarPanel
+            locale={locale}
+            branchId={branchId as BranchId}
+            selectedDate={selectedDate}
+            onPickDate={(date) => form.setValue("date", date, { shouldDirty: true, shouldTouch: true })}
+          />
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
@@ -664,6 +674,13 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
             </p>
           </div>
         </div>
+
+        <SeatMapVisual
+          locale={locale}
+          branchId={branchId as BranchId}
+          selectedZone={seating}
+          onSelectZone={(zone) => form.setValue("seating", zone, { shouldDirty: true, shouldTouch: true })}
+        />
 
         <div className="lux-panel-soft rounded-[2rem] p-6">
           <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{liveText.seatingPreview}</p>

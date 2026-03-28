@@ -14,6 +14,8 @@ import type {
 } from "@/lib/catalog";
 import { getAllDietaryLabels, getDietaryLabels, getExperienceCopy } from "@/lib/experience";
 import { ChefRecommendations } from "@/components/dishes/chef-recommendations";
+import { MenuGallery } from "@/components/dishes/menu-gallery";
+import { RecentlyViewedStrip } from "@/components/dishes/recently-viewed-strip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +23,7 @@ import { DishCard } from "@/components/dishes/dish-card";
 import type { DietaryTagId } from "@/lib/experience";
 import type { DishStatusId } from "@/lib/premium";
 import { getDishStatus } from "@/lib/premium";
+import { useExperienceStore } from "@/store/experience-store";
 
 type SpiceFilter = "all" | "mild" | "medium" | "hot";
 type SortMode = "recommended" | "price" | "rating" | "spicy";
@@ -33,30 +36,40 @@ const menuFiltersText = {
     status: "สถานะเมนู",
     allDietary: "ทุกแบบ",
     allStatuses: "ทุกสถานะ",
+    cards: "โหมดการ์ด",
+    gallery: "โหมดแกลเลอรี",
   },
   en: {
     dietary: "Dietary filter",
     status: "Availability",
     allDietary: "All dietary",
     allStatuses: "All statuses",
+    cards: "Card mode",
+    gallery: "Gallery mode",
   },
   ja: {
     dietary: "食事条件フィルター",
     status: "提供状況",
     allDietary: "すべて",
     allStatuses: "すべての状態",
+    cards: "カード表示",
+    gallery: "ギャラリー表示",
   },
   zh: {
     dietary: "饮食条件筛选",
     status: "菜单状态",
     allDietary: "全部条件",
     allStatuses: "全部状态",
+    cards: "卡片模式",
+    gallery: "画廊模式",
   },
   ko: {
     dietary: "식단 필터",
     status: "메뉴 상태",
     allDietary: "전체 조건",
     allStatuses: "모든 상태",
+    cards: "카드 모드",
+    gallery: "갤러리 모드",
   },
 } as const;
 
@@ -87,6 +100,8 @@ export function MenuExperience({
   const [sortMode, setSortMode] = useState<SortMode>("recommended");
   const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const menuViewMode = useExperienceStore((state) => state.menuViewMode);
+  const setMenuViewMode = useExperienceStore((state) => state.setMenuViewMode);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
   const text = menuFiltersText[locale];
@@ -265,6 +280,38 @@ export function MenuExperience({
       </div>
 
       <div className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">{copy.labels.viewAll}</p>
+          <div className="flex rounded-full border border-white/10 bg-white/5 p-1">
+            <Button
+              type="button"
+              size="sm"
+              variant={menuViewMode === "cards" ? "default" : "ghost"}
+              className={
+                menuViewMode === "cards"
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full text-white hover:bg-white/8"
+              }
+              onClick={() => setMenuViewMode("cards")}
+            >
+              {text.cards}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={menuViewMode === "gallery" ? "default" : "ghost"}
+              className={
+                menuViewMode === "gallery"
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full text-white hover:bg-white/8"
+              }
+              onClick={() => setMenuViewMode("gallery")}
+            >
+              {text.gallery}
+            </Button>
+          </div>
+        </div>
+
         <div>
           <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
             {text.dietary}
@@ -401,6 +448,8 @@ export function MenuExperience({
         </div>
       </div>
 
+      <RecentlyViewedStrip locale={locale} />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-[#cabda9]">{t("results", { count: filteredDishes.length })}</p>
         <div className="flex flex-wrap items-center gap-2 text-[0.72rem] uppercase tracking-[0.16em] text-[#bca16a]">
@@ -434,11 +483,15 @@ export function MenuExperience({
         </div>
       ) : (
         <div className="space-y-10">
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {filteredDishes.map((dish) => (
-              <DishCard key={dish.id} dish={dish} locale={locale} />
-            ))}
-          </div>
+          {menuViewMode === "cards" ? (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {filteredDishes.map((dish) => (
+                <DishCard key={dish.id} dish={dish} locale={locale} />
+              ))}
+            </div>
+          ) : (
+            <MenuGallery dishes={filteredDishes} locale={locale} />
+          )}
           <ChefRecommendations locale={locale} region={region} />
         </div>
       )}

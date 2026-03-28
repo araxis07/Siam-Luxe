@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import type { AppLocale } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,7 @@ const pageText = {
     successTitle: "ส่งคำขอจัดเลี้ยงแล้ว",
     successBody: "ทีมหน้าบ้านสามารถเชื่อมหน้า UI นี้เข้ากับ CRM ขั้นตอนงานอีเวนต์ และตารางความพร้อมของแต่ละสาขาได้ภายหลัง",
     submit: "ส่งคำขอ",
+    catering: "เปิด Catering Builder",
     fields: {
       name: "ชื่อผู้ติดต่อ",
       company: "บริษัท / องค์กร",
@@ -48,6 +50,7 @@ const pageText = {
     successTitle: "Private dining inquiry sent",
     successBody: "The house team can later connect this UI to CRM, catering workflows, and branch-specific availability.",
     submit: "Send inquiry",
+    catering: "Open catering builder",
     fields: {
       name: "Name",
       company: "Company",
@@ -70,6 +73,7 @@ const pageText = {
     successTitle: "問い合わせを受け付けました",
     successBody: "この UI は将来 CRM、イベント運用、店舗ごとの空席管理へ接続できます。",
     submit: "問い合わせ送信",
+    catering: "ケータリング構成を見る",
     fields: {
       name: "担当者名",
       company: "会社名",
@@ -92,6 +96,7 @@ const pageText = {
     successTitle: "咨询请求已发送",
     successBody: "这套前端后续可连接 CRM、宴会流程和分店档期系统。",
     submit: "提交咨询",
+    catering: "打开宴会构建器",
     fields: {
       name: "联系人姓名",
       company: "公司 / 机构",
@@ -114,6 +119,7 @@ const pageText = {
     successTitle: "문의가 접수되었습니다",
     successBody: "이 UI는 이후 CRM, 이벤트 운영, 지점별 가능 일정과 연결할 수 있습니다.",
     submit: "문의 보내기",
+    catering: "케이터링 빌더 열기",
     fields: {
       name: "담당자 이름",
       company: "회사",
@@ -187,6 +193,14 @@ export function PrivateDiningPage({ locale }: { locale: AppLocale }) {
               </div>
             ))}
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+            render={<Link href="/catering" locale={locale} />}
+          >
+            {text.catering}
+          </Button>
         </div>
         <div className="lux-panel rounded-[2rem] p-6 sm:p-8">
           <form

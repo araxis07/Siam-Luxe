@@ -2,6 +2,7 @@ import { Clock3, MapPinned, Phone, Users } from "lucide-react";
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { BranchAvailabilityMatrix } from "@/components/branches/branch-availability-matrix";
 import { Button } from "@/components/ui/button";
 import { getLocalizedDishes } from "@/lib/catalog";
 import { getLocalizedBranch } from "@/lib/experience";
@@ -137,6 +138,8 @@ export function BranchDetailPage({
             ))}
           </div>
         </div>
+
+        <BranchAvailabilityMatrix locale={locale} branchId={branchId} />
       </div>
     </section>
   );

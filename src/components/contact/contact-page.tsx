@@ -2,6 +2,7 @@ import { Clock3, MapPinned, Phone } from "lucide-react";
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { BranchAvailabilityMatrix } from "@/components/branches/branch-availability-matrix";
 import { Button } from "@/components/ui/button";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranches } from "@/lib/experience";
 
@@ -141,6 +142,8 @@ export function ContactPage({ locale }: { locale: AppLocale }) {
             </div>
           </div>
         </div>
+
+        <BranchAvailabilityMatrix locale={locale} />
       </div>
     </section>
   );

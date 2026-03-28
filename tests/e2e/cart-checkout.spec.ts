@@ -8,9 +8,10 @@ test("guests can add a dish, open the cart, and reach checkout", async ({ page }
   await quickAdd.click();
 
   await expect(page.getByRole("heading", { name: /ตะกร้า/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /ชำระเงิน/i })).toBeVisible();
+  const checkoutCta = page.getByRole("button", { name: /ชำระเงิน/i });
+  await expect(checkoutCta).toBeVisible();
 
-  await page.getByRole("link", { name: /ชำระเงิน/i }).click();
+  await checkoutCta.click();
   await expect(page).toHaveURL(/\/th\/checkout$/);
 
   await expect(page.getByRole("heading", { name: /ชำระเงิน/i })).toBeVisible();

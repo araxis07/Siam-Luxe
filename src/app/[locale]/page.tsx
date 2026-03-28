@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { ChefHat, Crown, Flame, Leaf, Sparkles, Soup } from "lucide-react";
 import { hasLocale } from "next-intl";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/app/json-ld";
 import { FeaturedDishes } from "@/components/dishes/featured-dishes";
 import { HeritageTeaser } from "@/components/heritage/heritage-teaser";
 import { FeatureLinkGrid } from "@/components/home/feature-link-grid";
@@ -11,6 +13,7 @@ import { TestimonialsStrip } from "@/components/home/testimonials-strip";
 import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getLocalizedCategories, getLocalizedDishes, getLocalizedPromotions } from "@/lib/catalog";
+import { getPageMetadata, getRestaurantSchema } from "@/lib/page-metadata";
 
 const categoryIconMap = {
   crown: Crown,
@@ -19,6 +22,15 @@ const categoryIconMap = {
   bowl: Soup,
   sparkles: Sparkles,
 } as const;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale as AppLocale, "home", `/${locale}`);
+}
 
 export default async function HomePage({
   params,
@@ -34,12 +46,21 @@ export default async function HomePage({
   const appLocale = locale as AppLocale;
   const tHome = await getTranslations({ locale: appLocale, namespace: "home" });
   const tCommon = await getTranslations({ locale: appLocale, namespace: "common" });
+  const metadata = getPageMetadata(appLocale, "home", `/${locale}`);
   const featuredDishes = getLocalizedDishes(appLocale).filter((dish) => dish.featured).slice(0, 3);
   const categories = getLocalizedCategories(appLocale);
   const promotions = getLocalizedPromotions(appLocale);
 
   return (
     <>
+      <JsonLd
+        data={getRestaurantSchema(
+          appLocale,
+          `/${locale}`,
+          String(metadata.title),
+          metadata.description ?? "",
+        )}
+      />
       <section className="scene-section overflow-hidden px-4 pt-10 pb-14 sm:px-6 sm:pt-16 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="relative z-10">

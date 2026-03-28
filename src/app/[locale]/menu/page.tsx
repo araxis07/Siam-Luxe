@@ -1,10 +1,22 @@
 import { hasLocale } from "next-intl";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { JsonLd } from "@/components/app/json-ld";
 import { MenuExperience } from "@/components/dishes/menu-experience";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getLocalizedCategories, getLocalizedDishes, getLocalizedRegions } from "@/lib/catalog";
+import { getPageMetadata, getRestaurantSchema } from "@/lib/page-metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return getPageMetadata(locale as AppLocale, "menu", `/${locale}/menu`);
+}
 
 export default async function MenuPage({
   params,
@@ -19,6 +31,7 @@ export default async function MenuPage({
 
   const appLocale = locale as AppLocale;
   const t = await getTranslations({ locale: appLocale, namespace: "menu" });
+  const metadata = getPageMetadata(appLocale, "menu", `/${locale}/menu`);
   const menuEyebrow = {
     th: "เมนูของ Siam Lux",
     en: "Siam Lux Menu",
@@ -31,8 +44,17 @@ export default async function MenuPage({
   const regions = getLocalizedRegions(appLocale);
 
   return (
-    <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <>
+      <JsonLd
+        data={getRestaurantSchema(
+          appLocale,
+          `/${locale}/menu`,
+          String(metadata.title),
+          metadata.description ?? "",
+        )}
+      />
+      <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
         <div className="mb-10 max-w-3xl">
           <p className="text-[0.66rem] uppercase tracking-[0.2em] text-[#cdb37d] sm:text-[0.7rem]">{menuEyebrow}</p>
           <h1 className="mt-3 font-heading text-[2.85rem] leading-tight text-white sm:text-[3.45rem]">{t("title")}</h1>
@@ -68,7 +90,8 @@ export default async function MenuPage({
         </div>
 
         <MenuExperience dishes={dishes} categories={categories} regions={regions} locale={appLocale} />
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }

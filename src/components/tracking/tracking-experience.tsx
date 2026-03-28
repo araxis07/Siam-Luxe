@@ -7,6 +7,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DeliveryMapMock } from "@/components/tracking/delivery-map-mock";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getFeatureLinks, getLocalizedOrders } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
@@ -218,6 +219,8 @@ export function TrackingExperience({ locale }: { locale: AppLocale }) {
             </Button>
           </div>
         </div>
+
+        <DeliveryMapMock locale={locale} orderId={activeOrder.id} />
       </div>
     </div>
   );

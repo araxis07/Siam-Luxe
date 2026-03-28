@@ -29,6 +29,15 @@ export interface GiftWalletEntry {
   expiresAt: string;
 }
 
+export interface RedeemedRewardEntry {
+  id: string;
+  rewardId: string;
+  title: string;
+  pointsUsed: number;
+  walletAmount: number;
+  redeemedAt: string;
+}
+
 interface UserState {
   fullName: string;
   phone: string;
@@ -40,6 +49,8 @@ interface UserState {
   savedAddresses: SavedAddress[];
   paymentProfiles: SavedPaymentMethod[];
   giftWallet: GiftWalletEntry[];
+  rewardPoints: number;
+  redeemedRewards: RedeemedRewardEntry[];
   activeAddressId: string;
   activePaymentProfileId: string;
   saveCheckoutProfile: (payload: {
@@ -55,6 +66,13 @@ interface UserState {
   setActivePaymentProfile: (id: string) => void;
   addSavedAddress: (payload: Omit<SavedAddress, "id">) => void;
   addPaymentProfile: (payload: Omit<SavedPaymentMethod, "id">) => void;
+  addGiftWalletEntry: (payload: Omit<GiftWalletEntry, "id">) => void;
+  redeemReward: (payload: {
+    rewardId: string;
+    title: string;
+    points: number;
+    walletAmount: number;
+  }) => { ok: boolean; remainingPoints: number };
 }
 
 export const useUserStore = create<UserState>()(
@@ -99,6 +117,8 @@ export const useUserStore = create<UserState>()(
           expiresAt: "2026-08-31",
         },
       ],
+      rewardPoints: 1280,
+      redeemedRewards: [],
       activeAddressId: "address-home",
       activePaymentProfileId: "payment-promptpay",
       saveCheckoutProfile: (payload) =>
@@ -151,6 +171,63 @@ export const useUserStore = create<UserState>()(
             { ...payload, id: `payment-${Date.now()}-${state.paymentProfiles.length}` },
           ],
         })),
+      addGiftWalletEntry: (payload) =>
+        set((state) => ({
+          giftWallet: [
+            {
+              ...payload,
+              id: `gift-${Date.now()}-${state.giftWallet.length}`,
+            },
+            ...state.giftWallet,
+          ],
+        })),
+      redeemReward: ({ rewardId, title, points, walletAmount }) => {
+        let result = { ok: false, remainingPoints: 0 };
+
+        set((state) => {
+          if (state.rewardPoints < points) {
+            result = {
+              ok: false,
+              remainingPoints: state.rewardPoints,
+            };
+            return state;
+          }
+
+          const remainingPoints = state.rewardPoints - points;
+
+          result = {
+            ok: true,
+            remainingPoints,
+          };
+
+          return {
+            rewardPoints: remainingPoints,
+            giftWallet: [
+              {
+                id: `gift-${Date.now()}-${state.giftWallet.length}`,
+                code: rewardId.toUpperCase(),
+                amount: walletAmount,
+                title,
+                expiresAt: "2026-12-31",
+              },
+              ...state.giftWallet,
+            ],
+            redeemedRewards: [
+              {
+                id: `reward-${Date.now()}-${state.redeemedRewards.length}`,
+                rewardId,
+                title,
+                pointsUsed: points,
+                walletAmount,
+                redeemedAt: "2026-03-28",
+              },
+              ...state.redeemedRewards,
+            ],
+          };
+        });
+
+        return result;
+      },
     }),
     {
       name: "siam-lux-user",

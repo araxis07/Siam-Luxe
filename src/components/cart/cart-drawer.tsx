@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { PromoCodePanel } from "@/components/cart/promo-code-panel";
+import { SmartUpsellPanel } from "@/components/cart/smart-upsell-panel";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -170,13 +171,17 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
                     </div>
                   );
                 })}
+                <div className="space-y-4 pt-2">
+                  <PromoCodePanel locale={locale} subtotal={totals.subtotal} />
+                  <SmartUpsellPanel locale={locale} />
+                </div>
               </div>
             </>
           )}
         </div>
 
         {items.length > 0 && hydrated && (
-          <SheetFooter className="border-t border-white/8 bg-[#120c0d] p-4">
+          <SheetFooter className="sticky bottom-0 z-10 border-t border-white/8 bg-[#120c0d]/96 p-4 backdrop-blur-xl">
             <div className="lux-panel-soft w-full rounded-3xl p-4">
               <div className="mb-4 rounded-[1.5rem] border border-white/10 bg-black/15 px-4 py-3 text-sm text-[#d1c4b2]">
                 <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
@@ -185,8 +190,6 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
                 <p className="mt-2 text-white">{branch.name}</p>
                 <p className="mt-1 text-sm text-[#bcae9b]">{experienceCopy.serviceModes[serviceMode]}</p>
               </div>
-              <PromoCodePanel locale={locale} subtotal={totals.subtotal} />
-              <div className="my-4" />
               <div className="space-y-2 text-sm text-[#d8cbbb]">
                 <div className="flex items-center justify-between">
                   <span>{t("subtotal")}</span>

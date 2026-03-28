@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { MobileCartBar } from "@/components/cart/mobile-cart-bar";
+import { PageTransition } from "@/components/app/page-transition";
 import { PwaRegister } from "@/components/app/pwa-register";
 import { ExperienceBar } from "@/components/layout/experience-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -24,7 +25,9 @@ export function SiteShell({
       </div>
       <SiteHeader locale={locale} />
       <ExperienceBar locale={locale} />
-      <main className="relative z-10 flex-1">{children}</main>
+      <main className="relative z-10 flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <SiteFooter locale={locale} />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />

@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { PromoCodePanel } from "@/components/cart/promo-code-panel";
+import { SmartUpsellPanel } from "@/components/cart/smart-upsell-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -536,6 +537,9 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
 
           <div className="thai-divider my-6" />
           <PromoCodePanel locale={locale} subtotal={totals.subtotal} />
+          <div className="my-6">
+            <SmartUpsellPanel locale={locale} />
+          </div>
           <div className="thai-divider my-6" />
           <div className="space-y-3 text-sm text-[#d1c4b2]">
             <div className="flex items-center justify-between">

@@ -14,17 +14,18 @@ import {
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
+import { RecentlyViewedStrip } from "@/components/dishes/recently-viewed-strip";
 import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/format";
+import { getRewardTierSnapshot } from "@/lib/guest-experience";
 import {
   getExperienceCopy,
   getFeatureLinks,
   getLocalizedBranch,
   getLocalizedNotifications,
   getLocalizedOrders,
-  getLoyaltySnapshot,
 } from "@/lib/experience";
 import {
   getLocalizedAddressLabel,
@@ -194,6 +195,8 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const savedAddresses = useUserStore((state) => state.savedAddresses);
   const paymentProfiles = useUserStore((state) => state.paymentProfiles);
   const giftWallet = useUserStore((state) => state.giftWallet);
+  const rewardPoints = useUserStore((state) => state.rewardPoints);
+  const redeemedRewards = useUserStore((state) => state.redeemedRewards);
   const activeAddressId = useUserStore((state) => state.activeAddressId);
   const activePaymentProfileId = useUserStore((state) => state.activePaymentProfileId);
   const setActiveAddress = useUserStore((state) => state.setActiveAddress);
@@ -215,7 +218,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const branch = getLocalizedBranch(locale, selectedBranchId);
   const orders = getLocalizedOrders(locale);
   const notifications = getLocalizedNotifications(locale);
-  const loyalty = getLoyaltySnapshot(locale);
+  const loyalty = getRewardTierSnapshot(locale, rewardPoints);
   const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
   const activePayment = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
   const sortedReservations = [...reservations].sort((left, right) =>
@@ -245,6 +248,8 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
           </h1>
           <p className="mt-4 text-[0.98rem] leading-8 text-[#d1c4b2]">{feature?.description}</p>
         </div>
+
+        <RecentlyViewedStrip locale={locale} />
 
         <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr]">
           <div className="space-y-6">
@@ -291,11 +296,13 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/8">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-[#9b1d27] via-[#d6b26a] to-[#1d624b]"
-                    style={{ width: `${Math.min(100, (loyalty.currentPoints / loyalty.nextThreshold) * 100)}%` }}
+                    style={{ width: `${Math.min(100, (loyalty.currentPoints / Math.max(loyalty.nextThreshold, 1)) * 100)}%` }}
                   />
                 </div>
                 <p className="mt-3 text-sm text-[#d1c4b2]">
-                  {copy.labels.nextReward.replace("{points}", String(loyalty.pointsToNext))}
+                  {loyalty.pointsToNext > 0
+                    ? copy.labels.nextReward.replace("{points}", String(loyalty.pointsToNext))
+                    : loyalty.currentTier}
                 </p>
               </div>
             </div>
@@ -599,6 +606,31 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                       <p className="mt-3 text-sm text-[#d1c4b2]">{labels.expires}: {item.expiresAt}</p>
                     </div>
                   ))}
+                </div>
+                {redeemedRewards.length > 0 ? (
+                  <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/15 p-4">
+                    <p className="text-sm text-[#ecd8a0]">{copy.labels.loyaltyTitle}</p>
+                    <p className="mt-2 text-sm text-[#d1c4b2]">{redeemedRewards[0]?.title}</p>
+                  </div>
+                ) : null}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    render={<Link href="/gift-cards" locale={locale} />}
+                  >
+                    {labels.walletTitle}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                    render={<Link href="/rewards" locale={locale} />}
+                  >
+                    {copy.labels.loyaltyTitle}
+                  </Button>
                 </div>
               </div>
             </div>
