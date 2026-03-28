@@ -13,6 +13,7 @@ import type {
   RegionId,
 } from "@/lib/catalog";
 import { getAllDietaryLabels, getDietaryLabels, getExperienceCopy } from "@/lib/experience";
+import { getOccasionMoments } from "@/lib/hospitality";
 import { ChefRecommendations } from "@/components/dishes/chef-recommendations";
 import { MenuGallery } from "@/components/dishes/menu-gallery";
 import { RecentlyViewedStrip } from "@/components/dishes/recently-viewed-strip";
@@ -29,6 +30,9 @@ type SpiceFilter = "all" | "mild" | "medium" | "hot";
 type SortMode = "recommended" | "price" | "rating" | "spicy";
 type DietaryFilter = "all" | DietaryTagId;
 type StatusFilter = "all" | DishStatusId;
+type PriceFilter = "all" | "under400" | "400to700" | "700plus";
+type PrepFilter = "all" | "fast" | "balanced" | "leisure";
+type OccasionFilter = "all" | "date-night" | "business-hosting" | "family-table";
 
 const menuFiltersText = {
   th: {
@@ -38,6 +42,15 @@ const menuFiltersText = {
     allStatuses: "ทุกสถานะ",
     cards: "โหมดการ์ด",
     gallery: "โหมดแกลเลอรี",
+    price: "ช่วงราคา",
+    prep: "เวลาปรุง",
+    occasions: "โอกาสพิเศษ",
+    signatureOnly: "เฉพาะจานซิกเนเจอร์",
+    allPrices: "ทุกช่วงราคา",
+    allPrep: "ทุกเวลา",
+    fast: "เร็ว",
+    balanced: "กลาง",
+    leisure: "จัดเต็ม",
   },
   en: {
     dietary: "Dietary filter",
@@ -46,6 +59,15 @@ const menuFiltersText = {
     allStatuses: "All statuses",
     cards: "Card mode",
     gallery: "Gallery mode",
+    price: "Price band",
+    prep: "Prep time",
+    occasions: "Occasions",
+    signatureOnly: "Signature only",
+    allPrices: "All prices",
+    allPrep: "Any timing",
+    fast: "Fast",
+    balanced: "Balanced",
+    leisure: "Leisure",
   },
   ja: {
     dietary: "食事条件フィルター",
@@ -54,6 +76,15 @@ const menuFiltersText = {
     allStatuses: "すべての状態",
     cards: "カード表示",
     gallery: "ギャラリー表示",
+    price: "価格帯",
+    prep: "調理時間",
+    occasions: "利用シーン",
+    signatureOnly: "定番のみ",
+    allPrices: "すべて",
+    allPrep: "すべて",
+    fast: "早め",
+    balanced: "標準",
+    leisure: "ゆったり",
   },
   zh: {
     dietary: "饮食条件筛选",
@@ -62,6 +93,15 @@ const menuFiltersText = {
     allStatuses: "全部状态",
     cards: "卡片模式",
     gallery: "画廊模式",
+    price: "价格区间",
+    prep: "制作时间",
+    occasions: "使用场景",
+    signatureOnly: "仅看招牌",
+    allPrices: "全部价格",
+    allPrep: "全部时间",
+    fast: "快速",
+    balanced: "适中",
+    leisure: "慢享",
   },
   ko: {
     dietary: "식단 필터",
@@ -70,6 +110,15 @@ const menuFiltersText = {
     allStatuses: "모든 상태",
     cards: "카드 모드",
     gallery: "갤러리 모드",
+    price: "가격대",
+    prep: "조리 시간",
+    occasions: "방문 목적",
+    signatureOnly: "시그니처만",
+    allPrices: "전체 가격",
+    allPrep: "전체 시간",
+    fast: "빠름",
+    balanced: "보통",
+    leisure: "여유",
   },
 } as const;
 
@@ -78,6 +127,20 @@ function matchesSpiceFilter(baseSpice: number, filter: SpiceFilter) {
   if (filter === "mild") return baseSpice <= 2;
   if (filter === "medium") return baseSpice >= 3 && baseSpice <= 4;
   return baseSpice >= 5;
+}
+
+function matchesPriceFilter(price: number, filter: PriceFilter) {
+  if (filter === "all") return true;
+  if (filter === "under400") return price < 400;
+  if (filter === "400to700") return price >= 400 && price <= 700;
+  return price > 700;
+}
+
+function matchesPrepFilter(prepMinutes: number, filter: PrepFilter) {
+  if (filter === "all") return true;
+  if (filter === "fast") return prepMinutes <= 15;
+  if (filter === "balanced") return prepMinutes > 15 && prepMinutes <= 25;
+  return prepMinutes > 25;
 }
 
 export function MenuExperience({
@@ -100,11 +163,16 @@ export function MenuExperience({
   const [sortMode, setSortMode] = useState<SortMode>("recommended");
   const [dietaryFilter, setDietaryFilter] = useState<DietaryFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
+  const [prepFilter, setPrepFilter] = useState<PrepFilter>("all");
+  const [occasionFilter, setOccasionFilter] = useState<OccasionFilter>("all");
+  const [signatureOnly, setSignatureOnly] = useState(false);
   const menuViewMode = useExperienceStore((state) => state.menuViewMode);
   const setMenuViewMode = useExperienceStore((state) => state.setMenuViewMode);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
   const text = menuFiltersText[locale];
+  const occasions = getOccasionMoments(locale);
   const dietaryLabels = getAllDietaryLabels(locale).filter((item) =>
     ["vegetarian", "seafood", "containsNuts", "halalFriendly", "spicy"].includes(item.id),
   );
@@ -142,8 +210,25 @@ export function MenuExperience({
         dietaryFilter === "all" || getDietaryLabels(locale, dish.id).some((item) => item.id === dietaryFilter);
       const matchesStatus =
         statusFilter === "all" || getDishStatus(locale, dish.id).id === statusFilter;
+      const matchesPrice = matchesPriceFilter(dish.price, priceFilter);
+      const matchesPrep = matchesPrepFilter(dish.prepMinutes, prepFilter);
+      const matchesOccasion =
+        occasionFilter === "all" ||
+        occasions.find((occasion) => occasion.id === occasionFilter)?.recommendedDishIds.includes(dish.id);
+      const matchesSignature = !signatureOnly || getDietaryLabels(locale, dish.id).some((item) => item.id === "signature");
 
-      return matchesQuery && matchesRegion && matchesCategory && matchesSpice && matchesDietary && matchesStatus;
+      return (
+        matchesQuery &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesSpice &&
+        matchesDietary &&
+        matchesStatus &&
+        matchesPrice &&
+        matchesPrep &&
+        matchesOccasion &&
+        matchesSignature
+      );
     })
     .sort((left, right) => {
       if (sortMode === "price") return left.price - right.price;
@@ -375,6 +460,112 @@ export function MenuExperience({
 
         <div>
           <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {text.price}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {[
+              { id: "all", label: text.allPrices },
+              { id: "under400", label: "< 400" },
+              { id: "400to700", label: "400-700" },
+              { id: "700plus", label: "700+" },
+            ].map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={priceFilter === item.id ? "default" : "outline"}
+                className={
+                  priceFilter === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setPriceFilter(item.id as PriceFilter)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {text.prep}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            {[
+              { id: "all", label: text.allPrep },
+              { id: "fast", label: text.fast },
+              { id: "balanced", label: text.balanced },
+              { id: "leisure", label: text.leisure },
+            ].map((item) => (
+              <Button
+                key={item.id}
+                type="button"
+                size="sm"
+                variant={prepFilter === item.id ? "default" : "outline"}
+                className={
+                  prepFilter === item.id
+                    ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                }
+                onClick={() => setPrepFilter(item.id as PrepFilter)}
+              >
+                {item.label}
+              </Button>
+            ))}
+            <Button
+              type="button"
+              size="sm"
+              variant={signatureOnly ? "default" : "outline"}
+              className={
+                signatureOnly
+                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+              }
+              onClick={() => setSignatureOnly((value) => !value)}
+            >
+              {text.signatureOnly}
+            </Button>
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
+            {text.occasions}
+          </p>
+          <div className="grid gap-3 lg:grid-cols-3">
+            <button
+              type="button"
+              className={`rounded-[1.5rem] border p-4 text-left transition-colors ${
+                occasionFilter === "all"
+                  ? "border-[#d6b26a]/30 bg-[#d6b26a]/10"
+                  : "border-white/10 bg-white/4 hover:bg-white/8"
+              }`}
+              onClick={() => setOccasionFilter("all")}
+            >
+              <span className="block text-white">{text.occasions}</span>
+              <span className="mt-2 block text-sm text-[#bcae9b]">{copy.labels.viewAll}</span>
+            </button>
+            {occasions.map((occasion) => (
+              <button
+                key={occasion.id}
+                type="button"
+                className={`rounded-[1.5rem] border p-4 text-left transition-colors ${
+                  occasionFilter === occasion.id
+                    ? "border-[#d6b26a]/30 bg-[#d6b26a]/10"
+                    : "border-white/10 bg-white/4 hover:bg-white/8"
+                }`}
+                onClick={() => setOccasionFilter(occasion.id as OccasionFilter)}
+              >
+                <span className="block text-white">{occasion.title}</span>
+                <span className="mt-2 block text-sm leading-6 text-[#bcae9b]">{occasion.body}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#bca16a]">
             {t("quickRegions")}
           </p>
           <div className="flex flex-wrap items-center gap-3">
@@ -471,6 +662,34 @@ export function MenuExperience({
           {statusFilter !== "all" ? (
             <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
               {statusOptions.find((item) => item.id === statusFilter)?.label}
+            </span>
+          ) : null}
+          {priceFilter !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {{
+                under400: "< 400",
+                "400to700": "400-700",
+                "700plus": "700+",
+              }[priceFilter]}
+            </span>
+          ) : null}
+          {prepFilter !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {{
+                fast: text.fast,
+                balanced: text.balanced,
+                leisure: text.leisure,
+              }[prepFilter]}
+            </span>
+          ) : null}
+          {occasionFilter !== "all" ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {occasions.find((item) => item.id === occasionFilter)?.title}
+            </span>
+          ) : null}
+          {signatureOnly ? (
+            <span className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-white">
+              {text.signatureOnly}
             </span>
           ) : null}
         </div>

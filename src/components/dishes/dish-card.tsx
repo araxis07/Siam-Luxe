@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Clock3, Star } from "lucide-react";
+import { Clock3, Share2, Star, Users } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DietaryBadges } from "@/components/dishes/dietary-badges";
 import { DishStatusBadge } from "@/components/dishes/dish-status-badge";
 import { FavoriteButton } from "@/components/dishes/favorite-button";
+import { Link } from "@/i18n/navigation";
+import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
+import { getSocialProof } from "@/lib/hospitality";
 import { useToast } from "@/hooks/use-toast";
 import { getDishStatus } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
@@ -35,7 +38,46 @@ export function DishCard({
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const status = getDishStatus(locale, dish.id);
+  const socialProof = getSocialProof(locale, dish.id);
   const isSoldOut = status.id === "soldOut";
+  const extraText = {
+    th: { pairings: "จับคู่เครื่องดื่ม", share: "แชร์เมนู" },
+    en: { pairings: "Pairings", share: "Share dish" },
+    ja: { pairings: "ペアリング", share: "料理を共有" },
+    zh: { pairings: "饮品搭配", share: "分享菜品" },
+    ko: { pairings: "페어링", share: "메뉴 공유" },
+  } as const;
+
+  async function handleShare() {
+    const shareUrl =
+      typeof window !== "undefined" ? `${window.location.origin}/${locale}/menu#${dish.id}` : `/${locale}/menu#${dish.id}`;
+    const sharePayload = {
+      title: dish.name,
+      text: dish.description,
+      url: shareUrl,
+    };
+
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        await navigator.share(sharePayload);
+      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+
+      trackEvent("dish_share", { dishId: dish.id, locale });
+      toast({
+        title: dish.name,
+        description: shareUrl,
+        tone: "success",
+      });
+    } catch {
+      toast({
+        title: dish.name,
+        description: shareUrl,
+        tone: "info",
+      });
+    }
+  }
 
   return (
     <>
@@ -102,8 +144,15 @@ export function DishCard({
                     <Clock3 className="size-3.5 text-[#d6b26a]" />
                     {t("prepTime", { minutes: dish.prepMinutes })}
                   </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Users className="size-3.5 text-[#d6b26a]" />
+                    {socialProof.todayOrders}
+                  </span>
                 </div>
                 <DietaryBadges dishId={dish.id} locale={locale} />
+                <p className="text-xs leading-6 text-[#bdaa99]">
+                  {socialProof.label} · {socialProof.note}
+                </p>
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -111,9 +160,21 @@ export function DishCard({
                   type="button"
                   variant="outline"
                   className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    trackEvent("dish_customize_open", { dishId: dish.id, locale });
+                    setIsModalOpen(true);
+                  }}
                 >
                   {t("customize")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  aria-label={`${dish.name} ${extraText[locale].share}`}
+                  onClick={handleShare}
+                >
+                  <Share2 className="size-4" />
                 </Button>
                 <Button
                   type="button"
@@ -131,6 +192,7 @@ export function DishCard({
                       unitPrice: dish.price,
                     });
                     openCart();
+                    trackEvent("add_to_cart", { dishId: dish.id, locale, quantity: 1, source: "dish-card" });
                     toast({
                       title: t("quickAdd"),
                       description: dish.name,
@@ -139,6 +201,14 @@ export function DishCard({
                   }}
                 >
                   {isSoldOut ? status.label : t("quickAdd")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  render={<Link href="/pairings" locale={locale} />}
+                >
+                  {extraText[locale].pairings}
                 </Button>
               </div>
             </CardContent>

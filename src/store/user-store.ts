@@ -3,6 +3,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import type { BranchId, ServiceMode } from "@/lib/experience";
+
 export interface SavedAddress {
   id: string;
   label: string;
@@ -19,6 +21,7 @@ export interface SavedPaymentMethod {
   label: string;
   kind: "card" | "promptpay" | "cash";
   last4?: string;
+  isPrimary?: boolean;
 }
 
 export interface GiftWalletEntry {
@@ -38,7 +41,33 @@ export interface RedeemedRewardEntry {
   redeemedAt: string;
 }
 
+export interface NotificationSettings {
+  marketing: boolean;
+  orderUpdates: boolean;
+  reservationReminders: boolean;
+  loyaltyDigest: boolean;
+}
+
+export interface DiningPreferences {
+  spiceLevel: number;
+  allergenNotes: string;
+  favoriteOccasion: "casual" | "date" | "celebration" | "business" | "family";
+  preferredBranchId: BranchId;
+  preferredServiceMode: ServiceMode;
+}
+
+export interface InvoiceProfile {
+  needsReceipt: boolean;
+  taxInvoice: boolean;
+  companyName: string;
+  taxId: string;
+  email: string;
+}
+
 interface UserState {
+  authStatus: "guest" | "member";
+  email: string;
+  memberSince: string;
   fullName: string;
   phone: string;
   addressLine: string;
@@ -46,6 +75,9 @@ interface UserState {
   city: string;
   notes: string;
   paymentMethod: "cash" | "card" | "promptpay";
+  notificationSettings: NotificationSettings;
+  preferences: DiningPreferences;
+  invoiceProfile: InvoiceProfile;
   savedAddresses: SavedAddress[];
   paymentProfiles: SavedPaymentMethod[];
   giftWallet: GiftWalletEntry[];
@@ -53,6 +85,11 @@ interface UserState {
   redeemedRewards: RedeemedRewardEntry[];
   activeAddressId: string;
   activePaymentProfileId: string;
+  signInMember: (payload: { fullName: string; email: string; phone?: string }) => void;
+  continueAsGuest: () => void;
+  updateNotificationSettings: (patch: Partial<NotificationSettings>) => void;
+  updatePreferences: (patch: Partial<DiningPreferences>) => void;
+  updateInvoiceProfile: (patch: Partial<InvoiceProfile>) => void;
   saveCheckoutProfile: (payload: {
     fullName: string;
     phone: string;
@@ -65,7 +102,12 @@ interface UserState {
   setActiveAddress: (id: string) => void;
   setActivePaymentProfile: (id: string) => void;
   addSavedAddress: (payload: Omit<SavedAddress, "id">) => void;
+  updateSavedAddress: (id: string, patch: Partial<Omit<SavedAddress, "id">>) => void;
+  removeSavedAddress: (id: string) => void;
+  setPrimaryAddress: (id: string) => void;
   addPaymentProfile: (payload: Omit<SavedPaymentMethod, "id">) => void;
+  removePaymentProfile: (id: string) => void;
+  setPrimaryPaymentProfile: (id: string) => void;
   addGiftWalletEntry: (payload: Omit<GiftWalletEntry, "id">) => void;
   redeemReward: (payload: {
     rewardId: string;
@@ -78,6 +120,9 @@ interface UserState {
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
+      authStatus: "guest",
+      email: "",
+      memberSince: "2024-11-12",
       fullName: "Siam Lux Guest",
       phone: "",
       addressLine: "",
@@ -85,6 +130,26 @@ export const useUserStore = create<UserState>()(
       city: "Bangkok",
       notes: "",
       paymentMethod: "promptpay",
+      notificationSettings: {
+        marketing: true,
+        orderUpdates: true,
+        reservationReminders: true,
+        loyaltyDigest: true,
+      },
+      preferences: {
+        spiceLevel: 3,
+        allergenNotes: "",
+        favoriteOccasion: "date",
+        preferredBranchId: "bangrak",
+        preferredServiceMode: "delivery",
+      },
+      invoiceProfile: {
+        needsReceipt: true,
+        taxInvoice: false,
+        companyName: "",
+        taxId: "",
+        email: "",
+      },
       savedAddresses: [
         {
           id: "address-home",
@@ -98,7 +163,7 @@ export const useUserStore = create<UserState>()(
         },
       ],
       paymentProfiles: [
-        { id: "payment-promptpay", label: "PromptPay", kind: "promptpay" },
+        { id: "payment-promptpay", label: "PromptPay", kind: "promptpay", isPrimary: true },
         { id: "payment-visa", label: "Visa ending 8842", kind: "card", last4: "8842" },
       ],
       giftWallet: [
@@ -121,6 +186,35 @@ export const useUserStore = create<UserState>()(
       redeemedRewards: [],
       activeAddressId: "address-home",
       activePaymentProfileId: "payment-promptpay",
+      signInMember: ({ fullName, email, phone }) =>
+        set((state) => ({
+          authStatus: "member",
+          fullName,
+          email,
+          phone: phone ?? state.phone,
+          memberSince: state.memberSince || "2024-11-12",
+          invoiceProfile: {
+            ...state.invoiceProfile,
+            email,
+          },
+        })),
+      continueAsGuest: () =>
+        set({
+          authStatus: "guest",
+          email: "",
+        }),
+      updateNotificationSettings: (patch) =>
+        set((state) => ({
+          notificationSettings: { ...state.notificationSettings, ...patch },
+        })),
+      updatePreferences: (patch) =>
+        set((state) => ({
+          preferences: { ...state.preferences, ...patch },
+        })),
+      updateInvoiceProfile: (patch) =>
+        set((state) => ({
+          invoiceProfile: { ...state.invoiceProfile, ...patch },
+        })),
       saveCheckoutProfile: (payload) =>
         set((state) => {
           const activeAddress = state.savedAddresses.find((item) => item.id === state.activeAddressId);
@@ -153,6 +247,10 @@ export const useUserStore = create<UserState>()(
                     isPrimary: true,
                   },
                 ],
+            invoiceProfile: {
+              ...state.invoiceProfile,
+              email: state.invoiceProfile.email || state.email,
+            },
           };
         }),
       setActiveAddress: (activeAddressId) => set({ activeAddressId }),
@@ -161,15 +259,75 @@ export const useUserStore = create<UserState>()(
         set((state) => ({
           savedAddresses: [
             ...state.savedAddresses,
-            { ...payload, id: `address-${Date.now()}-${state.savedAddresses.length}` },
+            {
+              ...payload,
+              id: `address-${Date.now()}-${state.savedAddresses.length}`,
+              isPrimary: payload.isPrimary ?? false,
+            },
           ],
+        })),
+      updateSavedAddress: (id, patch) =>
+        set((state) => ({
+          savedAddresses: state.savedAddresses.map((item) =>
+            item.id === id ? { ...item, ...patch } : item,
+          ),
+        })),
+      removeSavedAddress: (id) =>
+        set((state) => {
+          const nextAddresses = state.savedAddresses.filter((item) => item.id !== id);
+          const fallbackAddressId = nextAddresses[0]?.id ?? "";
+          const activeAddressId =
+            state.activeAddressId === id ? fallbackAddressId : state.activeAddressId;
+
+          return {
+            savedAddresses: nextAddresses.map((item, index) => ({
+              ...item,
+              isPrimary: activeAddressId ? item.id === activeAddressId : index === 0,
+            })),
+            activeAddressId,
+          };
+        }),
+      setPrimaryAddress: (id) =>
+        set((state) => ({
+          savedAddresses: state.savedAddresses.map((item) => ({
+            ...item,
+            isPrimary: item.id === id,
+          })),
+          activeAddressId: id,
         })),
       addPaymentProfile: (payload) =>
         set((state) => ({
           paymentProfiles: [
             ...state.paymentProfiles,
-            { ...payload, id: `payment-${Date.now()}-${state.paymentProfiles.length}` },
+            {
+              ...payload,
+              id: `payment-${Date.now()}-${state.paymentProfiles.length}`,
+              isPrimary: payload.isPrimary ?? false,
+            },
           ],
+        })),
+      removePaymentProfile: (id) =>
+        set((state) => {
+          const nextPayments = state.paymentProfiles.filter((item) => item.id !== id);
+          const fallbackPaymentId = nextPayments[0]?.id ?? "";
+          const activePaymentProfileId =
+            state.activePaymentProfileId === id ? fallbackPaymentId : state.activePaymentProfileId;
+
+          return {
+            paymentProfiles: nextPayments.map((item, index) => ({
+              ...item,
+              isPrimary: activePaymentProfileId ? item.id === activePaymentProfileId : index === 0,
+            })),
+            activePaymentProfileId,
+          };
+        }),
+      setPrimaryPaymentProfile: (id) =>
+        set((state) => ({
+          paymentProfiles: state.paymentProfiles.map((item) => ({
+            ...item,
+            isPrimary: item.id === id,
+          })),
+          activePaymentProfileId: id,
         })),
       addGiftWalletEntry: (payload) =>
         set((state) => ({

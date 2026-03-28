@@ -16,6 +16,7 @@ import { SeatMapVisual } from "@/components/reservation/seat-map-visual";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 import type { BranchId } from "@/lib/experience";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranches } from "@/lib/experience";
 import { useExperienceStore } from "@/store/experience-store";
@@ -460,6 +461,14 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
             };
             const reservation = waitlistMode ? joinWaitlist(payload) : createReservation(payload);
             setSubmitted(reservation);
+            trackEvent(waitlistMode ? "reservation_waitlist_submit" : "reservation_submit", {
+              locale,
+              branchId: values.branchId,
+              date: values.date,
+              timeSlot: values.timeSlot,
+              seating: values.seating,
+              guests: Number(values.guestCount),
+            });
             toast({
               title: waitlistMode ? liveText.waitlistSubmitted : experienceCopy.labels.reservationSubmitted,
               description: `${activeBranch.name} · ${values.date} · ${values.timeSlot}`,

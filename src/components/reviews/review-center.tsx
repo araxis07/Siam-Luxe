@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 import { getLocalizedDishes } from "@/lib/catalog";
 import { getExperienceCopy, getLocalizedDishReviews, getLocalizedTestimonials } from "@/lib/experience";
 import { useReviewStore } from "@/store/review-store";
@@ -202,6 +203,11 @@ export function ReviewCenter({ locale }: { locale: AppLocale }) {
                     body: values.body,
                     rating: Number(values.rating),
                     locale,
+                  });
+                  trackEvent("review_submit", {
+                    locale,
+                    dishId: values.dishId,
+                    rating: Number(values.rating),
                   });
                   toast({
                     title: text.formTitle,

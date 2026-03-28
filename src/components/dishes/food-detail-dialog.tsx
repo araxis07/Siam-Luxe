@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Share2, Star, Wine } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import type { AppLocale } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import type { LocalizedMenuDish, ToppingId } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,8 +15,10 @@ import { DietaryBadges } from "@/components/dishes/dietary-badges";
 import { DishStatusBadge } from "@/components/dishes/dish-status-badge";
 import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedDishReviews } from "@/lib/experience";
+import { getBeveragePairings, getSocialProof } from "@/lib/hospitality";
 import { useToast } from "@/hooks/use-toast";
 import { getDishStatus } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
@@ -42,8 +45,17 @@ export function FoodDetailDialog({
   const [quantity, setQuantity] = useState(1);
   const [selectedToppings, setSelectedToppings] = useState<ToppingId[]>([]);
   const reviews = getLocalizedDishReviews(locale, dish.id).slice(0, 2);
+  const pairings = getBeveragePairings(locale).filter((item) => item.dishIds.includes(dish.id)).slice(0, 2);
+  const socialProof = getSocialProof(locale, dish.id);
   const status = getDishStatus(locale, dish.id);
   const isSoldOut = status.id === "soldOut";
+  const extraText = {
+    th: { pairings: "จับคู่เครื่องดื่ม", share: "แชร์เมนู" },
+    en: { pairings: "Pairings", share: "Share dish" },
+    ja: { pairings: "ペアリング", share: "料理を共有" },
+    zh: { pairings: "饮品搭配", share: "分享菜品" },
+    ko: { pairings: "페어링", share: "메뉴 공유" },
+  } as const;
 
   const resetSelections = useEffectEvent(() => {
     setSpiceLevel(dish.baseSpice);
@@ -55,8 +67,9 @@ export function FoodDetailDialog({
     if (open) {
       resetSelections();
       pushDish(dish.id);
+      trackEvent("dish_modal_open", { dishId: dish.id, locale });
     }
-  }, [dish.id, open, pushDish]);
+  }, [dish.id, locale, open, pushDish]);
 
   const toppingTotal = useMemo(
     () =>
@@ -66,6 +79,36 @@ export function FoodDetailDialog({
       }, 0),
     [dish.availableToppings, selectedToppings],
   );
+
+  async function handleShare() {
+    const shareUrl =
+      typeof window !== "undefined" ? `${window.location.origin}/${locale}/menu#${dish.id}` : `/${locale}/menu#${dish.id}`;
+
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        await navigator.share({
+          title: dish.name,
+          text: dish.description,
+          url: shareUrl,
+        });
+      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+
+      trackEvent("dish_share", { dishId: dish.id, locale, source: "detail-modal" });
+      toast({
+        title: dish.name,
+        description: shareUrl,
+        tone: "success",
+      });
+    } catch {
+      toast({
+        title: dish.name,
+        description: shareUrl,
+        tone: "info",
+      });
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,6 +141,16 @@ export function FoodDetailDialog({
                 </div>
                 <DishStatusBadge dishId={dish.id} locale={locale} />
                 <FavoriteButton dishId={dish.id} locale={locale} className="ml-auto" />
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  aria-label={`${dish.name} ${extraText[locale].share}`}
+                  onClick={handleShare}
+                >
+                  <Share2 className="size-4" />
+                </Button>
               </div>
               <DialogTitle className="font-heading text-[2.1rem] leading-tight text-white sm:text-[2.35rem]">
                 {dish.name}
@@ -113,6 +166,9 @@ export function FoodDetailDialog({
                 <span>{t("premiumFinish")}</span>
               </div>
               <DietaryBadges dishId={dish.id} locale={locale} className="mt-4" />
+              <p className="mt-4 text-sm leading-7 text-[#d1c4b2]">
+                {socialProof.label} · {socialProof.todayOrders} · {socialProof.note}
+              </p>
             </DialogHeader>
 
             <div className="space-y-6 px-6 py-6">
@@ -224,6 +280,33 @@ export function FoodDetailDialog({
                   </div>
                 </section>
               ) : null}
+
+              {pairings.length > 0 ? (
+                <section className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="font-medium text-white">{extraText[locale].pairings}</h3>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                      render={<Link href="/pairings" locale={locale} />}
+                    >
+                      <Wine className="size-4" />
+                      {extraText[locale].pairings}
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    {pairings.map((pairing) => (
+                      <div key={pairing.id} className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                        <p className="text-white">{pairing.title}</p>
+                        <p className="mt-1 text-sm text-[#ecd8a0]">{pairing.beverage}</p>
+                        <p className="mt-3 text-sm leading-6 text-[#d4c7b5]">{pairing.body}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ) : null}
             </div>
 
             <div className="border-t border-white/8 bg-black/10 px-6 py-5">
@@ -271,6 +354,13 @@ export function FoodDetailDialog({
                           unitPrice: dish.price + toppingTotal,
                         });
                         openCart();
+                        trackEvent("add_to_cart", {
+                          dishId: dish.id,
+                          locale,
+                          quantity,
+                          spiceLevel,
+                          source: "detail-modal",
+                        });
                         toast({
                           title: t("addToCart"),
                           description: dish.name,

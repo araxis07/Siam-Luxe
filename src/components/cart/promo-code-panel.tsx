@@ -6,6 +6,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
 import { getDiscountValue, getExperienceCopy, getPromoOfferByCode, getPromoOffers } from "@/lib/experience";
 import { useExperienceStore } from "@/store/experience-store";
@@ -50,6 +51,7 @@ export function PromoCodePanel({
     setAppliedPromoCode(normalizedCode);
     setDraftValue(normalizedCode);
     setError("");
+    trackEvent("promo_apply", { code: normalizedCode, subtotal, locale });
     toast({
       title: copy.labels.promoApplied.replace("{code}", normalizedCode),
       description: localizedOffer?.description ?? copy.labels.promoTitle,
@@ -97,6 +99,7 @@ export function PromoCodePanel({
                 setAppliedPromoCode(null);
                 setDraftValue("");
                 setError("");
+                trackEvent("promo_clear", { locale });
                 toast({
                   title: copy.labels.clearPromo,
                   description: copy.labels.promoTitle,

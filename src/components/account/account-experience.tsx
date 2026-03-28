@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  BellRing,
   CalendarCheck2,
   Clock3,
   CreditCard,
@@ -9,7 +10,12 @@ import {
   Heart,
   MapPinned,
   PackageCheck,
+  ReceiptText,
+  Settings2,
+  ShieldCheck,
+  Store,
   Ticket,
+  Trash2,
 } from "lucide-react";
 
 import type { AppLocale } from "@/i18n/routing";
@@ -18,8 +24,10 @@ import { RecentlyViewedStrip } from "@/components/dishes/recently-viewed-strip";
 import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
 import { getRewardTierSnapshot } from "@/lib/guest-experience";
+import { getAuthPanel } from "@/lib/hospitality";
 import {
   getExperienceCopy,
   getFeatureLinks,
@@ -64,6 +72,29 @@ const accountText = {
     noReservations: "ยังไม่มีรายการจองใหม่",
     profileTitle: "ข้อมูลแขกหลัก",
     activePayment: "วิธีชำระที่เลือก",
+    memberTitle: "สถานะบัญชี",
+    guestMode: "โหมดแขก",
+    memberMode: "สมาชิก",
+    signIn: "จัดการการเข้าสู่ระบบ",
+    preferencesTitle: "รสนิยมที่บันทึกไว้",
+    notificationsSettings: "ค่าการแจ้งเตือน",
+    invoiceTitle: "ใบเสร็จและใบกำกับภาษี",
+    receiptEnabled: "ต้องการใบเสร็จ",
+    taxInvoice: "ขอใบกำกับภาษี",
+    defaultItem: "ตั้งเป็นค่าเริ่มต้น",
+    removeItem: "ลบรายการ",
+    addCalendar: "เพิ่มเข้า Calendar",
+    compareBranches: "เทียบสาขา",
+    pairings: "จับคู่เครื่องดื่ม",
+    trustCenter: "ศูนย์ความเชื่อมั่น",
+    policies: "นโยบาย",
+    marketing: "โปรโมชันและแคมเปญ",
+    orderUpdatesSetting: "อัปเดตสถานะออเดอร์",
+    reservationReminders: "เตือนการจอง",
+    loyaltyDigest: "สรุปสิทธิพิเศษ",
+    occasion: "โอกาสที่ชอบ",
+    spicePreference: "ระดับความเผ็ด",
+    allergenNotes: "หมายเหตุด้านแพ้อาหาร",
   },
   en: {
     noSavedAddress: "No saved address yet",
@@ -89,6 +120,29 @@ const accountText = {
     noReservations: "No new reservations yet",
     profileTitle: "Primary guest profile",
     activePayment: "Selected payment",
+    memberTitle: "Account status",
+    guestMode: "Guest mode",
+    memberMode: "Member",
+    signIn: "Manage sign-in",
+    preferencesTitle: "Saved dining preferences",
+    notificationsSettings: "Notification settings",
+    invoiceTitle: "Receipts & tax invoices",
+    receiptEnabled: "Receipt requested",
+    taxInvoice: "Request tax invoice",
+    defaultItem: "Set default",
+    removeItem: "Remove",
+    addCalendar: "Add to calendar",
+    compareBranches: "Compare branches",
+    pairings: "Beverage pairings",
+    trustCenter: "Trust center",
+    policies: "Policies",
+    marketing: "Promos and campaigns",
+    orderUpdatesSetting: "Order status updates",
+    reservationReminders: "Reservation reminders",
+    loyaltyDigest: "Loyalty digest",
+    occasion: "Favorite occasion",
+    spicePreference: "Spice preference",
+    allergenNotes: "Allergen notes",
   },
   ja: {
     noSavedAddress: "保存済み住所はまだありません",
@@ -114,6 +168,29 @@ const accountText = {
     noReservations: "新しい予約はまだありません",
     profileTitle: "メインプロフィール",
     activePayment: "選択中の支払い",
+    memberTitle: "アカウント状態",
+    guestMode: "ゲストモード",
+    memberMode: "会員",
+    signIn: "サインイン設定",
+    preferencesTitle: "保存済みの好み",
+    notificationsSettings: "通知設定",
+    invoiceTitle: "領収書と税務情報",
+    receiptEnabled: "領収書を希望",
+    taxInvoice: "税務書類を希望",
+    defaultItem: "既定にする",
+    removeItem: "削除",
+    addCalendar: "Calendar に追加",
+    compareBranches: "店舗比較",
+    pairings: "ペアリング",
+    trustCenter: "信頼センター",
+    policies: "ポリシー",
+    marketing: "プロモーション案内",
+    orderUpdatesSetting: "注文状況の更新",
+    reservationReminders: "予約リマインド",
+    loyaltyDigest: "特典ダイジェスト",
+    occasion: "よく使うシーン",
+    spicePreference: "辛さの好み",
+    allergenNotes: "アレルゲンメモ",
   },
   zh: {
     noSavedAddress: "尚未保存地址",
@@ -139,6 +216,29 @@ const accountText = {
     noReservations: "暂时没有新的预订",
     profileTitle: "主要客人资料",
     activePayment: "当前支付方式",
+    memberTitle: "账户状态",
+    guestMode: "游客模式",
+    memberMode: "会员",
+    signIn: "管理登录",
+    preferencesTitle: "已保存偏好",
+    notificationsSettings: "通知设置",
+    invoiceTitle: "收据与发票",
+    receiptEnabled: "需要收据",
+    taxInvoice: "申请税务发票",
+    defaultItem: "设为默认",
+    removeItem: "移除",
+    addCalendar: "加入 Calendar",
+    compareBranches: "门店对比",
+    pairings: "饮品搭配",
+    trustCenter: "信任中心",
+    policies: "政策说明",
+    marketing: "活动与优惠",
+    orderUpdatesSetting: "订单状态更新",
+    reservationReminders: "预订提醒",
+    loyaltyDigest: "会员摘要",
+    occasion: "偏好场合",
+    spicePreference: "辣度偏好",
+    allergenNotes: "过敏备注",
   },
   ko: {
     noSavedAddress: "저장된 주소가 아직 없습니다",
@@ -164,6 +264,29 @@ const accountText = {
     noReservations: "새 예약이 아직 없습니다",
     profileTitle: "대표 게스트 프로필",
     activePayment: "선택된 결제",
+    memberTitle: "계정 상태",
+    guestMode: "게스트 모드",
+    memberMode: "멤버",
+    signIn: "로그인 관리",
+    preferencesTitle: "저장된 취향",
+    notificationsSettings: "알림 설정",
+    invoiceTitle: "영수증 및 세금계산서",
+    receiptEnabled: "영수증 요청",
+    taxInvoice: "세금계산서 요청",
+    defaultItem: "기본으로 설정",
+    removeItem: "삭제",
+    addCalendar: "Calendar에 추가",
+    compareBranches: "지점 비교",
+    pairings: "페어링",
+    trustCenter: "트러스트 센터",
+    policies: "정책 안내",
+    marketing: "프로모션 및 캠페인",
+    orderUpdatesSetting: "주문 상태 업데이트",
+    reservationReminders: "예약 리마인드",
+    loyaltyDigest: "멤버십 다이제스트",
+    occasion: "선호 방문 목적",
+    spicePreference: "매운맛 선호",
+    allergenNotes: "알레르기 메모",
   },
 } as const;
 
@@ -176,10 +299,42 @@ function shiftTimeSlot(timeSlot: string) {
   return `${String(nextHours).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
 }
 
+function buildCalendarHref({
+  title,
+  date,
+  timeSlot,
+  description,
+}: {
+  title: string;
+  date: string;
+  timeSlot: string;
+  description: string;
+}) {
+  const start = `${date.replaceAll("-", "")}T${timeSlot.replace(":", "")}00`;
+  const [hours, minutes] = timeSlot.split(":").map(Number);
+  const endDate = new Date(`${date}T${timeSlot}:00`);
+  endDate.setHours(hours + 2, minutes, 0, 0);
+  const end = `${endDate.getFullYear()}${String(endDate.getMonth() + 1).padStart(2, "0")}${String(endDate.getDate()).padStart(2, "0")}T${String(endDate.getHours()).padStart(2, "0")}${String(endDate.getMinutes()).padStart(2, "0")}00`;
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "BEGIN:VEVENT",
+    `SUMMARY:${title}`,
+    `DESCRIPTION:${description}`,
+    `DTSTART:${start}`,
+    `DTEND:${end}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\n");
+
+  return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`;
+}
+
 export function AccountExperience({ locale }: { locale: AppLocale }) {
   const hydrated = useHydrated();
   const feature = getFeatureLinks(locale).find((item) => item.id === "account");
   const copy = getExperienceCopy(locale);
+  const authPanel = getAuthPanel(locale);
   const labels = accountText[locale];
   const { toast } = useToast();
 
@@ -187,11 +342,16 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
 
+  const authStatus = useUserStore((state) => state.authStatus);
+  const email = useUserStore((state) => state.email);
   const fullName = useUserStore((state) => state.fullName);
   const phone = useUserStore((state) => state.phone);
   const addressLine = useUserStore((state) => state.addressLine);
   const district = useUserStore((state) => state.district);
   const city = useUserStore((state) => state.city);
+  const notificationSettings = useUserStore((state) => state.notificationSettings);
+  const preferences = useUserStore((state) => state.preferences);
+  const invoiceProfile = useUserStore((state) => state.invoiceProfile);
   const savedAddresses = useUserStore((state) => state.savedAddresses);
   const paymentProfiles = useUserStore((state) => state.paymentProfiles);
   const giftWallet = useUserStore((state) => state.giftWallet);
@@ -201,8 +361,15 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const activePaymentProfileId = useUserStore((state) => state.activePaymentProfileId);
   const setActiveAddress = useUserStore((state) => state.setActiveAddress);
   const setActivePaymentProfile = useUserStore((state) => state.setActivePaymentProfile);
+  const updateNotificationSettings = useUserStore((state) => state.updateNotificationSettings);
+  const updatePreferences = useUserStore((state) => state.updatePreferences);
+  const updateInvoiceProfile = useUserStore((state) => state.updateInvoiceProfile);
   const addSavedAddress = useUserStore((state) => state.addSavedAddress);
+  const setPrimaryAddress = useUserStore((state) => state.setPrimaryAddress);
+  const removeSavedAddress = useUserStore((state) => state.removeSavedAddress);
   const addPaymentProfile = useUserStore((state) => state.addPaymentProfile);
+  const setPrimaryPaymentProfile = useUserStore((state) => state.setPrimaryPaymentProfile);
+  const removePaymentProfile = useUserStore((state) => state.removePaymentProfile);
 
   const reservations = useReservationStore((state) => state.reservations);
   const cancelReservation = useReservationStore((state) => state.cancelReservation);
@@ -225,6 +392,50 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
     `${left.date}T${left.timeSlot}`.localeCompare(`${right.date}T${right.timeSlot}`),
   );
   const displayName = normalizeSeedGuestName(fullName);
+  const occasionLabels = {
+    th: {
+      casual: "มื้อทั่วไป",
+      date: "เดท / ฉลองคู่",
+      celebration: "ฉลองโอกาสพิเศษ",
+      business: "รับรองลูกค้า",
+      family: "มื้อครอบครัว",
+    },
+    en: {
+      casual: "Casual dinner",
+      date: "Date night",
+      celebration: "Celebration",
+      business: "Business hosting",
+      family: "Family table",
+    },
+    ja: {
+      casual: "通常利用",
+      date: "デート",
+      celebration: "お祝い",
+      business: "接待",
+      family: "家族利用",
+    },
+    zh: {
+      casual: "日常用餐",
+      date: "约会晚餐",
+      celebration: "庆祝聚餐",
+      business: "商务接待",
+      family: "家庭聚餐",
+    },
+    ko: {
+      casual: "일반 식사",
+      date: "데이트",
+      celebration: "기념일",
+      business: "비즈니스 접대",
+      family: "가족 식사",
+    },
+  } as const;
+  const fallbackNotes = {
+    th: "ระบุแพ้อาหารถั่วและต้องการแยกอุปกรณ์จากอาหารทะเล",
+    en: "Peanut garnish avoided and shellfish handled separately where possible.",
+    ja: "ピーナッツの付け合わせを避け、甲殻類は可能な範囲で分けて調理します。",
+    zh: "避免花生配料，并尽量与贝壳类食材分开处理。",
+    ko: "땅콩 가니시는 제외하고 해산물은 가능한 범위에서 분리 조리합니다.",
+  } as const;
   const paymentKindLabels = {
     th: { cash: "เงินสด", card: "บัตรเครดิต / เดบิต", promptpay: "PromptPay" },
     en: { cash: "Cash", card: "Credit / Debit Card", promptpay: "PromptPay" },
@@ -237,6 +448,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
     if (kind === "cash") return paymentKindLabels[locale].cash;
     return paymentKindLabels[locale].promptpay;
   };
+  const accountStatusLabel = authStatus === "member" ? labels.memberMode : labels.guestMode;
 
   return (
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
@@ -273,6 +485,148 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                   <p className="mt-3 text-sm text-[#ecd8a0]">
                     {labels.activePayment}: {activePayment ? getLocalizedPaymentLabel(locale, activePayment) : "—"}
                   </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-2">
+              <div className="lux-panel-soft rounded-[2rem] p-6">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                    <ShieldCheck className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.memberTitle}</p>
+                    <h2 className="mt-1 font-heading text-[1.9rem] leading-tight text-white">{accountStatusLabel}</h2>
+                  </div>
+                </div>
+                <p className="mt-4 text-sm leading-7 text-[#d1c4b2]">{authPanel.body}</p>
+                <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/15 p-4">
+                  <p className="text-white">{email || "guest@siamlux.test"}</p>
+                  <p className="mt-1 text-sm text-[#bcae9b]">{authPanel.highlights[0]?.value}</p>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Button
+                    type="button"
+                    className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    render={<Link href="/auth" locale={locale} />}
+                  >
+                    {labels.signIn}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                    render={<Link href="/policies" locale={locale} />}
+                  >
+                    {labels.policies}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="lux-panel-soft rounded-[2rem] p-6">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                    <Settings2 className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.preferencesTitle}</p>
+                    <h2 className="mt-1 font-heading text-[1.9rem] leading-tight text-white">
+                      {occasionLabels[locale][preferences.favoriteOccasion]}
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-5 space-y-4">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.spicePreference}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {Array.from({ length: 6 }, (_, level) => (
+                        <Button
+                          key={level}
+                          type="button"
+                          size="sm"
+                          variant={preferences.spiceLevel === level ? "default" : "outline"}
+                          className={
+                            preferences.spiceLevel === level
+                              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          }
+                          onClick={() => {
+                            updatePreferences({ spiceLevel: level });
+                            trackEvent("preference_spice_update", { level, locale });
+                          }}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.occasion}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {(Object.entries(occasionLabels[locale]) as Array<
+                        [keyof typeof occasionLabels.en, string]
+                      >).map(([key, value]) => (
+                        <Button
+                          key={key}
+                          type="button"
+                          size="sm"
+                          variant={preferences.favoriteOccasion === key ? "default" : "outline"}
+                          className={
+                            preferences.favoriteOccasion === key
+                              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          }
+                          onClick={() => {
+                            updatePreferences({ favoriteOccasion: key });
+                            trackEvent("preference_occasion_update", { occasion: key, locale });
+                          }}
+                        >
+                          {value}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.allergenNotes}</p>
+                    <p className="mt-3 text-sm text-[#d1c4b2]">
+                      {preferences.allergenNotes || fallbackNotes[locale]}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        onClick={() => {
+                          updatePreferences({
+                            allergenNotes:
+                              preferences.allergenNotes.length > 0
+                                ? ""
+                                : fallbackNotes[locale],
+                          });
+                          toast({
+                            title: labels.preferencesTitle,
+                            description: labels.allergenNotes,
+                            tone: "success",
+                          });
+                        }}
+                      >
+                        {preferences.allergenNotes ? labels.removeItem : labels.defaultItem}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        render={<Link href="/trust" locale={locale} />}
+                      >
+                        {labels.trustCenter}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -348,26 +702,51 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                             <p className="mt-2 text-sm text-[#d1c4b2]">{item.addressLine}</p>
                             <p className="mt-1 text-sm text-[#bcae9b]">{item.district} {item.city}</p>
                           </div>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={isActive ? "default" : "outline"}
-                            className={
-                              isActive
-                                ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
-                                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-                            }
-                            onClick={() => {
-                              setActiveAddress(item.id);
-                              toast({
-                                title: labels.addressesTitle,
-                                description: item.label,
-                                tone: "success",
-                              });
-                            }}
-                          >
-                            {isActive ? labels.active : labels.useThis}
-                          </Button>
+                          <div className="flex flex-col items-end gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={isActive ? "default" : "outline"}
+                              className={
+                                isActive
+                                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                              }
+                              onClick={() => {
+                                setActiveAddress(item.id);
+                                toast({
+                                  title: labels.addressesTitle,
+                                  description: item.label,
+                                  tone: "success",
+                                });
+                              }}
+                            >
+                              {isActive ? labels.active : labels.useThis}
+                            </Button>
+                            <div className="flex flex-wrap justify-end gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                onClick={() => setPrimaryAddress(item.id)}
+                              >
+                                {item.isPrimary ? labels.active : labels.defaultItem}
+                              </Button>
+                              {savedAddresses.length > 1 ? (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                  onClick={() => removeSavedAddress(item.id)}
+                                >
+                                  <Trash2 className="size-4" />
+                                  {labels.removeItem}
+                                </Button>
+                              ) : null}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
@@ -415,26 +794,51 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                               <p className="mt-1 text-sm text-[#bcae9b]">{getPaymentKindLabel(item.kind)}</p>
                             </div>
                           </div>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant={isActive ? "default" : "outline"}
-                            className={
-                              isActive
-                                ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
-                                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-                            }
-                            onClick={() => {
-                              setActivePaymentProfile(item.id);
-                              toast({
-                                    title: labels.paymentsTitle,
-                                    description: getLocalizedPaymentLabel(locale, item),
-                                    tone: "success",
-                                  });
-                                }}
-                          >
-                            {isActive ? labels.active : labels.useThis}
-                          </Button>
+                          <div className="flex flex-col items-end gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={isActive ? "default" : "outline"}
+                              className={
+                                isActive
+                                  ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                                  : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                              }
+                              onClick={() => {
+                                setActivePaymentProfile(item.id);
+                                toast({
+                                  title: labels.paymentsTitle,
+                                  description: getLocalizedPaymentLabel(locale, item),
+                                  tone: "success",
+                                });
+                              }}
+                            >
+                              {isActive ? labels.active : labels.useThis}
+                            </Button>
+                            <div className="flex flex-wrap justify-end gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                onClick={() => setPrimaryPaymentProfile(item.id)}
+                              >
+                                {item.isPrimary ? labels.active : labels.defaultItem}
+                              </Button>
+                              {paymentProfiles.length > 1 ? (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                  onClick={() => removePaymentProfile(item.id)}
+                                >
+                                  <Trash2 className="size-4" />
+                                  {labels.removeItem}
+                                </Button>
+                              ) : null}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
@@ -545,6 +949,28 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                                 size="sm"
                                 variant="outline"
                                 className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                render={
+                                  <a
+                                    href={buildCalendarHref({
+                                      title: reservationBranch.name,
+                                      date: reservation.date,
+                                      timeSlot: reservation.timeSlot,
+                                      description: reservation.notes || reservationBranch.neighborhood,
+                                    })}
+                                    download={`${reservation.id}.ics`}
+                                  />
+                                }
+                                onClick={() => trackEvent("reservation_add_calendar", { reservationId: reservation.id, locale })}
+                              >
+                                {labels.addCalendar}
+                              </Button>
+                            ) : null}
+                            {reservation.status !== "cancelled" ? (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                                 onClick={() => {
                                   updateReservation(reservation.id, { timeSlot: shiftTimeSlot(reservation.timeSlot) });
                                   toast({
@@ -635,6 +1061,112 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
               </div>
             </div>
 
+            <div className="grid gap-6 xl:grid-cols-2">
+              <div className="lux-panel-soft rounded-[2rem] p-6">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                    <ReceiptText className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.invoiceTitle}</p>
+                    <h2 className="mt-1 font-heading text-[1.9rem] leading-tight text-white">
+                      {invoiceProfile.needsReceipt ? labels.receiptEnabled : labels.guestMode}
+                    </h2>
+                  </div>
+                </div>
+                <div className="mt-5 space-y-3">
+                  <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                    <p className="text-white">{invoiceProfile.email || email || "billing@siamlux.test"}</p>
+                    <p className="mt-1 text-sm text-[#bcae9b]">
+                      {invoiceProfile.taxInvoice
+                        ? invoiceProfile.companyName || "Siam Lux Hospitality Co."
+                        : labels.receiptEnabled}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={invoiceProfile.needsReceipt ? "default" : "outline"}
+                      className={
+                        invoiceProfile.needsReceipt
+                          ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                          : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                      }
+                      onClick={() => updateInvoiceProfile({ needsReceipt: !invoiceProfile.needsReceipt })}
+                    >
+                      {labels.receiptEnabled}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={invoiceProfile.taxInvoice ? "default" : "outline"}
+                      className={
+                        invoiceProfile.taxInvoice
+                          ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                          : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                      }
+                      onClick={() =>
+                        updateInvoiceProfile({
+                          taxInvoice: !invoiceProfile.taxInvoice,
+                          companyName: invoiceProfile.companyName || "Siam Lux Hospitality Co.",
+                          taxId: invoiceProfile.taxId || "0105559001234",
+                          email: invoiceProfile.email || email || "billing@siamlux.test",
+                        })
+                      }
+                    >
+                      {labels.taxInvoice}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lux-panel-soft rounded-[2rem] p-6">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                    <BellRing className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{labels.notificationsSettings}</p>
+                    <h2 className="mt-1 font-heading text-[1.9rem] leading-tight text-white">{notifications.length}</h2>
+                  </div>
+                </div>
+                <div className="mt-5 space-y-3">
+                  {[
+                    { key: "marketing", label: labels.marketing },
+                    { key: "orderUpdates", label: labels.orderUpdatesSetting },
+                    { key: "reservationReminders", label: labels.reservationReminders },
+                    { key: "loyaltyDigest", label: labels.loyaltyDigest },
+                  ].map((item) => {
+                    const isActive = notificationSettings[item.key as keyof typeof notificationSettings];
+
+                    return (
+                      <div key={item.key} className="flex items-center justify-between gap-3 rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
+                        <span className="text-white">{item.label}</span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={isActive ? "default" : "outline"}
+                          className={
+                            isActive
+                              ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                              : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          }
+                          onClick={() =>
+                            updateNotificationSettings({
+                              [item.key]: !isActive,
+                            } as Partial<typeof notificationSettings>)
+                          }
+                        >
+                          {isActive ? labels.active : labels.useThis}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
             <div className="lux-panel-soft rounded-[2rem] p-6 sm:p-8">
               <div className="flex items-center gap-3">
                 <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
@@ -690,6 +1222,24 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                 >
                   <MapPinned className="size-4" />
                   {copy.labels.reviewsTitle}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  render={<Link href="/compare-branches" locale={locale} />}
+                >
+                  <Store className="size-4" />
+                  {labels.compareBranches}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  render={<Link href="/pairings" locale={locale} />}
+                >
+                  <Crown className="size-4" />
+                  {labels.pairings}
                 </Button>
               </div>
             </div>

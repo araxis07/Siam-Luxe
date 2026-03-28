@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLanguageStore } from "@/store/language-store";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const t = useTranslations("language");
   const locale = useLocale() as AppLocale;
   const router = useRouter();
@@ -31,7 +31,9 @@ export function LanguageSwitcher() {
       <SelectTrigger
         size="sm"
         aria-label={t("label")}
-        className="glass-chip h-10 w-[132px] rounded-full border-white/10 bg-white/5 pl-3 text-white hover:bg-white/8"
+        className={`glass-chip rounded-full border-white/10 bg-white/5 pl-3 text-white hover:bg-white/8 ${
+          compact ? "h-10 w-[120px]" : "h-10 w-[132px]"
+        }`}
       >
         <Globe2 className="size-4 text-[#d6b26a]" />
         <SelectValue />

@@ -98,14 +98,6 @@ export interface RewardTierSnapshot {
   pointsToNext: number;
 }
 
-const localeMap: Record<AppLocale, string> = {
-  th: "th-TH",
-  en: "en-US",
-  ja: "ja-JP",
-  zh: "zh-CN",
-  ko: "ko-KR",
-};
-
 const calendarLabels: Record<AppLocale, { headline: Record<ReservationDemand, string>; note: Record<ReservationDemand, string> }> = {
   th: {
     headline: {
@@ -1117,6 +1109,14 @@ const trackingMapText = {
     completed: "완료",
   },
 } as const;
+
+const localeMap: Record<AppLocale, string> = {
+  th: "th-TH",
+  en: "en-US",
+  ja: "ja-JP",
+  zh: "zh-CN",
+  ko: "ko-KR",
+};
 
 function formatShortDate(locale: AppLocale, date: string) {
   return new Intl.DateTimeFormat(localeMap[locale], {

@@ -6,13 +6,13 @@ import { getReservationCalendar } from "@/lib/guest-experience";
 
 const panelText = {
   th: {
-    title: "Reservation Calendar Pro",
+    title: "ปฏิทินการจอง",
     open: "โล่ง",
     steady: "เริ่มแน่น",
     peak: "พีค",
   },
   en: {
-    title: "Reservation Calendar Pro",
+    title: "Reservation calendar",
     open: "Open",
     steady: "Steady",
     peak: "Peak",

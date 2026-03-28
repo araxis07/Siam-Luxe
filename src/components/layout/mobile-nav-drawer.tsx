@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranch } from "@/lib/experience";
 import { getUiText } from "@/lib/ui-text";
@@ -54,10 +53,55 @@ const primaryLinks = {
   ],
 } as const;
 
+const serviceLinks = {
+  th: [
+    { href: "/auth", label: "เข้าสู่ระบบ" },
+    { href: "/compare-branches", label: "เทียบสาขา" },
+    { href: "/pairings", label: "จับคู่เครื่องดื่ม" },
+    { href: "/policies", label: "นโยบาย" },
+    { href: "/trust", label: "ศูนย์ความเชื่อมั่น" },
+  ],
+  en: [
+    { href: "/auth", label: "Sign in" },
+    { href: "/compare-branches", label: "Compare branches" },
+    { href: "/pairings", label: "Pairings" },
+    { href: "/policies", label: "Policies" },
+    { href: "/trust", label: "Trust center" },
+  ],
+  ja: [
+    { href: "/auth", label: "サインイン" },
+    { href: "/compare-branches", label: "店舗比較" },
+    { href: "/pairings", label: "ペアリング" },
+    { href: "/policies", label: "ポリシー" },
+    { href: "/trust", label: "信頼センター" },
+  ],
+  zh: [
+    { href: "/auth", label: "登录" },
+    { href: "/compare-branches", label: "门店对比" },
+    { href: "/pairings", label: "饮品搭配" },
+    { href: "/policies", label: "政策说明" },
+    { href: "/trust", label: "信任中心" },
+  ],
+  ko: [
+    { href: "/auth", label: "로그인" },
+    { href: "/compare-branches", label: "지점 비교" },
+    { href: "/pairings", label: "페어링" },
+    { href: "/policies", label: "정책 안내" },
+    { href: "/trust", label: "트러스트 센터" },
+  ],
+} as const;
+
 export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
   const [open, setOpen] = useState(false);
   const copy = getExperienceCopy(locale);
   const uiText = getUiText(locale);
+  const sectionLabel = {
+    th: "บริการเพิ่มเติม",
+    en: "More services",
+    ja: "追加サービス",
+    zh: "更多服务",
+    ko: "추가 서비스",
+  } as const;
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
   const branch = getLocalizedBranch(locale, selectedBranchId);
@@ -65,16 +109,14 @@ export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
 
   return (
     <>
-      <Button
+      <button
         type="button"
-        variant="outline"
-        size="icon-sm"
         aria-label={uiText.openNavigation}
-        className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10 md:hidden"
+        className="inline-flex size-7 shrink-0 items-center justify-center rounded-[min(var(--radius-md),12px)] border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 lg:hidden"
         onClick={() => setOpen(true)}
       >
         <Menu className="size-4.5" />
-      </Button>
+      </button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="left"
@@ -119,6 +161,25 @@ export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
                     onClick={() => setOpen(false)}
                   >
                     {item.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">
+                {sectionLabel[locale]}
+              </p>
+              <div className="grid gap-2">
+                {serviceLinks[locale].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    locale={locale}
+                    className="rounded-[1.2rem] border border-white/10 bg-black/20 px-4 py-3 text-[#d7cab8] transition-colors hover:bg-white/8 hover:text-white"
+                    onClick={() => setOpen(false)}
+                  >
+                    {item.label}
                   </Link>
                 ))}
               </div>

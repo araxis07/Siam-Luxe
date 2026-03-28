@@ -11,26 +11,31 @@ const contactText = {
     body: "ทีมบริการของร้านจะช่วยแนะนำสาขาที่เหมาะกับการนั่งทาน รับเอง หรือจัดส่งตามพื้นที่ของคุณ",
     branchStory: "ดูรายละเอียดสาขา",
     privateDining: "จัดเลี้ยง / ห้องส่วนตัว",
+    compareBranches: "เทียบสาขา",
   },
   en: {
     body: "House service can guide guests to the best branch for dine-in, pickup, or delivery-ready ordering.",
     branchStory: "View branch details",
     privateDining: "Private dining inquiry",
+    compareBranches: "Compare branches",
   },
   ja: {
     body: "店舗サービスチームが、来店、受取、配送に最適な店舗選びを案内します。",
     branchStory: "店舗詳細を見る",
     privateDining: "個室・イベント相談",
+    compareBranches: "店舗比較",
   },
   zh: {
     body: "门店服务团队会协助客人选择最适合堂食、自取或配送的门店。",
     branchStory: "查看门店详情",
     privateDining: "包厢 / 宴会咨询",
+    compareBranches: "门店对比",
   },
   ko: {
     body: "매장 서비스 팀이 식사, 픽업, 배달에 가장 적합한 지점을 안내합니다.",
     branchStory: "지점 상세 보기",
     privateDining: "프라이빗 다이닝 문의",
+    compareBranches: "지점 비교",
   },
 } as const;
 
@@ -138,6 +143,14 @@ export function ContactPage({ locale }: { locale: AppLocale }) {
                 render={<Link href="/private-dining" locale={locale} />}
               >
                 {contactText[locale].privateDining}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                render={<Link href="/compare-branches" locale={locale} />}
+              >
+                {contactText[locale].compareBranches}
               </Button>
             </div>
           </div>

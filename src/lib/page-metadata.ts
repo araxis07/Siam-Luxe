@@ -11,6 +11,7 @@ export type PageMetadataKey =
   | "reservation"
   | "tracking"
   | "reviews"
+  | "auth"
   | "giftCards"
   | "rewards"
   | "buildSet"
@@ -18,8 +19,12 @@ export type PageMetadataKey =
   | "specials"
   | "heritage"
   | "account"
+  | "compareBranches"
+  | "pairings"
   | "contact"
-  | "help";
+  | "help"
+  | "policies"
+  | "trust";
 
 const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: LocalizedText }> = {
   home: {
@@ -100,6 +105,22 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ja: "既存レビューの閲覧と新規投稿を両立したレビュー体験です。",
       zh: "查看菜品点评并通过精致的前端流程提交新评价。",
       ko: "기존 리뷰 열람과 새 후기 제출을 함께 제공하는 리뷰 경험입니다.",
+    },
+  },
+  auth: {
+    title: {
+      th: "เข้าสู่ระบบและโหมดแขก | Siam Lux",
+      en: "Sign In & Guest Mode | Siam Lux",
+      ja: "サインインとゲストモード | Siam Lux",
+      zh: "登录与游客模式 | Siam Lux",
+      ko: "로그인 및 게스트 모드 | Siam Lux",
+    },
+    description: {
+      th: "สลับระหว่าง guest checkout และ member-ready account พร้อมบันทึกสิทธิ์ ที่อยู่ และการแจ้งเตือน",
+      en: "Switch between guest checkout and a member-ready account with saved rewards, addresses, and preferences.",
+      ja: "ゲスト購入と会員アカウントを切り替え、住所や特典、設定を管理できます。",
+      zh: "在游客结账与会员账户之间切换，并管理地址、奖励与偏好设置。",
+      ko: "게스트 체크아웃과 멤버 계정을 전환하며 주소, 리워드, 선호 설정을 관리합니다.",
     },
   },
   giftCards: {
@@ -214,6 +235,38 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "주소, 결제, 리워드, 예약, 주문 이력을 하나의 대시보드에서 관리합니다.",
     },
   },
+  compareBranches: {
+    title: {
+      th: "เปรียบเทียบสาขา | Siam Lux",
+      en: "Compare Branches | Siam Lux",
+      ja: "店舗比較 | Siam Lux",
+      zh: "门店对比 | Siam Lux",
+      ko: "지점 비교 | Siam Lux",
+    },
+    description: {
+      th: "เทียบจุดเด่นของแต่ละสาขา ทั้งห้องส่วนตัว รับเอง เดลิเวอรี และบรรยากาศที่เหมาะกับแต่ละโอกาส",
+      en: "Compare branch strengths across hosting, pickup, delivery, private dining, and different guest occasions.",
+      ja: "店舗ごとの強みを、接待、受取、配送、個室、利用シーンごとに比較できます。",
+      zh: "从招待、自取、配送、包厢与不同场景角度对比分店差异。",
+      ko: "호스팅, 픽업, 배달, 프라이빗 다이닝, 방문 목적별로 지점 강점을 비교합니다.",
+    },
+  },
+  pairings: {
+    title: {
+      th: "เครื่องดื่มจับคู่ | Siam Lux",
+      en: "Beverage Pairings | Siam Lux",
+      ja: "ペアリング | Siam Lux",
+      zh: "饮品搭配 | Siam Lux",
+      ko: "음료 페어링 | Siam Lux",
+    },
+    description: {
+      th: "ดูการจับคู่เครื่องดื่มกับเมนูไทยเพื่อเพิ่มประสบการณ์ร้านให้สมบูรณ์และพรีเมียมขึ้น",
+      en: "Explore beverage pairings that elevate Thai dishes and complete the premium house experience.",
+      ja: "料理体験を引き上げる飲み物ペアリングをまとめたページです。",
+      zh: "查看提升泰式菜品体验的饮品搭配建议。",
+      ko: "태국 요리 경험을 한층 끌어올리는 음료 페어링을 소개합니다.",
+    },
+  },
   contact: {
     title: {
       th: "สาขาและเวลาพร้อมให้บริการ | Siam Lux",
@@ -244,6 +297,38 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ja: "アレルゲン、受取、予約、クーポン、注文導線に関する答えをまとめています。",
       zh: "集中整理过敏原、自取、预订、优惠码与点餐流程的常见解答。",
       ko: "알레르기, 픽업, 예약, 프로모 코드, 주문 흐름에 대한 답변을 모았습니다.",
+    },
+  },
+  policies: {
+    title: {
+      th: "นโยบายการใช้งาน | Siam Lux",
+      en: "Policies | Siam Lux",
+      ja: "ポリシー | Siam Lux",
+      zh: "政策说明 | Siam Lux",
+      ko: "정책 안내 | Siam Lux",
+    },
+    description: {
+      th: "รวม privacy, terms และคำอธิบายการเก็บสถานะบนอุปกรณ์สำหรับเว็บร้านอาหารที่พร้อม production มากขึ้น",
+      en: "A clear legal hub for privacy, terms, and device storage guidance across the restaurant frontend.",
+      ja: "プライバシー、利用規約、端末保存に関する案内をまとめた法務ページです。",
+      zh: "集中展示隐私、条款与设备存储说明的法律页面。",
+      ko: "개인정보, 이용약관, 기기 저장소 안내를 모아 둔 정책 허브입니다.",
+    },
+  },
+  trust: {
+    title: {
+      th: "ศูนย์ความเชื่อมั่น | Siam Lux",
+      en: "Trust Center | Siam Lux",
+      ja: "信頼センター | Siam Lux",
+      zh: "信任中心 | Siam Lux",
+      ko: "트러스트 센터 | Siam Lux",
+    },
+    description: {
+      th: "รวมนโยบายแพ้อาหาร เดลิเวอรี รับเอง การยกเลิก การจอง และใบเสร็จในหน้าที่อ่านง่าย",
+      en: "A trust hub for allergens, delivery, pickup, cancellations, reservations, and receipt guidance.",
+      ja: "アレルゲン、配送、受取、返金、予約、領収書に関する案内をまとめています。",
+      zh: "汇总过敏原、配送、自取、取消、预订与收据说明的信任中心。",
+      ko: "알레르기, 배달, 픽업, 취소, 예약, 영수증 안내를 모아 둔 신뢰 허브입니다.",
     },
   },
 };

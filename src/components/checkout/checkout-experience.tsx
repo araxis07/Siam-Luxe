@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useTransition } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ReceiptText, ShieldCheck, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { AppLocale } from "@/i18n/routing";
@@ -20,9 +20,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/lib/analytics";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
+import { getAuthPanel } from "@/lib/hospitality";
 import {
   getLocalizedAddressLabel,
   getLocalizedPaymentLabel,
@@ -40,6 +42,17 @@ const checkoutEnhancementText = {
     apply: "ใช้ข้อมูลนี้",
     walletTitle: "เครดิตในกระเป๋า",
     walletEntries: "เครดิตในกระเป๋า {count} รายการ",
+    accountMode: "โหมด checkout",
+    member: "สมาชิก",
+    guest: "แขก",
+    signIn: "เข้าสู่ระบบ",
+    authBody: "สลับเป็นสมาชิกเพื่อใช้ที่อยู่ สิทธิ์สะสมแต้ม และใบเสร็จที่บันทึกไว้",
+    invoiceTitle: "ใบเสร็จ / ใบกำกับภาษี",
+    receiptEnabled: "ขอใบเสร็จ",
+    taxInvoice: "ขอใบกำกับภาษี",
+    companyName: "ชื่อบริษัท",
+    taxId: "เลขผู้เสียภาษี",
+    invoiceEmail: "อีเมลสำหรับเอกสาร",
   },
   en: {
     savedAddresses: "Saved addresses",
@@ -48,6 +61,17 @@ const checkoutEnhancementText = {
     apply: "Apply",
     walletTitle: "Wallet credits",
     walletEntries: "{count} wallet entries",
+    accountMode: "Checkout mode",
+    member: "Member",
+    guest: "Guest",
+    signIn: "Sign in",
+    authBody: "Switch into member mode to reuse saved addresses, rewards, and receipt details.",
+    invoiceTitle: "Receipt / tax invoice",
+    receiptEnabled: "Request receipt",
+    taxInvoice: "Request tax invoice",
+    companyName: "Company name",
+    taxId: "Tax ID",
+    invoiceEmail: "Billing email",
   },
   ja: {
     savedAddresses: "保存済み住所",
@@ -56,6 +80,17 @@ const checkoutEnhancementText = {
     apply: "使う",
     walletTitle: "ウォレット残高",
     walletEntries: "ウォレット {count} 件",
+    accountMode: "checkout モード",
+    member: "会員",
+    guest: "ゲスト",
+    signIn: "サインイン",
+    authBody: "会員モードに切り替えると保存済み住所、特典、領収書情報を再利用できます。",
+    invoiceTitle: "領収書 / 税務書類",
+    receiptEnabled: "領収書を希望",
+    taxInvoice: "税務書類を希望",
+    companyName: "会社名",
+    taxId: "税番号",
+    invoiceEmail: "請求先メール",
   },
   zh: {
     savedAddresses: "已保存地址",
@@ -64,6 +99,17 @@ const checkoutEnhancementText = {
     apply: "使用此项",
     walletTitle: "钱包余额",
     walletEntries: "钱包项目 {count} 条",
+    accountMode: "结账模式",
+    member: "会员",
+    guest: "游客",
+    signIn: "登录",
+    authBody: "切换成会员模式后，可复用地址、积分与收据资料。",
+    invoiceTitle: "收据 / 税务发票",
+    receiptEnabled: "申请收据",
+    taxInvoice: "申请税务发票",
+    companyName: "公司名称",
+    taxId: "税号",
+    invoiceEmail: "账单邮箱",
   },
   ko: {
     savedAddresses: "저장된 주소",
@@ -72,6 +118,17 @@ const checkoutEnhancementText = {
     apply: "적용",
     walletTitle: "월렛 잔액",
     walletEntries: "월렛 항목 {count}개",
+    accountMode: "체크아웃 모드",
+    member: "멤버",
+    guest: "게스트",
+    signIn: "로그인",
+    authBody: "멤버 모드로 전환하면 저장된 주소, 리워드, 영수증 정보를 재사용할 수 있습니다.",
+    invoiceTitle: "영수증 / 세금계산서",
+    receiptEnabled: "영수증 요청",
+    taxInvoice: "세금계산서 요청",
+    companyName: "회사명",
+    taxId: "사업자 번호",
+    invoiceEmail: "청구 이메일",
   },
 } as const;
 
@@ -100,12 +157,15 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const [isPending, startOrderTransition] = useTransition();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const experienceCopy = getExperienceCopy(locale);
+  const authPanel = getAuthPanel(locale);
   const { toast } = useToast();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
   const appliedPromoCode = useExperienceStore((state) => state.appliedPromoCode);
+  const authStatus = useUserStore((state) => state.authStatus);
+  const email = useUserStore((state) => state.email);
   const fullName = useUserStore((state) => state.fullName);
   const phone = useUserStore((state) => state.phone);
   const addressLine = useUserStore((state) => state.addressLine);
@@ -113,6 +173,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const city = useUserStore((state) => state.city);
   const notes = useUserStore((state) => state.notes);
   const paymentMethod = useUserStore((state) => state.paymentMethod);
+  const invoiceProfile = useUserStore((state) => state.invoiceProfile);
   const savedAddresses = useUserStore((state) => state.savedAddresses);
   const paymentProfiles = useUserStore((state) => state.paymentProfiles);
   const giftWallet = useUserStore((state) => state.giftWallet);
@@ -121,6 +182,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const setActiveAddress = useUserStore((state) => state.setActiveAddress);
   const setActivePaymentProfile = useUserStore((state) => state.setActivePaymentProfile);
   const saveCheckoutProfile = useUserStore((state) => state.saveCheckoutProfile);
+  const updateInvoiceProfile = useUserStore((state) => state.updateInvoiceProfile);
   const text = checkoutEnhancementText[locale];
   const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
   const activePaymentProfile = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
@@ -248,6 +310,77 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
               {experienceCopy.serviceModes[serviceMode]} · {branch.neighborhood}
             </p>
           </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className="rounded-[1.6rem] border border-white/10 bg-black/15 p-4">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex size-11 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                  <ShieldCheck className="size-5" />
+                </div>
+                <div>
+                  <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{text.accountMode}</p>
+                  <p className="mt-1 text-white">{authStatus === "member" ? text.member : text.guest}</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-7 text-[#d1c4b2]">{text.authBody}</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  render={<Link href="/auth" locale={locale} />}
+                >
+                  <UserRound className="size-4" />
+                  {text.signIn}
+                </Button>
+                {authStatus === "member" ? (
+                  <span className="rounded-full border border-[#d6b26a]/20 bg-[#d6b26a]/10 px-3 py-2 text-sm text-[#ecd8a0]">
+                    {email || authPanel.highlights[0]?.value}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[1.6rem] border border-white/10 bg-black/15 p-4">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex size-11 items-center justify-center rounded-2xl bg-[#d6b26a]/12 text-[#ecd8a0]">
+                  <ReceiptText className="size-5" />
+                </div>
+                <div>
+                  <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{text.invoiceTitle}</p>
+                  <p className="mt-1 text-white">{invoiceProfile.email || email || "billing@siamlux.test"}</p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={invoiceProfile.needsReceipt ? "default" : "outline"}
+                  className={
+                    invoiceProfile.needsReceipt
+                      ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                      : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  }
+                  onClick={() => updateInvoiceProfile({ needsReceipt: !invoiceProfile.needsReceipt })}
+                >
+                  {text.receiptEnabled}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={invoiceProfile.taxInvoice ? "default" : "outline"}
+                  className={
+                    invoiceProfile.taxInvoice
+                      ? "rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                      : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  }
+                  onClick={() => updateInvoiceProfile({ taxInvoice: !invoiceProfile.taxInvoice })}
+                >
+                  {text.taxInvoice}
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <form
@@ -263,8 +396,22 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                 notes: values.notes ?? "",
                 paymentMethod: values.paymentMethod,
               });
+              updateInvoiceProfile({
+                email: invoiceProfile.email || email,
+              });
               clearCart();
               setOrderPlaced(true);
+              trackEvent("checkout_submit", {
+                locale,
+                itemCount: items.length,
+                total: totals.total,
+                authStatus,
+                serviceMode,
+                branchId: selectedBranchId,
+                promoCode: appliedPromoCode ?? "",
+                wantsReceipt: invoiceProfile.needsReceipt,
+                wantsTaxInvoice: invoiceProfile.taxInvoice,
+              });
               toast({
                 title: t("successTitle"),
                 description: t("successBody"),
@@ -425,6 +572,42 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
               className="min-h-28 rounded-2xl border-white/10 bg-white/4 text-white placeholder:text-[#8f8579]"
             />
           </div>
+
+              {(invoiceProfile.needsReceipt || invoiceProfile.taxInvoice) ? (
+            <div className="grid gap-5 rounded-[1.8rem] border border-white/10 bg-black/15 p-5 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="checkout-invoice-email" className="text-[#d9ccbb]">{text.invoiceEmail}</Label>
+                <Input
+                  id="checkout-invoice-email"
+                  value={invoiceProfile.email || email}
+                  onChange={(event) => updateInvoiceProfile({ email: event.target.value })}
+                  className="h-12 rounded-2xl border-white/10 bg-white/4 text-white placeholder:text-[#8f8579]"
+                />
+              </div>
+              {invoiceProfile.taxInvoice ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="checkout-company-name" className="text-[#d9ccbb]">{text.companyName}</Label>
+                    <Input
+                      id="checkout-company-name"
+                      value={invoiceProfile.companyName}
+                      onChange={(event) => updateInvoiceProfile({ companyName: event.target.value })}
+                      className="h-12 rounded-2xl border-white/10 bg-white/4 text-white placeholder:text-[#8f8579]"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="checkout-tax-id" className="text-[#d9ccbb]">{text.taxId}</Label>
+                    <Input
+                      id="checkout-tax-id"
+                      value={invoiceProfile.taxId}
+                      onChange={(event) => updateInvoiceProfile({ taxId: event.target.value })}
+                      className="h-12 rounded-2xl border-white/10 bg-white/4 text-white placeholder:text-[#8f8579]"
+                    />
+                  </div>
+                </>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
