@@ -18,7 +18,8 @@ export type PageMetadataKey =
   | "specials"
   | "heritage"
   | "account"
-  | "contact";
+  | "contact"
+  | "help";
 
 const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: LocalizedText }> = {
   home: {
@@ -46,7 +47,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "태국 메뉴 | Siam Lux",
     },
     description: {
-      th: "รวมอาหารไทยคลาสสิก เมนูประจำภูมิภาค ของคาว ของหวาน และโหมด gallery สำหรับเลือกเมนูแบบพรีเมียม",
+      th: "รวมอาหารไทยคลาสสิก เมนูประจำภูมิภาค ของคาว ของหวาน และโหมดภาพใหญ่สำหรับเลือกเมนูแบบพรีเมียม",
       en: "Browse Thai classics, regional dishes, desserts, gallery view, recently viewed plates, and curated set-building.",
       ja: "定番料理、郷土料理、甘味、ギャラリーモード、最近見た料理まで揃えたメニューページです。",
       zh: "浏览经典泰菜、地方风味、甜品、画廊模式与最近浏览菜品。",
@@ -62,7 +63,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "예약 및 좌석 캘린더 | Siam Lux",
     },
     description: {
-      th: "ดูปฏิทินจองโต๊ะ แผนผังที่นั่ง โซนของแต่ละสาขา และ waitlist flow แบบร้านจริง",
+      th: "ดูปฏิทินจองโต๊ะ แผนผังที่นั่ง โซนของแต่ละสาขา และลำดับคิวรอแบบร้านจริง",
       en: "Explore reservation heatmaps, seat maps, branch zones, and waitlist flows in one polished frontend.",
       ja: "予約ヒートマップ、席マップ、支店別ゾーン、ウェイトリストまで備えた予約体験です。",
       zh: "在一个完整前端里查看预约热度、座位图、分店区域与候补流程。",
@@ -78,7 +79,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "주문 추적 및 딜리버리 맵 | Siam Lux",
     },
     description: {
-      th: "ติดตามสถานะออเดอร์ด้วย timeline และแผนที่ส่งอาหารจำลองแบบพรีเมียม",
+      th: "ติดตามสถานะออเดอร์ด้วยเส้นเวลาสถานะและแผนที่ส่งอาหารจำลองแบบพรีเมียม",
       en: "Track progress with an elevated order timeline, route map mock, and reorder shortcuts.",
       ja: "上質な進行タイムライン、配送マップ、再注文導線をまとめた追跡画面です。",
       zh: "结合时间线、配送路线模拟与再次下单入口的高质感追踪体验。",
@@ -94,7 +95,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "리뷰 및 게스트 제출 | Siam Lux",
     },
     description: {
-      th: "ดูรีวิวเมนูจริงและส่งความคิดเห็นใหม่พร้อมให้คะแนนแบบ frontend-ready",
+      th: "ดูรีวิวเมนูจริงและส่งความคิดเห็นใหม่พร้อมให้คะแนนในรูปแบบพร้อมใช้งานฝั่งหน้าเว็บ",
       en: "Browse guest reviews and submit new dish feedback with a polished frontend-only review flow.",
       ja: "既存レビューの閲覧と新規投稿を両立したレビュー体験です。",
       zh: "查看菜品点评并通过精致的前端流程提交新评价。",
@@ -174,7 +175,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "스페셜 및 시즌 메뉴 | Siam Lux",
     },
     description: {
-      th: "รวมชุดอาหาร curated, tasting menus และ seasonal showcases ของร้าน",
+      th: "รวมชุดอาหารคัดสรร ชุดชิมเมนู และเมนูเด่นตามฤดูกาลของร้าน",
       en: "A curated home for tasting menus, festive collections, and premium specials.",
       ja: "テイスティングや季節企画をまとめた特集ページです。",
       zh: "集中展示品鉴套餐、节庆企划与高级限定菜单。",
@@ -222,11 +223,27 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "지점 및 이용 가능 시간 | Siam Lux",
     },
     description: {
-      th: "ดูสาขา จุดเด่น และ matrix ของ dine-in, pickup, delivery, private dining ในแต่ละช่วงเวลา",
+      th: "ดูสาขา จุดเด่น และตารางสรุปความพร้อมของการนั่งทานที่ร้าน รับเอง เดลิเวอรี และห้องส่วนตัวในแต่ละช่วงเวลา",
       en: "Explore branches with dine-in, pickup, delivery, and private dining availability by time window.",
       ja: "店舗ごとの来店、受取、配送、個室の提供状況を時間帯ごとに確認できます。",
       zh: "查看各门店在不同时间段的堂食、自取、配送与包厢可用性。",
       ko: "지점별 다이닝, 픽업, 딜리버리, 프라이빗 다이닝 가용성을 시간대별로 확인합니다.",
+    },
+  },
+  help: {
+    title: {
+      th: "ศูนย์ช่วยเหลือ | Siam Lux",
+      en: "Help Center | Siam Lux",
+      ja: "ヘルプセンター | Siam Lux",
+      zh: "帮助中心 | Siam Lux",
+      ko: "도움말 센터 | Siam Lux",
+    },
+    description: {
+      th: "รวมคำถามที่พบบ่อย ข้อมูลแพ้อาหาร การรับสินค้า การจอง และการใช้โค้ดส่วนลด",
+      en: "Find answers for allergens, pickup, reservations, promo codes, and ordering flows.",
+      ja: "アレルゲン、受取、予約、クーポン、注文導線に関する答えをまとめています。",
+      zh: "集中整理过敏原、自取、预订、优惠码与点餐流程的常见解答。",
+      ko: "알레르기, 픽업, 예약, 프로모 코드, 주문 흐름에 대한 답변을 모았습니다.",
     },
   },
 };

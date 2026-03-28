@@ -10,6 +10,7 @@ export function LocaleSynchronizer({ locale }: { locale: AppLocale }) {
 
   useEffect(() => {
     setLocale(locale);
+    document.documentElement.lang = locale;
   }, [locale, setLocale]);
 
   return null;

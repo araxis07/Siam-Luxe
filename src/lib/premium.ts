@@ -51,7 +51,7 @@ const branchStories: BranchStoryDefinition[] = [
     ],
     diningMoments: [
       {
-        th: "ดินเนอร์คู่และ private celebration",
+        th: "ดินเนอร์คู่และงานฉลองแบบส่วนตัว",
         en: "Date nights and private celebrations",
         ja: "デート利用とプライベートなお祝い",
         zh: "约会晚餐与私密庆祝",
@@ -156,7 +156,7 @@ const branchStories: BranchStoryDefinition[] = [
         ko: "여유롭지만 고급스러운 런치",
       },
       {
-        th: "ของหวานและ afternoon tea ไทย",
+        th: "ของหวานและน้ำชายามบ่ายแบบไทย",
         en: "Dessert and Thai afternoon tea",
         ja: "デザートとタイ式アフタヌーンティー",
         zh: "泰式下午茶与甜品体验",
@@ -198,7 +198,7 @@ const festivals: FestivalDefinition[] = [
       ko: "허브의 상쾌함과 코코넛 디저트를 중심으로 한 더운 계절 한정 기획입니다.",
     },
     highlight: {
-      th: "มี table setting พิเศษโทนดอกบัวและทองอ่อน",
+      th: "มีการจัดโต๊ะพิเศษโทนดอกบัวและทองอ่อน",
       en: "Features a lotus-toned table setting and seasonal set menu pairings.",
       ja: "ロータスを思わせる卓上演出と季節セットを用意します。",
       zh: "搭配莲花意象桌面陈设与节令套餐。",

@@ -128,7 +128,7 @@ const pageCopy = {
     ko: "Siam Lux 식탁 뒤의 10인",
   },
   teamBody: {
-    th: "เราแบ่งทีมเป็นเชฟ 7 คนและลูกมือ 3 คน เพื่อดูแลตั้งแต่การต้ม stock การผัดไฟแรง การทำขนม ไปจนถึงการส่งจานผ่าน pass อย่างนิ่งและแม่นยำ",
+    th: "เราแบ่งทีมเป็นเชฟ 7 คนและลูกมือ 3 คน เพื่อดูแลตั้งแต่การต้มหม้อน้ำพื้นฐาน การผัดไฟแรง การทำขนม ไปจนถึงการส่งจานผ่านจุดส่งอาหารอย่างนิ่งและแม่นยำ",
     en: "The kitchen brigade is structured around seven chefs and three assistants, each responsible for a precise part of the experience: stocks, live fire, curries, sweets, garnish, and the final pass.",
     ja: "厨房は 7 名のシェフと 3 名のアシスタントで構成され、出汁、火入れ、カレー、甘味、ガーニッシュ、最終パスまでを丁寧に分担しています。",
     zh: "我们的厨房班底由 7 位主厨与 3 位助手组成，分别负责高汤、火候、咖喱、甜品、装饰与出餐节奏。",
@@ -149,7 +149,7 @@ const pageCopy = {
     ko: "레스토랑을 제대로 움직이게 하는 다른 역할들",
   },
   supportBody: {
-    th: "นอกจากครัวหลัก ร้านอาหารระดับนี้ยังต้องมี front-of-house และงานหลังบ้านที่เชื่อมต่อกันแน่น ทั้งการต้อนรับ คิดเงิน เครื่องดื่ม จัดซื้อ คุณภาพ และการจัดคิวออเดอร์",
+    th: "นอกจากครัวหลัก ร้านอาหารระดับนี้ยังต้องมีทีมหน้าร้านและงานหลังบ้านที่เชื่อมต่อกันแน่น ทั้งการต้อนรับ คิดเงิน เครื่องดื่ม จัดซื้อ คุณภาพ และการจัดคิวออเดอร์",
     en: "Beyond the kitchen, a serious restaurant needs a disciplined front-of-house and back-office operation: hosting, cashiering, beverage service, purchasing, hygiene, and order coordination.",
     ja: "本格的なレストランには厨房だけでなく、案内、会計、ドリンク、仕入れ、衛生、オーダー調整を担う前後方の運営体制が必要です。",
     zh: "一家真正成熟的餐厅，不只需要厨房，还需要前场接待、收银、饮品、采购、卫生与订单协调等完整支持系统。",
@@ -277,7 +277,7 @@ const storyChapters: StoryChapterDefinition[] = [
       ko: "Siam Lux 가 특별한 만찬을 위한 프라이빗 하우스로 열리다",
     },
     body: {
-      th: "ทายาทรุ่นที่สามนำสมุดบันทึกเดิมกลับมาอ่านใหม่และตั้งชื่อบ้านรับรองว่า Siam Lux เพื่อให้คนร่วมสมัยได้สัมผัสรสชาติไทยที่มีระเบียบแบบในวัง แต่ไม่ห่างเหิน พวกเขาจัดทีมครัวเป็น station ชัดเจน แยกผู้ดูแลของหวาน น้ำแกง เส้น และไฟย่างอย่างเป็นระบบ",
+      th: "ทายาทรุ่นที่สามนำสมุดบันทึกเดิมกลับมาอ่านใหม่และตั้งชื่อบ้านรับรองว่า Siam Lux เพื่อให้คนร่วมสมัยได้สัมผัสรสชาติไทยที่มีระเบียบแบบในวัง แต่ไม่ห่างเหิน พวกเขาจัดทีมครัวเป็นจุดรับผิดชอบที่ชัดเจน แยกผู้ดูแลของหวาน น้ำแกง เส้น และไฟย่างอย่างเป็นระบบ",
       en: "The third generation revisited the original notebook and opened a private dining address called Siam Lux. The aim was to make palace discipline feel warm rather than distant. The kitchen was rebuilt into clear stations: sweets, broths, noodles, grill, and final pass.",
       ja: "三代目は手帳を読み直し、Siam Lux という名の私的な会食の場を開きました。宮廷の規律を冷たさではなく温かさとして感じられるようにするため、厨房は甘味、スープ、麺、炭火、最終パスという明確な持ち場に再構成されました。",
       zh: "第三代重新阅读那本手札，并以 Siam Lux 之名开设私宴食府，希望让宫廷式秩序显得温暖而不疏离。厨房也因此被重新编成甜点、汤底、面点、火烤与出餐等清晰分工。",
@@ -294,7 +294,7 @@ const storyChapters: StoryChapterDefinition[] = [
       ko: "현재",
     },
     title: {
-      th: "จากสำรับรับรองสู่ Thai ordering atelier ที่พร้อมรับคนทุกภูมิภาค",
+      th: "จากสำรับรับรองสู่เรือนสั่งอาหารไทยร่วมสมัยที่พร้อมรับคนทุกภูมิภาค",
       en: "From ceremonial table to digital Thai ordering atelier",
       ja: "儀礼の食卓から、地域をつなぐデジタル注文アトリエへ",
       zh: "从礼序餐桌走向数字化泰式点餐工坊",
@@ -400,14 +400,14 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "총괄 헤리티지 셰프",
     },
     specialty: {
-      th: "ควบคุมลำดับเสิร์ฟและ final seasoning",
+      th: "ควบคุมลำดับเสิร์ฟและปรุงเกลารสช่วงสุดท้าย",
       en: "Final seasoning and service sequence",
       ja: "最終調味と提供順序",
       zh: "最终调味与上菜顺序",
       ko: "최종 간과 서빙 순서",
     },
     duty: {
-      th: "เป็นคนชิมรสสุดท้ายทุก station และตัดสินว่าจังหวะการออกจานของทั้งโต๊ะควรเดินอย่างไร",
+      th: "เป็นคนชิมรสสุดท้ายทุกจุดครัว และตัดสินว่าจังหวะการออกจานของทั้งโต๊ะควรเดินอย่างไร",
       en: "She tastes every station before service and decides how the entire table should move from opening plate to dessert.",
       ja: "提供前にすべての持ち場を確認し、前菜から甘味まで卓全体の流れを決めます。",
       zh: "她会在出餐前逐一确认各站口味，并决定整桌从前菜到甜品的节奏。",
@@ -482,7 +482,7 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "커리 & 소스 셰프",
     },
     specialty: {
-      th: "แกงเขียวหวาน มัสมั่น และ base stock",
+      th: "แกงเขียวหวาน มัสมั่น และหม้อน้ำพื้นฐาน",
       en: "Green curry, massaman, and mother stocks",
       ja: "グリーンカレー、マッサマン、母体スープ",
       zh: "青咖喱、玛莎曼与基础高汤",
@@ -653,7 +653,7 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "쿠아클링, 갱쏨, 사또 요리",
     },
     duty: {
-      th: "เธอดูแลมิติรสของภาคใต้ให้แรงพอจะปลุกความทรงจำของคนใต้ แต่ยังคุม balance ให้คนต่างถิ่นเข้าถึงได้",
+      th: "เธอดูแลมิติรสของภาคใต้ให้แรงพอจะปลุกความทรงจำของคนใต้ แต่ยังคุมสมดุลให้คนต่างถิ่นเข้าถึงได้",
       en: "She keeps southern dishes vivid enough for people from the south to trust, while balancing them so new guests still lean in for the next bite.",
       ja: "南部の客が納得する力強さを保ちながら、初めての客にも届く均衡を整えます。",
       zh: "她让南部菜保有足够鲜明的本味，让熟悉这类味道的人信服，也让初次尝试的人愿意继续吃下去。",
@@ -721,21 +721,21 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "말리 두앙자이",
     },
     role: {
-      th: "ลูกมือ stock และเครื่องแกง",
+      th: "ลูกมือหม้อน้ำพื้นฐานและเครื่องแกง",
       en: "Stock and curry assistant",
       ja: "スープとカレーベースのアシスタント",
       zh: "高汤与咖喱底助手",
       ko: "스톡 & 커리 어시스턴트",
     },
     specialty: {
-      th: "เตรียมเครื่อง หั่นสมุนไพร และดูแลหม้อ base",
+      th: "เตรียมเครื่อง หั่นสมุนไพร และดูแลหม้อฐานรส",
       en: "Herb prep and base pots",
       ja: "香草の下ごしらえとベース鍋",
       zh: "香草备料与基础锅底",
       ko: "허브 손질과 베이스 포트",
     },
     duty: {
-      th: "อยู่เบื้องหลังหม้อหลักของร้าน คอยเฝ้าความนิ่งของน้ำ stock และความสดของสมุนไพรทุกวัน",
+      th: "อยู่เบื้องหลังหม้อหลักของร้าน คอยเฝ้าความนิ่งของน้ำฐานรสและความสดของสมุนไพรทุกวัน",
       en: "She watches the base pots and fresh herbs so the kitchen starts each day on the same note.",
       ja: "店のベースとなる鍋とハーブの鮮度を守り、厨房の一日を安定した状態で始めます。",
       zh: "她守着店里的基础锅底与香草新鲜度，确保每天的厨房从同一标准起步。",
@@ -762,7 +762,7 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "프리차 옹앗",
     },
     role: {
-      th: "ลูกมือ garnish และ pass",
+      th: "ลูกมือจัดจานและจุดส่งอาหาร",
       en: "Garnish and pass assistant",
       ja: "ガーニッシュとパスのアシスタント",
       zh: "装饰与出餐口助手",
@@ -810,7 +810,7 @@ const teamMembers: TeamMemberDefinition[] = [
       ko: "디저트 & 플로럴 티 어시스턴트",
     },
     specialty: {
-      th: "เตรียมของหวานเย็น ชา และ garnish จานหวาน",
+      th: "เตรียมของหวานเย็น ชา และจัดแต่งจานหวาน",
       en: "Cold sweets, tea service, and dessert garnish",
       ja: "冷菓、茶、甘味の仕上げ",
       zh: "冷甜品、花茶与甜点装饰",
@@ -839,7 +839,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "house-steward",
     title: {
-      th: "ผู้จัดการร้าน / House Steward",
+      th: "ผู้จัดการร้าน / ผู้ดูแลเรือนรับรอง",
       en: "General manager / House steward",
       ja: "店舗支配人 / ハウススチュワード",
       zh: "店经理 / 管家式总负责",
@@ -863,7 +863,7 @@ const supportRoles: SupportRoleDefinition[] = [
       ko: "예약 컨시어지",
     },
     duty: {
-      th: "ดูแลจองโต๊ะ special request วันเกิด อาหารแพ้ และการจับคู่โต๊ะกับประสบการณ์ที่เหมาะ",
+      th: "ดูแลจองโต๊ะ คำขอพิเศษ วันเกิด อาหารแพ้ และการจับคู่โต๊ะกับประสบการณ์ที่เหมาะ",
       en: "Handles bookings, guest notes, allergies, celebrations, and special table preparation.",
       ja: "予約、アレルギー、記念日、特別席の準備など来店前の調整を担います。",
       zh: "负责订位、过敏备注、庆生需求与特殊席位准备。",
@@ -873,7 +873,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "service-captain",
     title: {
-      th: "หัวหน้าพนักงานเสิร์ฟ / Service Captain",
+      th: "หัวหน้าพนักงานเสิร์ฟ / ผู้ควบคุมจังหวะบริการ",
       en: "Service captain",
       ja: "サービスキャプテン",
       zh: "楼面领班",
@@ -890,7 +890,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "servers",
     title: {
-      th: "พนักงานเสิร์ฟ / Floor Servers",
+      th: "พนักงานเสิร์ฟ / ทีมดูแลหน้าร้าน",
       en: "Floor servers",
       ja: "フロアサーバー",
       zh: "服务员",
@@ -907,7 +907,7 @@ const supportRoles: SupportRoleDefinition[] = [
   {
     id: "cashier",
     title: {
-      th: "พนักงานแคชเชียร์ / Guest Billing",
+      th: "พนักงานแคชเชียร์ / ผู้ดูแลบัญชีแขก",
       en: "Cashier and guest billing",
       ja: "会計担当",
       zh: "收银与账单管理",
@@ -931,7 +931,7 @@ const supportRoles: SupportRoleDefinition[] = [
       ko: "티 & 베버리지 스튜어드",
     },
     duty: {
-      th: "ดูแลชาดอกไม้ เครื่องดื่มสมุนไพร pairing และอุณหภูมิของเครื่องดื่มแต่ละช่วงคอร์ส",
+      th: "ดูแลชาดอกไม้ เครื่องดื่มสมุนไพรจับคู่เมนู และอุณหภูมิของเครื่องดื่มแต่ละช่วงคอร์ส",
       en: "Curates floral tea, herbal drinks, and pairings that support the food without competing with it.",
       ja: "花茶やハーブドリンクのペアリングを整え、料理を邪魔しない飲み物体験を作ります。",
       zh: "负责花茶、草本饮品与搭配建议，让饮品辅助菜品而不抢味。",
@@ -965,11 +965,11 @@ const supportRoles: SupportRoleDefinition[] = [
       ko: "품질·위생·재고 관리",
     },
     duty: {
-      th: "ตรวจ FIFO อุณหภูมิห้องเย็น เอกสารสุขอนามัย และความพร้อมของวัตถุดิบทุก station",
+      th: "ตรวจระบบเข้าก่อนออกก่อน อุณหภูมิห้องเย็น เอกสารสุขอนามัย และความพร้อมของวัตถุดิบทุกจุดครัว",
       en: "Owns cold-room temperature, FIFO, hygiene records, and station readiness before service.",
-      ja: "冷蔵温度、FIFO、衛生記録、営業前の各持ち場の準備状況を管理します。",
+      ja: "冷蔵温度、先入先出、衛生記録、営業前の各持ち場の準備状況を管理します。",
       zh: "负责冷藏温度、先进先出、卫生记录与各站开餐前准备。",
-      ko: "냉장 온도, FIFO, 위생 기록, 서비스 전 각 스테이션 준비 상태를 관리합니다.",
+      ko: "냉장 온도, 선입선출, 위생 기록, 서비스 전 각 스테이션 준비 상태를 관리합니다.",
     },
   },
 ];

@@ -374,7 +374,7 @@ const promotions: PromotionDefinition[] = [
     id: "golden-hour",
     code: "GOLD15",
     title: {
-      th: "ส่วนลด Golden Hour 15%",
+      th: "ส่วนลดช่วงทอง 15%",
       en: "Golden Hour 15% Off",
       ja: "ゴールデンアワー 15% オフ",
       zh: "黄金时段 15% 优惠",

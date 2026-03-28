@@ -190,7 +190,7 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#5e1820]/88 via-[#221111]/70 to-[#0f0d0d]/94",
       label: {
-        th: "Grand Salon",
+        th: "ศาลาหลักใหญ่",
         en: "Grand Salon",
         ja: "グランドサロン",
         zh: "主沙龙区",
@@ -218,14 +218,14 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#184738]/88 via-[#132520]/70 to-[#0b0d0c]/94",
       label: {
-        th: "River Terrace",
+        th: "ระเบียงริมน้ำ",
         en: "River Terrace",
         ja: "リバーテラス",
         zh: "河畔露台",
         ko: "리버 테라스",
       },
       vibe: {
-        th: "ลมเย็นและแสงนุ่ม เหมาะกับโต๊ะคู่และ sunset cocktails",
+        th: "ลมเย็นและแสงนุ่ม เหมาะกับโต๊ะคู่และเครื่องดื่มยามพระอาทิตย์ตก",
         en: "Soft evening light for date tables and sunset cocktails.",
         ja: "柔らかな光と風が心地よいデート向け席です。",
         zh: "柔和天光与河景，适合约会与餐前酒。",
@@ -245,14 +245,14 @@ const seatMapDefinitions: Record<
       status: "open",
       accentClass: "from-[#61461f]/86 via-[#23170d]/70 to-[#090807]/94",
       label: {
-        th: "Chef Counter",
+        th: "เคาน์เตอร์เชฟ",
         en: "Chef Counter",
         ja: "シェフカウンター",
         zh: "主厨吧台",
         ko: "셰프 카운터",
       },
       vibe: {
-        th: "มองเห็นไฟครัว เหมาะกับแขกที่อยากดู plating ใกล้ ๆ",
+        th: "มองเห็นไฟครัว เหมาะกับแขกที่อยากดูการจัดจานใกล้ ๆ",
         en: "Front-row seating for kitchen pacing and finishing details.",
         ja: "仕上げや盛り付けの流れを近くで楽しめます。",
         zh: "能近距离观看出菜节奏与摆盘过程。",
@@ -272,14 +272,14 @@ const seatMapDefinitions: Record<
       status: "waitlist",
       accentClass: "from-[#2b153a]/86 via-[#1b1022]/70 to-[#0b090c]/94",
       label: {
-        th: "Royal Private Room",
+        th: "ห้องรับรองหลวง",
         en: "Royal Private Room",
         ja: "ロイヤル個室",
         zh: "皇家包厢",
         ko: "로열 프라이빗 룸",
       },
       vibe: {
-        th: "เหมาะกับงานเลี้ยงส่วนตัวและ client dinner แบบเป็นทางการ",
+        th: "เหมาะกับงานเลี้ยงส่วนตัวและมื้อรับรองแขกแบบเป็นทางการ",
         en: "Built for private celebrations and formal hosted dinners.",
         ja: "記念日や接待向けの個室利用に最適です。",
         zh: "适合正式招待、私宴与庆典包场。",
@@ -298,14 +298,14 @@ const seatMapDefinitions: Record<
       status: "open",
       accentClass: "from-[#4b1821]/84 via-[#201111]/70 to-[#0f0d0d]/94",
       label: {
-        th: "House Salon",
+        th: "ศาลาหลักประจำร้าน",
         en: "House Salon",
         ja: "ハウスサロン",
         zh: "主用餐区",
         ko: "하우스 살롱",
       },
       vibe: {
-        th: "เหมาะกับโต๊ะกลุ่มเล็กหลังเลิกงานและ dinner meeting",
+        th: "เหมาะกับโต๊ะกลุ่มเล็กหลังเลิกงานและมื้อคุยงานยามค่ำ",
         en: "Suited to after-work dinners and compact hosted tables.",
         ja: "仕事帰りの会食や少人数ディナー向けです。",
         zh: "适合下班聚餐与小型正式晚餐。",
@@ -326,14 +326,14 @@ const seatMapDefinitions: Record<
       status: "open",
       accentClass: "from-[#1d4d3e]/84 via-[#12261f]/68 to-[#0a0c0c]/94",
       label: {
-        th: "Garden Edge",
+        th: "มุมสวนรับลม",
         en: "Garden Edge",
         ja: "ガーデンエッジ",
         zh: "花园边座",
         ko: "가든 엣지",
       },
       vibe: {
-        th: "มุมรับลมสำหรับ afternoon bites และของหวาน",
+        th: "มุมรับลมสำหรับของว่างยามบ่ายและของหวาน",
         en: "Good for lighter courses, sweets, and a slower pace.",
         ja: "軽い食事やデザートに向く穏やかな席です。",
         zh: "适合下午茶、甜品与轻松节奏用餐。",
@@ -352,14 +352,14 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#6c4c1d]/84 via-[#2a1b0e]/68 to-[#0b0908]/94",
       label: {
-        th: "Tasting Counter",
+        th: "เคาน์เตอร์ชิมเมนู",
         en: "Tasting Counter",
         ja: "テイスティングカウンター",
         zh: "品鉴吧台",
         ko: "테이스팅 카운터",
       },
       vibe: {
-        th: "ดีที่สุดสำหรับ tasting sequence และแขกที่ชอบครัวเปิด",
+        th: "ดีที่สุดสำหรับการชิมหลายจานต่อเนื่องและแขกที่ชอบครัวเปิด",
         en: "The sharpest seat for tasting sequences and open-kitchen energy.",
         ja: "テイスティングとライブ感を楽しむのに最適です。",
         zh: "最适合品鉴菜单与开放式厨房体验。",
@@ -379,14 +379,14 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#2f183f]/84 via-[#1a1023]/68 to-[#0a090c]/94",
       label: {
-        th: "Gallery Room",
+        th: "ห้องรับรองงานศิลป์",
         en: "Gallery Room",
         ja: "ギャラリールーム",
         zh: "艺廊包间",
         ko: "갤러리 룸",
       },
       vibe: {
-        th: "สำหรับคุยงานและ private tasting แบบ intimate",
+        th: "สำหรับคุยงานและชิมเมนูแบบส่วนตัวในบรรยากาศใกล้ชิด",
         en: "Ideal for intimate tastings and focused business hosting.",
         ja: "少人数接待とプライベート試食に向いています。",
         zh: "适合小规模商务宴请与私享品鉴。",
@@ -403,14 +403,14 @@ const seatMapDefinitions: Record<
       status: "open",
       accentClass: "from-[#521922]/84 via-[#211110]/68 to-[#0d0c0c]/94",
       label: {
-        th: "Lanna Salon",
+        th: "ศาลาล้านนา",
         en: "Lanna Salon",
         ja: "ラーンナーサロン",
         zh: "兰纳主厅",
         ko: "란나 살롱",
       },
       vibe: {
-        th: "มื้อกลางวันช้า ๆ และ family table ที่ยังดูพรีเมียม",
+        th: "มื้อกลางวันช้า ๆ และโต๊ะครอบครัวที่ยังดูพรีเมียม",
         en: "Relaxed lunch pacing for family tables and signature plates.",
         ja: "家族利用やゆったりランチに向く上品な席です。",
         zh: "适合家庭午餐与从容节奏的精致用餐。",
@@ -430,7 +430,7 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#16513c]/84 via-[#12241d]/68 to-[#090c0b]/94",
       label: {
-        th: "Garden Veranda",
+        th: "เฉลียงสวน",
         en: "Garden Veranda",
         ja: "ガーデンベランダ",
         zh: "花园回廊",
@@ -457,14 +457,14 @@ const seatMapDefinitions: Record<
       status: "open",
       accentClass: "from-[#61451e]/84 via-[#25190d]/68 to-[#090807]/94",
       label: {
-        th: "Dessert Bar",
+        th: "บาร์ของหวาน",
         en: "Dessert Bar",
         ja: "デザートバー",
         zh: "甜品吧台",
         ko: "디저트 바",
       },
       vibe: {
-        th: "เหมาะกับของหวานไทยและ plated tea set",
+        th: "เหมาะกับของหวานไทยและชุดชาที่จัดเสิร์ฟอย่างประณีต",
         en: "Best for plated sweets and a Thai tea service finish.",
         ja: "デザートとティーサービスの締めに最適です。",
         zh: "适合甜品盘与泰式茶歇体验。",
@@ -483,14 +483,14 @@ const seatMapDefinitions: Record<
       status: "limited",
       accentClass: "from-[#2d1639]/84 via-[#1b1122]/68 to-[#0a090b]/94",
       label: {
-        th: "Lantern Room",
+        th: "ห้องโคม",
         en: "Lantern Room",
         ja: "ランタンルーム",
         zh: "灯影包间",
         ko: "랜턴 룸",
       },
       vibe: {
-        th: "สำหรับ tasting ส่วนตัวและ family celebration",
+        th: "สำหรับการชิมแบบส่วนตัวและการฉลองในครอบครัว",
         en: "Reserved for private tastings and family celebrations.",
         ja: "家族のお祝いとプライベート試食向けです。",
         zh: "适合家庭庆祝与私享品鉴。",
@@ -520,7 +520,7 @@ const giftCardDefinitions: Array<{
       ko: "첫 경험용",
     },
     title: {
-      th: "Golden Supper Card",
+      th: "บัตรมื้อค่ำสีทอง",
       en: "Golden Supper Card",
       ja: "ゴールデンサパーカード",
       zh: "金色晚宴卡",
@@ -546,7 +546,7 @@ const giftCardDefinitions: Array<{
       ko: "가장 인기",
     },
     title: {
-      th: "Royal Table Gift",
+      th: "ของขวัญโต๊ะรับรองหลวง",
       en: "Royal Table Gift",
       ja: "ロイヤルテーブルギフト",
       zh: "皇家餐桌礼卡",
@@ -572,14 +572,14 @@ const giftCardDefinitions: Array<{
       ko: "프리미엄 호스팅",
     },
     title: {
-      th: "Heritage Evening Card",
+      th: "บัตรค่ำคืนแห่งมรดก",
       en: "Heritage Evening Card",
       ja: "ヘリテージイブニングカード",
       zh: "传承晚宴礼卡",
       ko: "헤리티지 이브닝 카드",
     },
     body: {
-      th: "ออกแบบสำหรับ private dinner, tasting set และเครดิตของขวัญที่ดูจริงจัง",
+      th: "ออกแบบสำหรับมื้อค่ำส่วนตัว ชุดชิมเมนู และเครดิตของขวัญที่ดูจริงจัง",
       en: "Built for private dinners, tasting collections, and meaningful gifting.",
       ja: "個室利用やテイスティングにも使いやすい、格のある贈り物です。",
       zh: "适合私宴、品鉴套餐与更正式的礼赠场景。",
@@ -609,7 +609,7 @@ const rewardDefinitions: Array<{
       ko: "셰프 디저트 크레딧",
     },
     body: {
-      th: "แลกเครดิตเพื่อใช้กับของหวานจานเด่นหรือเมนู seasonal sweets",
+      th: "แลกเครดิตเพื่อใช้กับของหวานจานเด่นหรือขนมตามฤดูกาล",
       en: "Unlock a sweet finish credit for plated desserts and seasonal sweets.",
       ja: "デザートや季節甘味に使える小回りのよい特典です。",
       zh: "可用于招牌甜品或季节甜点的抵扣额度。",
@@ -622,14 +622,14 @@ const rewardDefinitions: Array<{
     points: 320,
     walletAmount: 220,
     title: {
-      th: "เครดิตรับเองแบบ priority",
+      th: "เครดิตรับเองแบบด่วนพิเศษ",
       en: "Priority pickup credit",
       ja: "優先受取クレジット",
       zh: "优先自取抵扣",
       ko: "프라이어리티 픽업 크레딧",
     },
     body: {
-      th: "เหมาะกับลูกค้าที่ใช้ pickup บ่อยและอยากได้เครดิตทันที",
+      th: "เหมาะกับลูกค้าที่รับอาหารเองบ่อยและอยากได้เครดิตทันที",
       en: "A compact reward for frequent pickup guests and dinner repeats.",
       ja: "受取利用が多いゲスト向けの使いやすい特典です。",
       zh: "适合经常自取、想立即抵扣的回访顾客。",
@@ -649,7 +649,7 @@ const rewardDefinitions: Array<{
       ko: "로열 서퍼 업그레이드",
     },
     body: {
-      th: "ใช้เป็นเครดิตก้อนใหญ่สำหรับชุดพิเศษ ดินเนอร์ หรือรอบ celebration",
+      th: "ใช้เป็นเครดิตก้อนใหญ่สำหรับชุดพิเศษ มื้อค่ำ หรือรอบเฉลิมฉลอง",
       en: "A larger loyalty unlock for celebratory dinners and premium set menus.",
       ja: "記念日や上位セットへの背中を押す上級特典です。",
       zh: "适合庆祝晚宴与更高级套餐的高等级兑换。",
@@ -667,14 +667,14 @@ const rewardTiers: Array<{
   {
     threshold: 0,
     title: {
-      th: "Lotus Guest",
+      th: "แขกบัวงาม",
       en: "Lotus Guest",
-      ja: "Lotus Guest",
-      zh: "Lotus Guest",
-      ko: "Lotus Guest",
+      ja: "ロータスゲスト",
+      zh: "莲华来宾",
+      ko: "로터스 게스트",
     },
     body: {
-      th: "เริ่มสะสมเพื่อปลดล็อกเครดิตของหวานและ privilege สำหรับมื้อถัดไป",
+      th: "เริ่มสะสมเพื่อปลดล็อกเครดิตของหวานและสิทธิพิเศษสำหรับมื้อถัดไป",
       en: "Building toward dessert credits and premium repeat-order perks.",
       ja: "まずはデザート特典と再訪向けの優待を目指す段階です。",
       zh: "正在累积解锁甜品抵扣与回访礼遇。",
@@ -684,14 +684,14 @@ const rewardTiers: Array<{
   {
     threshold: 700,
     title: {
-      th: "Golden Patron",
+      th: "ผู้อุปถัมภ์ทอง",
       en: "Golden Patron",
-      ja: "Golden Patron",
-      zh: "Golden Patron",
-      ko: "Golden Patron",
+      ja: "ゴールデンパトロン",
+      zh: "金辉贵宾",
+      ko: "골든 패트런",
     },
     body: {
-      th: "เริ่มแลกเครดิตมื้อค่ำและสิทธิ์ priority ได้ชัดเจนขึ้น",
+      th: "เริ่มแลกเครดิตมื้อค่ำและสิทธิ์ลำดับพิเศษได้ชัดเจนขึ้น",
       en: "Strong enough to redeem dinner credits and priority house benefits.",
       ja: "ディナー利用に効く特典を取りやすくなる中位ランクです。",
       zh: "可稳定兑换晚宴抵扣与优先礼遇的中阶等级。",
@@ -701,14 +701,14 @@ const rewardTiers: Array<{
   {
     threshold: 1500,
     title: {
-      th: "Royal Circle",
+      th: "วงรับรองหลวง",
       en: "Royal Circle",
-      ja: "Royal Circle",
-      zh: "Royal Circle",
-      ko: "Royal Circle",
+      ja: "ロイヤルサークル",
+      zh: "御享会席",
+      ko: "로열 서클",
     },
     body: {
-      th: "พร้อมสำหรับเครดิตก้อนใหญ่ private dining และของขวัญระดับร้านจริง",
+      th: "พร้อมสำหรับเครดิตก้อนใหญ่ ห้องรับรองส่วนตัว และของขวัญระดับร้านจริง",
       en: "Positioned for premium dining credits, gifting, and private-table privileges.",
       ja: "上位クレジットや個室利用の特典に手が届く上級ランクです。",
       zh: "适合兑换高额抵扣、礼卡与私宴礼遇的高阶等级。",
@@ -733,7 +733,7 @@ const setBuilderDefinitions: Array<{
       ko: "오프닝 플레이트",
     },
     body: {
-      th: "เลือกจานแรกเพื่อกำหนด mood ของโต๊ะ",
+      th: "เลือกจานแรกเพื่อกำหนดอารมณ์ของโต๊ะ",
       en: "Choose the first plate to set the table mood.",
       ja: "最初の一皿でテーブルのトーンを決めます。",
       zh: "用第一道菜定义整桌的开场气氛。",
@@ -769,7 +769,7 @@ const setBuilderDefinitions: Array<{
       ko: "스위트 피니시",
     },
     body: {
-      th: "ปิดท้ายด้วยของหวานที่บาลานซ์เครื่องเทศและทำให้โต๊ะดู complete",
+      th: "ปิดท้ายด้วยของหวานที่บาลานซ์เครื่องเทศและทำให้โต๊ะดูสมบูรณ์",
       en: "Finish with a dessert that softens spice and completes the table.",
       ja: "甘味で辛味をほどき、食卓全体を完成させます。",
       zh: "用甜品收束香辣层次，让整桌更完整。",
@@ -793,11 +793,11 @@ const cateringDefinitions: Array<{
   {
     id: "royal-reception",
     title: {
-      th: "Royal Reception Table",
+      th: "สำรับรับรองแบบหลวง",
       en: "Royal Reception Table",
-      ja: "Royal Reception Table",
-      zh: "Royal Reception Table",
-      ko: "Royal Reception Table",
+      ja: "王室迎賓テーブル",
+      zh: "皇室迎宾宴席",
+      ko: "로열 리셉션 테이블",
     },
     body: {
       th: "ชุดรับรองสำหรับแขก 8-12 ท่าน เน้นจานไทยกลางและเมนูที่แชร์ง่าย",
@@ -824,14 +824,14 @@ const cateringDefinitions: Array<{
     dishIds: ["royal-tom-yum", "golden-crab-omelette", "river-prawn-rice", "mango-sticky-cloud"],
     serviceStyles: [
       {
-        th: "plated sharing",
+        th: "แชร์แบบจัดจาน",
         en: "plated sharing",
         ja: "シェアプレート",
         zh: "共享摆盘",
         ko: "플레이티드 셰어링",
       },
       {
-        th: "private room",
+        th: "ห้องส่วนตัว",
         en: "private room",
         ja: "個室",
         zh: "包厢",
@@ -843,14 +843,14 @@ const cateringDefinitions: Array<{
   {
     id: "chef-counter-party",
     title: {
-      th: "Chef Counter Party",
+      th: "งานเลี้ยงหน้าเคาน์เตอร์เชฟ",
       en: "Chef Counter Party",
-      ja: "Chef Counter Party",
-      zh: "Chef Counter Party",
-      ko: "Chef Counter Party",
+      ja: "シェフカウンターパーティー",
+      zh: "主厨吧台宴会",
+      ko: "셰프 카운터 파티",
     },
     body: {
-      th: "สำหรับงาน 12-18 ท่านที่ต้องการ tasting, kitchen view และจังหวะเสิร์ฟชัดเจน",
+      th: "สำหรับงาน 12-18 ท่านที่ต้องการชิมหลายจาน เห็นครัวชัด และมีจังหวะเสิร์ฟที่ชัดเจน",
       en: "A 12-18 guest flow for chef-led tastings and visible kitchen energy.",
       ja: "12〜18名向けのライブ感あるテイスティング構成です。",
       zh: "适合 12-18 位宾客、强调主厨节奏与开放厨房体验。",
@@ -874,14 +874,14 @@ const cateringDefinitions: Array<{
     dishIds: ["pandan-satay", "charcoal-pad-thai", "fire-basil-wagyu", "roti-kaya-gold"],
     serviceStyles: [
       {
-        th: "counter tasting",
+        th: "ชิมเมนูหน้าเคาน์เตอร์",
         en: "counter tasting",
         ja: "カウンターテイスティング",
         zh: "吧台品鉴",
         ko: "카운터 테이스팅",
       },
       {
-        th: "chef remarks",
+        th: "คำอธิบายจากเชฟ",
         en: "chef remarks",
         ja: "シェフ解説",
         zh: "主厨讲解",
@@ -893,14 +893,14 @@ const cateringDefinitions: Array<{
   {
     id: "garden-dessert-social",
     title: {
-      th: "Garden Dessert Social",
+      th: "งานพบปะสวนของหวาน",
       en: "Garden Dessert Social",
-      ja: "Garden Dessert Social",
-      zh: "Garden Dessert Social",
-      ko: "Garden Dessert Social",
+      ja: "ガーデンデザートソーシャル",
+      zh: "花园甜品雅集",
+      ko: "가든 디저트 소셜",
     },
     body: {
-      th: "สำหรับ 20-40 ท่าน เน้น afternoon reception, ของหวานไทย และ tea pairing",
+      th: "สำหรับ 20-40 ท่าน เน้นการรับรองยามบ่าย ของหวานไทย และการจับคู่ชา",
       en: "A 20-40 guest format for receptions, Thai sweets, and tea pairings.",
       ja: "20〜40名のレセプション向け、甘味とティーを主役にした構成です。",
       zh: "适合 20-40 位宾客的下午接待与甜品茶会形式。",
@@ -924,14 +924,14 @@ const cateringDefinitions: Array<{
     dishIds: ["kanom-buang-royale", "foi-thong-custard", "mango-sticky-cloud", "palm-sugar-coconut-ice"],
     serviceStyles: [
       {
-        th: "dessert bar",
+        th: "บาร์ของหวาน",
         en: "dessert bar",
         ja: "デザートバー",
         zh: "甜品吧",
         ko: "디저트 바",
       },
       {
-        th: "tea pairing",
+        th: "ชาจับคู่เมนู",
         en: "tea pairing",
         ja: "ティーペアリング",
         zh: "茶饮搭配",
