@@ -18,7 +18,7 @@ test("reviews, catering, tracking map, and branch availability are reachable", a
   await expect(page.getByRole("heading", { name: /ตะกร้า/i })).toBeVisible();
 
   await page.goto("/th/tracking");
-  await expect(page.getByText(/แผนที่เส้นทางจำลอง/i)).toBeVisible();
+  await expect(page.getByText(/แผนที่เส้นทางจัดส่ง/i)).toBeVisible();
 
   await page.goto("/th/contact");
   await expect(page.getByText(/ตารางความพร้อมให้บริการ/i).first()).toBeVisible();

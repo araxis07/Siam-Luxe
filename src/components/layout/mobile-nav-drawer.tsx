@@ -112,10 +112,10 @@ export function MobileNavDrawer({ locale }: { locale: AppLocale }) {
       <button
         type="button"
         aria-label={uiText.openNavigation}
-        className="inline-flex size-7 shrink-0 items-center justify-center rounded-[min(var(--radius-md),12px)] border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 lg:hidden"
+        className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 lg:hidden"
         onClick={() => setOpen(true)}
       >
-        <Menu className="size-4.5" />
+        <Menu className="size-5" />
       </button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
