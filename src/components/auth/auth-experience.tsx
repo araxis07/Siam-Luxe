@@ -1,6 +1,6 @@
 "use client";
 
-import { LockKeyhole, Mail, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { LoaderCircle, LockKeyhole, Mail, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { useState } from "react";
 
 import type { AppLocale } from "@/i18n/routing";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 import { getAuthPanel } from "@/lib/hospitality";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { normalizeSeedGuestName } from "@/lib/user-display";
 import { useUserStore } from "@/store/user-store";
 
@@ -21,12 +23,18 @@ const authText = {
     name: "ชื่อสำหรับบัญชี",
     email: "อีเมล",
     phone: "เบอร์โทรศัพท์",
+    password: "รหัสผ่าน",
     signIn: "เข้าสู่บัญชีสมาชิก",
     continueGuest: "ใช้โหมดแขก",
     signedIn: "อัปเดตบัญชีสมาชิกแล้ว",
     guestMode: "เปลี่ยนกลับเป็นโหมดแขกแล้ว",
     account: "ไปยังแดชบอร์ดบัญชี",
     checkout: "ไปยัง checkout",
+    createAccount: "สร้างบัญชีใหม่แล้ว",
+    checkEmail: "กรุณายืนยันอีเมลจากลิงก์ที่ส่งไป",
+    missingFields: "กรอกอีเมลและรหัสผ่านก่อน",
+    setupNeeded: "ยังขาด Publishable key ของ Supabase",
+    authFailed: "ไม่สามารถเข้าสู่ระบบได้ในขณะนี้",
   },
   en: {
     member: "Member access",
@@ -34,12 +42,18 @@ const authText = {
     name: "Profile name",
     email: "Email",
     phone: "Phone",
+    password: "Password",
     signIn: "Continue with member profile",
     continueGuest: "Use guest mode",
     signedIn: "Member profile updated",
     guestMode: "Switched back to guest mode",
     account: "Open account dashboard",
     checkout: "Go to checkout",
+    createAccount: "New member account created",
+    checkEmail: "Check your inbox to confirm your email",
+    missingFields: "Enter both email and password first",
+    setupNeeded: "Supabase publishable key is still missing",
+    authFailed: "Unable to sign in right now",
   },
   ja: {
     member: "会員サインイン",
@@ -47,12 +61,18 @@ const authText = {
     name: "プロフィール名",
     email: "メール",
     phone: "電話番号",
+    password: "パスワード",
     signIn: "会員プロフィールで続ける",
     continueGuest: "ゲストモードを使う",
     signedIn: "会員プロフィールを更新しました",
     guestMode: "ゲストモードへ戻しました",
     account: "アカウントへ",
     checkout: "checkout へ",
+    createAccount: "新しい会員アカウントを作成しました",
+    checkEmail: "受信メールから確認を完了してください",
+    missingFields: "先にメールとパスワードを入力してください",
+    setupNeeded: "Supabase の公開キーがまだ未設定です",
+    authFailed: "現在サインインできません",
   },
   zh: {
     member: "会员登录",
@@ -60,12 +80,18 @@ const authText = {
     name: "档案姓名",
     email: "邮箱",
     phone: "电话",
+    password: "密码",
     signIn: "以会员档案继续",
     continueGuest: "使用游客模式",
     signedIn: "会员档案已更新",
     guestMode: "已切换回游客模式",
     account: "前往账户页",
     checkout: "前往结账",
+    createAccount: "已创建新的会员账户",
+    checkEmail: "请前往邮箱完成确认",
+    missingFields: "请先填写邮箱和密码",
+    setupNeeded: "Supabase publishable key 仍未填写",
+    authFailed: "暂时无法登录",
   },
   ko: {
     member: "멤버 로그인",
@@ -73,12 +99,18 @@ const authText = {
     name: "프로필 이름",
     email: "이메일",
     phone: "전화번호",
+    password: "비밀번호",
     signIn: "멤버 프로필로 계속",
     continueGuest: "게스트 모드 사용",
     signedIn: "멤버 프로필을 업데이트했습니다",
     guestMode: "게스트 모드로 전환했습니다",
     account: "계정으로 이동",
     checkout: "체크아웃으로 이동",
+    createAccount: "새 멤버 계정을 만들었습니다",
+    checkEmail: "이메일 확인을 완료해 주세요",
+    missingFields: "이메일과 비밀번호를 먼저 입력해 주세요",
+    setupNeeded: "Supabase publishable key가 아직 없습니다",
+    authFailed: "지금은 로그인할 수 없습니다",
   },
 } as const;
 
@@ -95,6 +127,8 @@ export function AuthExperience({ locale }: { locale: AppLocale }) {
   const [draftName, setDraftName] = useState(normalizeSeedGuestName(fullName));
   const [draftEmail, setDraftEmail] = useState(email);
   const [draftPhone, setDraftPhone] = useState(phone);
+  const [draftPassword, setDraftPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const statusCopy = {
     th: { guest: "แขก", guestCheckout: "ซื้อแบบแขก", memberReady: "พร้อมเป็นสมาชิก" },
     en: { guest: "Guest", guestCheckout: "Guest checkout", memberReady: "Member ready" },
@@ -102,6 +136,126 @@ export function AuthExperience({ locale }: { locale: AppLocale }) {
     zh: { guest: "游客", guestCheckout: "游客结账", memberReady: "会员就绪" },
     ko: { guest: "게스트", guestCheckout: "게스트 체크아웃", memberReady: "멤버 준비 완료" },
   } as const;
+
+  async function handleMemberAccess() {
+    if (!draftEmail.trim() || !draftPassword.trim()) {
+      toast({
+        title: text.missingFields,
+        description: draftEmail || draftName || "Siam Lux",
+        tone: "info",
+      });
+      return;
+    }
+
+    if (!isSupabaseConfigured()) {
+      toast({
+        title: text.setupNeeded,
+        description: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        tone: "info",
+      });
+      return;
+    }
+
+    const supabase = createSupabaseClient();
+
+    if (!supabase) {
+      toast({
+        title: text.setupNeeded,
+        description: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        tone: "info",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const profileName = draftName.trim() || "Siam Lux Guest";
+    const emailValue = draftEmail.trim();
+    const phoneValue = draftPhone.trim();
+
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: emailValue,
+      password: draftPassword,
+    });
+
+    if (!signInError && signInData.user) {
+      signInMember({
+        fullName: normalizeSeedGuestName(
+          typeof signInData.user.user_metadata.full_name === "string"
+            ? signInData.user.user_metadata.full_name
+            : profileName,
+        ),
+        email: signInData.user.email ?? emailValue,
+        phone:
+          typeof signInData.user.user_metadata.phone === "string"
+            ? signInData.user.user_metadata.phone
+            : phoneValue,
+        memberSince: signInData.user.created_at?.slice(0, 10),
+      });
+      trackEvent("auth_member_sign_in", { locale, provider: "supabase_password" });
+      toast({
+        title: text.signedIn,
+        description: signInData.user.email ?? emailValue,
+        tone: "success",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: emailValue,
+      password: draftPassword,
+      options: {
+        data: {
+          full_name: profileName,
+          phone: phoneValue,
+        },
+      },
+    });
+
+    if (signUpError) {
+      toast({
+        title: text.authFailed,
+        description: signUpError.message,
+        tone: "error",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (signUpData.user) {
+      signInMember({
+        fullName: profileName,
+        email: signUpData.user.email ?? emailValue,
+        phone: phoneValue,
+        memberSince: signUpData.user.created_at?.slice(0, 10),
+      });
+      trackEvent("auth_member_sign_up", { locale, provider: "supabase_password" });
+      toast({
+        title: signUpData.session ? text.createAccount : text.checkEmail,
+        description: signUpData.user.email ?? emailValue,
+        tone: "success",
+      });
+    }
+
+    setIsSubmitting(false);
+  }
+
+  async function handleGuestMode() {
+    const supabase = createSupabaseClient();
+
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+
+    continueAsGuest();
+    trackEvent("auth_guest_mode", { locale });
+    toast({
+      title: text.guestMode,
+      description: statusCopy[locale].guestCheckout,
+      tone: "info",
+    });
+  }
 
   return (
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
@@ -203,40 +357,40 @@ export function AuthExperience({ locale }: { locale: AppLocale }) {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="auth-password" className="text-[#d9ccbb]">{text.password}</Label>
+                <div className="relative">
+                  <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#9f9487]" />
+                  <Input
+                    id="auth-password"
+                    type="password"
+                    value={draftPassword}
+                    onChange={(event) => setDraftPassword(event.target.value)}
+                    className="h-12 rounded-2xl border-white/10 bg-white/4 pl-11 text-white placeholder:text-[#8f8579]"
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="mt-6 flex flex-col gap-3">
               <Button
                 type="button"
                 className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                disabled={isSubmitting}
                 onClick={() => {
-                  signInMember({
-                    fullName: draftName.trim() || "Siam Lux Guest",
-                    email: draftEmail,
-                    phone: draftPhone,
-                  });
-                  trackEvent("auth_member_sign_in", { locale });
-                  toast({
-                    title: text.signedIn,
-                    description: draftEmail || draftName || "Siam Lux",
-                    tone: "success",
-                  });
+                  void handleMemberAccess();
                 }}
               >
+                {isSubmitting ? <LoaderCircle className="size-4 animate-spin" /> : null}
                 {text.signIn}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                disabled={isSubmitting}
                 onClick={() => {
-                  continueAsGuest();
-                  trackEvent("auth_guest_mode", { locale });
-                  toast({
-                    title: text.guestMode,
-                    description: statusCopy[locale].guestCheckout,
-                    tone: "info",
-                  });
+                  void handleGuestMode();
                 }}
               >
                 {text.continueGuest}

@@ -16,6 +16,8 @@
     "@fontsource/pridi": "^5.2.8",
     "@fontsource/sarabun": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.100.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",

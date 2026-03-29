@@ -85,7 +85,12 @@ interface UserState {
   redeemedRewards: RedeemedRewardEntry[];
   activeAddressId: string;
   activePaymentProfileId: string;
-  signInMember: (payload: { fullName: string; email: string; phone?: string }) => void;
+  signInMember: (payload: {
+    fullName: string;
+    email: string;
+    phone?: string;
+    memberSince?: string;
+  }) => void;
   continueAsGuest: () => void;
   updateNotificationSettings: (patch: Partial<NotificationSettings>) => void;
   updatePreferences: (patch: Partial<DiningPreferences>) => void;
@@ -186,13 +191,14 @@ export const useUserStore = create<UserState>()(
       redeemedRewards: [],
       activeAddressId: "address-home",
       activePaymentProfileId: "payment-promptpay",
-      signInMember: ({ fullName, email, phone }) =>
+      signInMember: ({ fullName, email, phone, memberSince }) =>
         set((state) => ({
           authStatus: "member",
           fullName,
           email,
           phone: phone ?? state.phone,
-          memberSince: state.memberSince || "2024-11-12",
+          memberSince:
+            memberSince ?? state.memberSince ?? new Date().toISOString().slice(0, 10),
           invoiceProfile: {
             ...state.invoiceProfile,
             email,

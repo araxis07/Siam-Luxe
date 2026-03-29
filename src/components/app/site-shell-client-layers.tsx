@@ -22,10 +22,17 @@ const ToastViewport = dynamic(
 const PwaRegister = dynamic(() => import("@/components/app/pwa-register").then((mod) => mod.PwaRegister), {
   ssr: false,
 });
+const AuthSessionSync = dynamic(
+  () => import("@/components/auth/auth-session-sync").then((mod) => mod.AuthSessionSync),
+  {
+    ssr: false,
+  },
+);
 
 export function SiteShellClientLayers({ locale }: { locale: AppLocale }) {
   return (
     <>
+      <AuthSessionSync />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />
       <ToastViewport />
