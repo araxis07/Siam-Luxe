@@ -8,9 +8,12 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DeliveryMapMock } from "@/components/tracking/delivery-map-mock";
+import { presentBackendOrders } from "@/lib/backend/order-presenter";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getFeatureLinks, getLocalizedOrders } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
+import { useMemberDataStore } from "@/store/member-data-store";
+import { useUserStore } from "@/store/user-store";
 
 const trackingText = {
   th: {
@@ -54,13 +57,20 @@ export function TrackingExperience({ locale }: { locale: AppLocale }) {
   const copy = trackingText[locale];
   const experienceCopy = getExperienceCopy(locale);
   const feature = getFeatureLinks(locale).find((item) => item.id === "tracking");
-  const orders = getLocalizedOrders(locale);
+  const authStatus = useUserStore((state) => state.authStatus);
+  const memberOrders = useMemberDataStore((state) => state.orders);
+  const orders =
+    authStatus === "member"
+      ? presentBackendOrders(locale, memberOrders)
+      : getLocalizedOrders(locale);
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
   const [selectedOrderId, setSelectedOrderId] = useState(orders[0]?.id ?? "");
+  const resolvedOrderId = selectedOrderId || orders[0]?.id || "";
+
   const activeOrder = useMemo(
-    () => orders.find((order) => order.id === selectedOrderId) ?? orders[0],
-    [orders, selectedOrderId],
+    () => orders.find((order) => order.id === resolvedOrderId) ?? orders[0],
+    [orders, resolvedOrderId],
   );
 
   if (!activeOrder) {
@@ -83,7 +93,7 @@ export function TrackingExperience({ locale }: { locale: AppLocale }) {
           <div className="mt-6 space-y-2">
             <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{experienceCopy.labels.selectOrder}</p>
             <Select
-              value={selectedOrderId}
+              value={resolvedOrderId}
               onValueChange={(value) => setSelectedOrderId(value ?? orders[0]?.id ?? "")}
             >
               <SelectTrigger className="h-12 w-full rounded-2xl border-white/10 bg-white/4 px-4 text-white">

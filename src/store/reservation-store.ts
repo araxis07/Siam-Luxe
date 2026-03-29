@@ -21,6 +21,7 @@ export interface ReservationRecord {
 
 interface ReservationState {
   reservations: ReservationRecord[];
+  setReservations: (reservations: ReservationRecord[]) => void;
   createReservation: (payload: Omit<ReservationRecord, "id" | "status">) => ReservationRecord;
   joinWaitlist: (payload: Omit<ReservationRecord, "id" | "status">) => ReservationRecord;
   cancelReservation: (id: string) => void;
@@ -52,6 +53,7 @@ export const useReservationStore = create<ReservationState>()(
           status: "confirmed",
         },
       ],
+      setReservations: (reservations) => set({ reservations }),
       createReservation: (payload) => {
         const reservation = { ...payload, id: buildId(), status: "confirmed" as const };
         set((state) => ({

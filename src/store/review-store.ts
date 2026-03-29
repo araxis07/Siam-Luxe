@@ -17,6 +17,7 @@ export interface SubmittedReview {
 
 interface ReviewState {
   submittedReviews: SubmittedReview[];
+  setSubmittedReviews: (reviews: SubmittedReview[]) => void;
   submitReview: (payload: Omit<SubmittedReview, "id">) => void;
 }
 
@@ -24,6 +25,7 @@ export const useReviewStore = create<ReviewState>()(
   persist(
     (set) => ({
       submittedReviews: [],
+      setSubmittedReviews: (submittedReviews) => set({ submittedReviews }),
       submitReview: (payload) =>
         set((state) => ({
           submittedReviews: [

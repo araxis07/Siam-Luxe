@@ -19,6 +19,7 @@ export type PageMetadataKey =
   | "specials"
   | "heritage"
   | "account"
+  | "admin"
   | "compareBranches"
   | "pairings"
   | "contact"
@@ -233,6 +234,22 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ja: "住所、支払い、特典、予約、注文履歴を一つの画面で管理します。",
       zh: "在同一仪表板中管理地址、支付方式、奖励、预订与订单历史。",
       ko: "주소, 결제, 리워드, 예약, 주문 이력을 하나의 대시보드에서 관리합니다.",
+    },
+  },
+  admin: {
+    title: {
+      th: "หลังบ้านและภาพรวมระบบ | Siam Lux",
+      en: "Backoffice Overview | Siam Lux",
+      ja: "バックオフィス概要 | Siam Lux",
+      zh: "后台总览 | Siam Lux",
+      ko: "백오피스 개요 | Siam Lux",
+    },
+    description: {
+      th: "ดูภาพรวมคำสั่งซื้อ การจอง และรีวิวล่าสุดของร้านจากฐานข้อมูลจริง",
+      en: "Review live orders, reservations, and recent reviews from the transactional backend.",
+      ja: "実データベースに保存された注文、予約、レビューを確認するバックオフィス概要です。",
+      zh: "查看事务型后台中的真实订单、预约与最新评论。",
+      ko: "트랜잭션 백엔드에 저장된 실시간 주문, 예약, 리뷰를 확인하는 백오피스 개요입니다.",
     },
   },
   compareBranches: {

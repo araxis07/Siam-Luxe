@@ -28,11 +28,18 @@ const AuthSessionSync = dynamic(
     ssr: false,
   },
 );
+const MemberBackendSync = dynamic(
+  () => import("@/components/auth/member-backend-sync").then((mod) => mod.MemberBackendSync),
+  {
+    ssr: false,
+  },
+);
 
 export function SiteShellClientLayers({ locale }: { locale: AppLocale }) {
   return (
     <>
       <AuthSessionSync />
+      <MemberBackendSync />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />
       <ToastViewport />

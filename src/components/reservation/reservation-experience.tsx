@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -17,10 +17,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
+import type { BackendNotification, BackendReservationRecord } from "@/lib/backend/types";
+import { requestJson } from "@/lib/backend/client";
 import type { BranchId } from "@/lib/experience";
 import { getExperienceCopy, getFeatureLinks, getLocalizedBranches } from "@/lib/experience";
+import {
+  reservationBaseLoads,
+  reservationSeatingCapacities,
+  type ReservationSeatingId,
+} from "@/lib/reservation-capacity";
 import { useExperienceStore } from "@/store/experience-store";
+import { useMemberDataStore } from "@/store/member-data-store";
 import { useReservationStore, type ReservationRecord } from "@/store/reservation-store";
+import { useUserStore } from "@/store/user-store";
 
 const reservationText = {
   th: {
@@ -250,6 +259,8 @@ const reservationLiveText = {
     seatsLeft: "เหลือ {count} ที่",
     full: "เต็มรอบนี้",
     reserveSummary: "ภาพรวมของรอบนี้",
+    submitError: "ยังบันทึกการจองไม่ได้ในตอนนี้",
+    submitting: "กำลังบันทึกการจอง",
   },
   en: {
     seatingPreview: "Interactive seating preview",
@@ -260,6 +271,8 @@ const reservationLiveText = {
     seatsLeft: "{count} seats left",
     full: "Full for this slot",
     reserveSummary: "Live slot summary",
+    submitError: "Unable to save the reservation right now.",
+    submitting: "Saving reservation",
   },
   ja: {
     seatingPreview: "席タイプのライブプレビュー",
@@ -270,6 +283,8 @@ const reservationLiveText = {
     seatsLeft: "残り {count} 席",
     full: "この時間帯は満席",
     reserveSummary: "現在の空席サマリー",
+    submitError: "現在予約を保存できません。",
+    submitting: "予約を保存しています",
   },
   zh: {
     seatingPreview: "互动座位预览",
@@ -280,6 +295,8 @@ const reservationLiveText = {
     seatsLeft: "剩余 {count} 个座位",
     full: "该时段已满",
     reserveSummary: "当前档期概览",
+    submitError: "当前无法保存预约。",
+    submitting: "正在保存预约",
   },
   ko: {
     seatingPreview: "좌석 프리뷰",
@@ -290,36 +307,10 @@ const reservationLiveText = {
     seatsLeft: "{count}석 남음",
     full: "이 시간대는 만석",
     reserveSummary: "현재 시간대 요약",
+    submitError: "지금은 예약을 저장할 수 없습니다.",
+    submitting: "예약을 저장하는 중",
   },
 } as const;
-
-const seatingCapacities = {
-  salon: 20,
-  terrace: 10,
-  counter: 8,
-  private: 16,
-} as const;
-
-const seatingLoads: Record<BranchId, Record<string, Partial<Record<keyof typeof seatingCapacities, number>>>> = {
-  bangrak: {
-    "18:00": { salon: 11, terrace: 4, counter: 4, private: 8 },
-    "19:00": { salon: 17, terrace: 8, counter: 7, private: 15 },
-    "20:30": { salon: 18, terrace: 10, counter: 8, private: 16 },
-    "21:30": { salon: 12, terrace: 6, counter: 4, private: 12 },
-  },
-  sukhumvit: {
-    "18:00": { salon: 8, terrace: 2, counter: 5, private: 4 },
-    "19:00": { salon: 15, terrace: 5, counter: 7, private: 9 },
-    "20:30": { salon: 18, terrace: 8, counter: 8, private: 12 },
-    "21:30": { salon: 10, terrace: 3, counter: 5, private: 6 },
-  },
-  chiangmai: {
-    "18:00": { salon: 7, terrace: 3, counter: 2, private: 4 },
-    "19:00": { salon: 13, terrace: 6, counter: 4, private: 8 },
-    "20:30": { salon: 16, terrace: 8, counter: 5, private: 11 },
-    "21:30": { salon: 9, terrace: 4, counter: 3, private: 6 },
-  },
-};
 
 function createSchema(locale: AppLocale) {
   const copy = reservationText[locale];
@@ -348,10 +339,13 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const setSelectedBranchId = useExperienceStore((state) => state.setSelectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
-  const createReservation = useReservationStore((state) => state.createReservation);
-  const joinWaitlist = useReservationStore((state) => state.joinWaitlist);
+  const authStatus = useUserStore((state) => state.authStatus);
+  const reservations = useReservationStore((state) => state.reservations);
+  const setReservations = useReservationStore((state) => state.setReservations);
+  const prependNotification = useMemberDataStore((state) => state.prependNotification);
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState<ReservationRecord | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<ReservationValues>({
     resolver: zodResolver(createSchema(locale)),
@@ -375,10 +369,10 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
   const guestCount = Number(useWatch({ control: form.control, name: "guestCount" }) ?? 2);
   const activeBranch = branches.find((branch) => branch.id === branchId) ?? branches[0];
   const seatPreview = (Object.entries(copy.seatingOptions) as Array<
-    [keyof typeof seatingCapacities, string]
+    [ReservationSeatingId, string]
   >).map(([id, label]) => {
-    const reserved = seatingLoads[branchId as BranchId]?.[timeSlot]?.[id] ?? 0;
-    const capacity = seatingCapacities[id];
+    const reserved = reservationBaseLoads[branchId as BranchId]?.[timeSlot]?.[id] ?? 0;
+    const capacity = reservationSeatingCapacities[id];
     const remaining = Math.max(0, capacity - reserved);
 
     return {
@@ -447,32 +441,67 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
         <form
           className="space-y-6"
           onSubmit={form.handleSubmit((values) => {
-            setSelectedBranchId(values.branchId as typeof selectedBranchId);
-            const payload = {
-              branchId: values.branchId as BranchId,
-              guestCount: Number(values.guestCount),
-              date: values.date,
-              timeSlot: values.timeSlot,
-              occasion: values.occasion,
-              seating: values.seating,
-              contactName: values.contactName,
-              phone: values.phone,
-              notes: values.notes ?? "",
-            };
-            const reservation = waitlistMode ? joinWaitlist(payload) : createReservation(payload);
-            setSubmitted(reservation);
-            trackEvent(waitlistMode ? "reservation_waitlist_submit" : "reservation_submit", {
-              locale,
-              branchId: values.branchId,
-              date: values.date,
-              timeSlot: values.timeSlot,
-              seating: values.seating,
-              guests: Number(values.guestCount),
-            });
-            toast({
-              title: waitlistMode ? liveText.waitlistSubmitted : experienceCopy.labels.reservationSubmitted,
-              description: `${activeBranch.name} · ${values.date} · ${values.timeSlot}`,
-              tone: "success",
+            startTransition(() => {
+              void (async () => {
+                try {
+                  setSelectedBranchId(values.branchId as typeof selectedBranchId);
+                  const reservation = await requestJson<BackendReservationRecord>("/api/reservations", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      branchId: values.branchId,
+                      guestCount: Number(values.guestCount),
+                      date: values.date,
+                      timeSlot: values.timeSlot,
+                      occasion: values.occasion,
+                      seating: values.seating,
+                      contactName: values.contactName,
+                      phone: values.phone,
+                      notes: values.notes ?? "",
+                      status: waitlistMode ? "waitlist" : "confirmed",
+                      locale,
+                    }),
+                  });
+
+                  setReservations([reservation, ...reservations.filter((item) => item.id !== reservation.id)]);
+                  setSubmitted(reservation);
+
+                  if (authStatus === "member") {
+                    prependNotification({
+                      id: `local-reservation-${reservation.id}`,
+                      title: `${reservation.branchId} · ${reservation.date}`,
+                      body: `${reservation.branchId} · ${reservation.date} · ${reservation.timeSlot}`,
+                      kind: reservation.status === "waitlist" ? "reservation-waitlist" : "reservation-created",
+                      link: "/reservation",
+                      createdAt: new Date().toISOString(),
+                      readAt: null,
+                    } satisfies BackendNotification);
+                  }
+
+                  trackEvent(waitlistMode ? "reservation_waitlist_submit" : "reservation_submit", {
+                    locale,
+                    branchId: values.branchId,
+                    date: values.date,
+                    timeSlot: values.timeSlot,
+                    seating: values.seating,
+                    guests: Number(values.guestCount),
+                    serviceMode,
+                  });
+                  toast({
+                    title: waitlistMode ? liveText.waitlistSubmitted : experienceCopy.labels.reservationSubmitted,
+                    description: `${activeBranch.name} · ${values.date} · ${values.timeSlot}`,
+                    tone: "success",
+                  });
+                } catch (error) {
+                  toast({
+                    title: copy.formTitle,
+                    description: error instanceof Error ? error.message : liveText.submitError,
+                    tone: "error",
+                  });
+                }
+              })();
             });
           })}
         >
@@ -589,7 +618,7 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
                 name="seating"
                 render={({ field }) => (
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {(Object.entries(copy.seatingOptions) as Array<[keyof typeof seatingCapacities, string]>).map(
+                    {(Object.entries(copy.seatingOptions) as Array<[ReservationSeatingId, string]>).map(
                       ([key, value]) => {
                         const preview = seatPreview.find((item) => item.id === key);
                         const isActive = field.value === key;
@@ -662,8 +691,9 @@ export function ReservationExperience({ locale }: { locale: AppLocale }) {
             type="submit"
             size="lg"
             className="button-shine h-12 rounded-full bg-[#d6b26a] px-6 text-[#1b130f] hover:bg-[#e4c987]"
+            disabled={isPending}
           >
-            {waitlistMode ? liveText.waitlistSubmitted : copy.submit}
+            {isPending ? liveText.submitting : waitlistMode ? liveText.waitlistSubmitted : copy.submit}
           </Button>
         </form>
       </div>

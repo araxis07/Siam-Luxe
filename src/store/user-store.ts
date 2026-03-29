@@ -3,6 +3,15 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import type {
+  BackendDiningPreferences,
+  BackendGiftWalletEntry,
+  BackendInvoiceProfile,
+  BackendNotificationSettings,
+  BackendRedeemedRewardEntry,
+  BackendSavedAddress,
+  BackendSavedPaymentMethod,
+} from "@/lib/backend/types";
 import type { BranchId, ServiceMode } from "@/lib/experience";
 
 export interface SavedAddress {
@@ -85,6 +94,27 @@ interface UserState {
   redeemedRewards: RedeemedRewardEntry[];
   activeAddressId: string;
   activePaymentProfileId: string;
+  hydrateAccountData: (payload: {
+    email: string;
+    memberSince: string;
+    fullName: string;
+    phone: string;
+    addressLine: string;
+    district: string;
+    city: string;
+    notes: string;
+    paymentMethod: "cash" | "card" | "promptpay";
+    notificationSettings: BackendNotificationSettings;
+    preferences: BackendDiningPreferences;
+    invoiceProfile: BackendInvoiceProfile;
+    savedAddresses: BackendSavedAddress[];
+    paymentProfiles: BackendSavedPaymentMethod[];
+    giftWallet: BackendGiftWalletEntry[];
+    rewardPoints: number;
+    redeemedRewards: BackendRedeemedRewardEntry[];
+    activeAddressId: string;
+    activePaymentProfileId: string;
+  }) => void;
   signInMember: (payload: {
     fullName: string;
     email: string;
@@ -191,6 +221,34 @@ export const useUserStore = create<UserState>()(
       redeemedRewards: [],
       activeAddressId: "address-home",
       activePaymentProfileId: "payment-promptpay",
+      hydrateAccountData: (payload) =>
+        set((state) => ({
+          authStatus: "member",
+          email: payload.email || state.email,
+          memberSince: payload.memberSince || state.memberSince,
+          fullName: payload.fullName || state.fullName,
+          phone: payload.phone,
+          addressLine: payload.addressLine,
+          district: payload.district,
+          city: payload.city,
+          notes: payload.notes,
+          paymentMethod: payload.paymentMethod,
+          notificationSettings: payload.notificationSettings,
+          preferences: payload.preferences,
+          invoiceProfile: payload.invoiceProfile,
+          savedAddresses: payload.savedAddresses.length > 0 ? payload.savedAddresses : state.savedAddresses,
+          paymentProfiles:
+            payload.paymentProfiles.length > 0 ? payload.paymentProfiles : state.paymentProfiles,
+          giftWallet: payload.giftWallet,
+          rewardPoints: payload.rewardPoints,
+          redeemedRewards: payload.redeemedRewards,
+          activeAddressId:
+            payload.activeAddressId || payload.savedAddresses[0]?.id || state.activeAddressId,
+          activePaymentProfileId:
+            payload.activePaymentProfileId ||
+            payload.paymentProfiles[0]?.id ||
+            state.activePaymentProfileId,
+        })),
       signInMember: ({ fullName, email, phone, memberSince }) =>
         set((state) => ({
           authStatus: "member",

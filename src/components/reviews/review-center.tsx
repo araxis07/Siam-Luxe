@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
+import { useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -13,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
+import type { BackendSubmittedReview } from "@/lib/backend/types";
+import { requestJson } from "@/lib/backend/client";
 import { getLocalizedDishes } from "@/lib/catalog";
 import { getExperienceCopy, getLocalizedDishReviews, getLocalizedTestimonials } from "@/lib/experience";
 import { useReviewStore } from "@/store/review-store";
@@ -29,6 +32,8 @@ const reviewText = {
     rating: "คะแนน",
     bodyLabel: "ความเห็น",
     submit: "ส่งรีวิว",
+    submitError: "ยังส่งรีวิวไม่ได้ในตอนนี้",
+    submitting: "กำลังส่งรีวิว",
     errors: {
       guest: "กรุณากรอกชื่ออย่างน้อย 2 ตัวอักษร",
       region: "กรุณาระบุพื้นที่",
@@ -48,6 +53,8 @@ const reviewText = {
     rating: "Rating",
     bodyLabel: "Review",
     submit: "Submit review",
+    submitError: "Unable to submit the review right now.",
+    submitting: "Submitting review",
     errors: {
       guest: "Please enter at least 2 characters",
       region: "Please enter your region",
@@ -67,6 +74,8 @@ const reviewText = {
     rating: "評価",
     bodyLabel: "コメント",
     submit: "投稿する",
+    submitError: "現在レビューを送信できません。",
+    submitting: "レビューを送信しています",
     errors: {
       guest: "2文字以上で入力してください",
       region: "地域を入力してください",
@@ -86,6 +95,8 @@ const reviewText = {
     rating: "评分",
     bodyLabel: "评价内容",
     submit: "提交点评",
+    submitError: "当前无法提交点评。",
+    submitting: "正在提交点评",
     errors: {
       guest: "请至少输入 2 个字符",
       region: "请输入地区",
@@ -105,6 +116,8 @@ const reviewText = {
     rating: "평점",
     bodyLabel: "후기",
     submit: "리뷰 제출",
+    submitError: "지금은 리뷰를 제출할 수 없습니다.",
+    submitting: "리뷰를 제출하는 중",
     errors: {
       guest: "이름을 2자 이상 입력해 주세요",
       region: "지역을 입력해 주세요",
@@ -135,8 +148,9 @@ export function ReviewCenter({ locale }: { locale: AppLocale }) {
   const dishes = getLocalizedDishes(locale);
   const seededReviews = getLocalizedDishReviews(locale);
   const submittedReviews = useReviewStore((state) => state.submittedReviews);
-  const submitReview = useReviewStore((state) => state.submitReview);
+  const setSubmittedReviews = useReviewStore((state) => state.setSubmittedReviews);
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
   const form = useForm<Values>({
     resolver: zodResolver(createSchema(locale)),
     defaultValues: {
@@ -196,30 +210,53 @@ export function ReviewCenter({ locale }: { locale: AppLocale }) {
               <form
                 className="mt-4 grid gap-4 md:grid-cols-2"
                 onSubmit={form.handleSubmit((values) => {
-                  submitReview({
-                    guest: values.guest,
-                    region: values.region,
-                    dishId: values.dishId,
-                    body: values.body,
-                    rating: Number(values.rating),
-                    locale,
-                  });
-                  trackEvent("review_submit", {
-                    locale,
-                    dishId: values.dishId,
-                    rating: Number(values.rating),
-                  });
-                  toast({
-                    title: text.formTitle,
-                    description: values.guest,
-                    tone: "success",
-                  });
-                  form.reset({
-                    guest: "",
-                    region: "",
-                    dishId: dishes[0]?.id ?? "",
-                    rating: "5",
-                    body: "",
+                  startTransition(() => {
+                    void (async () => {
+                      try {
+                        const review = await requestJson<BackendSubmittedReview>("/api/reviews", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            guest: values.guest,
+                            region: values.region,
+                            dishId: values.dishId,
+                            body: values.body,
+                            rating: Number(values.rating),
+                            locale,
+                          }),
+                        });
+
+                        setSubmittedReviews([
+                          review,
+                          ...submittedReviews.filter((item) => item.id !== review.id),
+                        ]);
+                        trackEvent("review_submit", {
+                          locale,
+                          dishId: values.dishId,
+                          rating: Number(values.rating),
+                        });
+                        toast({
+                          title: text.formTitle,
+                          description: values.guest,
+                          tone: "success",
+                        });
+                        form.reset({
+                          guest: "",
+                          region: "",
+                          dishId: dishes[0]?.id ?? "",
+                          rating: "5",
+                          body: "",
+                        });
+                      } catch (error) {
+                        toast({
+                          title: text.formTitle,
+                          description: error instanceof Error ? error.message : text.submitError,
+                          tone: "error",
+                        });
+                      }
+                    })();
                   });
                 })}
               >
@@ -269,8 +306,12 @@ export function ReviewCenter({ locale }: { locale: AppLocale }) {
                   {form.formState.errors.body ? <p className="text-sm text-[#f0aaa4]">{form.formState.errors.body.message}</p> : null}
                 </div>
                 <div className="md:col-span-2">
-                  <Button type="submit" className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]">
-                    {text.submit}
+                  <Button
+                    type="submit"
+                    className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
+                    disabled={isPending}
+                  >
+                    {isPending ? text.submitting : text.submit}
                   </Button>
                 </div>
               </form>

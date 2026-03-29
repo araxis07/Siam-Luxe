@@ -21,6 +21,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
+import type { BackendNotification, BackendOrder } from "@/lib/backend/types";
+import { requestJson } from "@/lib/backend/client";
 import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
@@ -33,6 +35,7 @@ import {
 } from "@/lib/user-display";
 import { useCartStore } from "@/store/cart-store";
 import { useExperienceStore } from "@/store/experience-store";
+import { useMemberDataStore } from "@/store/member-data-store";
 import { useUserStore } from "@/store/user-store";
 
 const checkoutEnhancementText = {
@@ -54,6 +57,10 @@ const checkoutEnhancementText = {
     companyName: "ชื่อบริษัท",
     taxId: "เลขผู้เสียภาษี",
     invoiceEmail: "อีเมลสำหรับเอกสาร",
+    paymentPreparedTitle: "เตรียมการชำระเงินแล้ว",
+    paymentPreparationError: "สร้างขั้นตอนการชำระเงินต่อไม่ได้ในตอนนี้ แต่คำสั่งซื้อถูกบันทึกแล้ว",
+    submitError: "ยังสร้างคำสั่งซื้อไม่ได้ในตอนนี้",
+    submitting: "กำลังยืนยันออเดอร์",
   },
   en: {
     savedAddresses: "Saved addresses",
@@ -73,6 +80,10 @@ const checkoutEnhancementText = {
     companyName: "Company name",
     taxId: "Tax ID",
     invoiceEmail: "Billing email",
+    paymentPreparedTitle: "Payment instructions ready",
+    paymentPreparationError: "The order was placed, but the payment step could not be prepared right now.",
+    submitError: "Unable to place the order right now.",
+    submitting: "Placing order",
   },
   ja: {
     savedAddresses: "保存済み住所",
@@ -92,6 +103,10 @@ const checkoutEnhancementText = {
     companyName: "会社名",
     taxId: "税番号",
     invoiceEmail: "請求先メール",
+    paymentPreparedTitle: "支払い案内を準備しました",
+    paymentPreparationError: "注文は完了しましたが、支払い案内を今は準備できませんでした。",
+    submitError: "現在注文を確定できません。",
+    submitting: "注文を確定しています",
   },
   zh: {
     savedAddresses: "已保存地址",
@@ -111,6 +126,10 @@ const checkoutEnhancementText = {
     companyName: "公司名称",
     taxId: "税号",
     invoiceEmail: "账单邮箱",
+    paymentPreparedTitle: "支付说明已准备好",
+    paymentPreparationError: "订单已创建，但暂时无法生成支付步骤。",
+    submitError: "当前无法提交订单。",
+    submitting: "正在提交订单",
   },
   ko: {
     savedAddresses: "저장된 주소",
@@ -130,6 +149,10 @@ const checkoutEnhancementText = {
     companyName: "회사명",
     taxId: "사업자 번호",
     invoiceEmail: "청구 이메일",
+    paymentPreparedTitle: "결제 안내가 준비되었습니다",
+    paymentPreparationError: "주문은 생성되었지만 결제 단계를 지금 준비할 수 없습니다.",
+    submitError: "지금은 주문을 접수할 수 없습니다.",
+    submitting: "주문을 접수하는 중",
   },
 } as const;
 
@@ -150,6 +173,15 @@ function createCheckoutSchema(t: ReturnType<typeof useTranslations<"checkout">>)
 
 type CheckoutValues = z.infer<ReturnType<typeof createCheckoutSchema>>;
 
+interface PaymentAttemptPreview {
+  id: string;
+  reference: string;
+  provider: string;
+  status: string;
+  instructions: string;
+  clientSecret: string;
+}
+
 export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const t = useTranslations("checkout");
   const tCart = useTranslations("cart");
@@ -157,6 +189,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const hydrated = useHydrated();
   const [isPending, startOrderTransition] = useTransition();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [paymentNotice, setPaymentNotice] = useState<PaymentAttemptPreview | null>(null);
   const experienceCopy = getExperienceCopy(locale);
   const authPanel = getAuthPanel(locale);
   const { toast } = useToast();
@@ -184,6 +217,8 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const setActivePaymentProfile = useUserStore((state) => state.setActivePaymentProfile);
   const saveCheckoutProfile = useUserStore((state) => state.saveCheckoutProfile);
   const updateInvoiceProfile = useUserStore((state) => state.updateInvoiceProfile);
+  const prependOrder = useMemberDataStore((state) => state.prependOrder);
+  const prependNotification = useMemberDataStore((state) => state.prependNotification);
   const text = checkoutEnhancementText[locale];
   const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
   const activePaymentProfile = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
@@ -255,6 +290,15 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
         <CheckCircle2 className="mx-auto size-16 text-[#d6b26a]" />
         <h2 className="mt-6 font-heading text-[2.5rem] leading-tight text-white sm:text-[3rem]">{t("successTitle")}</h2>
         <p className="mx-auto mt-4 max-w-2xl text-[#d1c4b2]">{t("successBody")}</p>
+        {paymentNotice ? (
+          <div className="mx-auto mt-6 max-w-2xl rounded-[1.7rem] border border-[#d6b26a]/20 bg-[#d6b26a]/10 px-5 py-4 text-left">
+            <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{text.paymentPreparedTitle}</p>
+            <p className="mt-3 text-white">{paymentNotice.instructions}</p>
+            <p className="mt-2 text-sm text-[#d1c4b2]">
+              {paymentNotice.provider} · {paymentNotice.reference}
+            </p>
+          </div>
+        ) : null}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button
             type="button"
@@ -388,36 +432,128 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
           className="space-y-8"
           onSubmit={form.handleSubmit((values) => {
             startOrderTransition(() => {
-              saveCheckoutProfile({
-                fullName: values.fullName,
-                phone: values.phone,
-                addressLine: values.addressLine,
-                district: values.district,
-                city: values.city,
-                notes: values.notes ?? "",
-                paymentMethod: values.paymentMethod,
-              });
-              updateInvoiceProfile({
-                email: invoiceProfile.email || email,
-              });
-              clearCart();
-              setOrderPlaced(true);
-              trackEvent("checkout_submit", {
-                locale,
-                itemCount: items.length,
-                total: totals.total,
-                authStatus,
-                serviceMode,
-                branchId: selectedBranchId,
-                promoCode: appliedPromoCode ?? "",
-                wantsReceipt: invoiceProfile.needsReceipt,
-                wantsTaxInvoice: invoiceProfile.taxInvoice,
-              });
-              toast({
-                title: t("successTitle"),
-                description: t("successBody"),
-                tone: "success",
-              });
+              void (async () => {
+                const invoiceEmail = invoiceProfile.email || email || getBillingEmailFallback(locale);
+                const orderItems = items
+                  .map((item) => {
+                    const dish = getLocalizedDish(locale, item.dishId);
+
+                    return {
+                      dishId: item.dishId,
+                      dishName: dish?.name ?? item.dishId,
+                      quantity: item.quantity,
+                      unitPrice: item.unitPrice,
+                      spiceLevel: item.spiceLevel,
+                      toppings: item.toppings,
+                    };
+                  })
+                  .filter((item) => item.quantity > 0);
+
+                try {
+                  let nextPaymentNotice: PaymentAttemptPreview | null = null;
+
+                  saveCheckoutProfile({
+                    fullName: values.fullName,
+                    phone: values.phone,
+                    addressLine: values.addressLine,
+                    district: values.district,
+                    city: values.city,
+                    notes: values.notes ?? "",
+                    paymentMethod: values.paymentMethod,
+                  });
+                  updateInvoiceProfile({
+                    email: invoiceEmail,
+                  });
+
+                  const createdOrder = await requestJson<BackendOrder>("/api/orders", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      branchId: selectedBranchId,
+                      serviceMode,
+                      locale,
+                      promoCode: appliedPromoCode ?? null,
+                      deliveryTime: values.deliveryTime,
+                      contactName: values.fullName,
+                      phone: values.phone,
+                      addressLine: values.addressLine,
+                      district: values.district,
+                      city: values.city,
+                      notes: values.notes ?? "",
+                      paymentMethod: values.paymentMethod,
+                      invoiceProfile: {
+                        ...invoiceProfile,
+                        email: invoiceEmail,
+                      },
+                      items: orderItems,
+                    }),
+                  });
+
+                  if (values.paymentMethod !== "cash") {
+                    try {
+                      nextPaymentNotice = await requestJson<PaymentAttemptPreview>("/api/payments/prepare", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          orderId: createdOrder.id,
+                        }),
+                      });
+                    } catch (paymentError) {
+                      toast({
+                        title: text.paymentPreparedTitle,
+                        description:
+                          paymentError instanceof Error
+                            ? paymentError.message
+                            : text.paymentPreparationError,
+                        tone: "info",
+                      });
+                    }
+                  }
+
+                  if (authStatus === "member") {
+                    prependOrder(createdOrder);
+                    prependNotification({
+                      id: `local-order-${createdOrder.id}`,
+                      title: createdOrder.code,
+                      body: `${createdOrder.code} · ${selectedBranchId} · ${formatPrice(createdOrder.total, locale)}`,
+                      kind: "order-placed",
+                      link: "/tracking",
+                      createdAt: createdOrder.placedAt,
+                      readAt: null,
+                    } satisfies BackendNotification);
+                  }
+
+                  clearCart();
+                  setPaymentNotice(nextPaymentNotice);
+                  setOrderPlaced(true);
+                  trackEvent("checkout_submit", {
+                    locale,
+                    itemCount: items.length,
+                    total: totals.total,
+                    authStatus,
+                    serviceMode,
+                    branchId: selectedBranchId,
+                    promoCode: appliedPromoCode ?? "",
+                    wantsReceipt: invoiceProfile.needsReceipt,
+                    wantsTaxInvoice: invoiceProfile.taxInvoice,
+                  });
+                  toast({
+                    title: t("successTitle"),
+                    description: t("successBody"),
+                    tone: "success",
+                  });
+                } catch (error) {
+                  toast({
+                    title: t("title"),
+                    description: error instanceof Error ? error.message : text.submitError,
+                    tone: "error",
+                  });
+                }
+              })();
             });
           })}
         >
@@ -666,7 +802,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
             className="button-shine h-12 rounded-full bg-[#d6b26a] px-6 text-[#1b130f] hover:bg-[#e4c987]"
             disabled={isPending}
           >
-            {t("submit")}
+            {isPending ? text.submitting : t("submit")}
           </Button>
         </form>
       </div>

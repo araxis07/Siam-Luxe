@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
+import { requestJson } from "@/lib/backend/client";
+import { presentBackendNotifications, presentBackendOrders } from "@/lib/backend/order-presenter";
 import { formatPrice } from "@/lib/format";
 import { getRewardTierSnapshot } from "@/lib/guest-experience";
 import { getAuthPanel } from "@/lib/hospitality";
@@ -47,6 +49,7 @@ import {
 import { useCartStore } from "@/store/cart-store";
 import { useExperienceStore } from "@/store/experience-store";
 import { useFavoritesStore } from "@/store/favorites-store";
+import { useMemberDataStore } from "@/store/member-data-store";
 import { useReservationStore } from "@/store/reservation-store";
 import { useUserStore } from "@/store/user-store";
 
@@ -375,8 +378,11 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   const removePaymentProfile = useUserStore((state) => state.removePaymentProfile);
 
   const reservations = useReservationStore((state) => state.reservations);
+  const setReservations = useReservationStore((state) => state.setReservations);
   const cancelReservation = useReservationStore((state) => state.cancelReservation);
   const updateReservation = useReservationStore((state) => state.updateReservation);
+  const memberOrders = useMemberDataStore((state) => state.orders);
+  const memberNotifications = useMemberDataStore((state) => state.notifications);
 
   const addItem = useCartStore((state) => state.addItem);
   const openCart = useCartStore((state) => state.openCart);
@@ -386,8 +392,14 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
   }
 
   const branch = getLocalizedBranch(locale, selectedBranchId);
-  const orders = getLocalizedOrders(locale);
-  const notifications = getLocalizedNotifications(locale);
+  const orders =
+    authStatus === "member"
+      ? presentBackendOrders(locale, memberOrders)
+      : getLocalizedOrders(locale);
+  const notifications =
+    authStatus === "member"
+      ? presentBackendNotifications(locale, memberNotifications)
+      : getLocalizedNotifications(locale);
   const loyalty = getRewardTierSnapshot(locale, rewardPoints);
   const activeAddress = savedAddresses.find((item) => item.id === activeAddressId) ?? savedAddresses[0];
   const activePayment = paymentProfiles.find((item) => item.id === activePaymentProfileId) ?? paymentProfiles[0];
@@ -975,12 +987,46 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                                 variant="outline"
                                 className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                                 onClick={() => {
-                                  updateReservation(reservation.id, { timeSlot: shiftTimeSlot(reservation.timeSlot) });
-                                  toast({
-                                    title: labels.reservationsTitle,
-                                    description: `${reservation.date} · ${shiftTimeSlot(reservation.timeSlot)}`,
-                                    tone: "success",
-                                  });
+                                  const nextTimeSlot = shiftTimeSlot(reservation.timeSlot);
+
+                                  if (authStatus !== "member") {
+                                    updateReservation(reservation.id, { timeSlot: nextTimeSlot });
+                                    toast({
+                                      title: labels.reservationsTitle,
+                                      description: `${reservation.date} · ${nextTimeSlot}`,
+                                      tone: "success",
+                                    });
+                                    return;
+                                  }
+
+                                  void (async () => {
+                                    try {
+                                      const updated = await requestJson<typeof reservation>(`/api/reservations/${reservation.id}`, {
+                                        method: "PATCH",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ timeSlot: nextTimeSlot }),
+                                      });
+
+                                      setReservations(
+                                        reservations.map((item) =>
+                                          item.id === updated.id ? updated : item,
+                                        ),
+                                      );
+                                      toast({
+                                        title: labels.reservationsTitle,
+                                        description: `${updated.date} · ${updated.timeSlot}`,
+                                        tone: "success",
+                                      });
+                                    } catch (error) {
+                                      toast({
+                                        title: labels.reservationsTitle,
+                                        description: error instanceof Error ? error.message : labels.reschedule,
+                                        tone: "error",
+                                      });
+                                    }
+                                  })();
                                 }}
                               >
                                 {labels.reschedule}
@@ -993,12 +1039,44 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                                 variant="outline"
                                 className="rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                                 onClick={() => {
-                                  cancelReservation(reservation.id);
-                                  toast({
-                                    title: labels.reservationsTitle,
-                                    description: labels.cancel,
-                                    tone: "info",
-                                  });
+                                  if (authStatus !== "member") {
+                                    cancelReservation(reservation.id);
+                                    toast({
+                                      title: labels.reservationsTitle,
+                                      description: labels.cancel,
+                                      tone: "info",
+                                    });
+                                    return;
+                                  }
+
+                                  void (async () => {
+                                    try {
+                                      const updated = await requestJson<typeof reservation>(`/api/reservations/${reservation.id}`, {
+                                        method: "PATCH",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ status: "cancelled" }),
+                                      });
+
+                                      setReservations(
+                                        reservations.map((item) =>
+                                          item.id === updated.id ? updated : item,
+                                        ),
+                                      );
+                                      toast({
+                                        title: labels.reservationsTitle,
+                                        description: labels.cancel,
+                                        tone: "info",
+                                      });
+                                    } catch (error) {
+                                      toast({
+                                        title: labels.reservationsTitle,
+                                        description: error instanceof Error ? error.message : labels.cancel,
+                                        tone: "error",
+                                      });
+                                    }
+                                  })();
                                 }}
                               >
                                 {labels.cancel}
