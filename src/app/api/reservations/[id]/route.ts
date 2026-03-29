@@ -3,6 +3,7 @@ import { z } from "zod";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { getCurrentUser } from "@/lib/server/auth";
+import { readJsonBody } from "@/lib/server/request-body";
 import { resolveReservationStatus } from "@/lib/server/reservation-service";
 
 const reservationUpdateSchema = z.object({
@@ -21,7 +22,13 @@ export async function PATCH(
   }
 
   const { id } = await context.params;
-  const parsed = reservationUpdateSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid reservation update", 400);
+  }
+
+  const parsed = reservationUpdateSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid reservation update", 400, parsed.error.flatten());

@@ -144,6 +144,9 @@ interface UserState {
   removePaymentProfile: (id: string) => void;
   setPrimaryPaymentProfile: (id: string) => void;
   addGiftWalletEntry: (payload: Omit<GiftWalletEntry, "id">) => void;
+  prependGiftWalletEntry: (payload: GiftWalletEntry) => void;
+  prependRedeemedReward: (payload: RedeemedRewardEntry) => void;
+  setRewardPoints: (points: number) => void;
   redeemReward: (payload: {
     rewardId: string;
     title: string;
@@ -403,6 +406,15 @@ export const useUserStore = create<UserState>()(
             ...state.giftWallet,
           ],
         })),
+      prependGiftWalletEntry: (payload) =>
+        set((state) => ({
+          giftWallet: [payload, ...state.giftWallet.filter((entry) => entry.id !== payload.id)],
+        })),
+      prependRedeemedReward: (payload) =>
+        set((state) => ({
+          redeemedRewards: [payload, ...state.redeemedRewards.filter((entry) => entry.id !== payload.id)],
+        })),
+      setRewardPoints: (rewardPoints) => set({ rewardPoints }),
       redeemReward: ({ rewardId, title, points, walletAmount }) => {
         let result = { ok: false, remainingPoints: 0 };
 

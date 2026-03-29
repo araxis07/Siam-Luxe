@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import type { AppLocale } from "@/i18n/routing";
 import { DishCard } from "@/components/dishes/dish-card";
 import { Button } from "@/components/ui/button";
-import { getLocalizedDishes } from "@/lib/catalog";
+import { useOperationalDishes } from "@/hooks/use-operational-menu";
 import { getDishIdsForQuiz } from "@/lib/premium";
 
 type Mood = "comfort" | "spicy" | "light" | "dessert";
@@ -126,7 +126,7 @@ const quizText = {
 
 export function RecommendationQuiz({ locale }: { locale: AppLocale }) {
   const text = quizText[locale];
-  const dishes = getLocalizedDishes(locale);
+  const dishes = useOperationalDishes(locale);
   const [mood, setMood] = useState<Mood>("comfort");
   const [dietary, setDietary] = useState<Dietary>("none");
   const [started, setStarted] = useState(false);

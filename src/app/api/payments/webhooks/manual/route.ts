@@ -3,6 +3,7 @@ import { z } from "zod";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { applyPaymentWebhook } from "@/lib/server/payments";
+import { readJsonBody } from "@/lib/server/request-body";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const webhookSchema = z.object({
@@ -19,7 +20,13 @@ export async function POST(request: Request) {
     return fail("Unauthorized", 401);
   }
 
-  const parsed = webhookSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid payment webhook payload", 400);
+  }
+
+  const parsed = webhookSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid payment webhook payload", 400, parsed.error.flatten());

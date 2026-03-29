@@ -64,6 +64,7 @@ export async function getAccountBootstrap(
     reviewsResult,
     ordersResult,
     notificationsResult,
+    loyaltyAccountResult,
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -97,6 +98,7 @@ export async function getAccountBootstrap(
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
     supabase.from("notifications").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+    supabase.from("loyalty_accounts").select("*").eq("user_id", userId).maybeSingle(),
   ]);
 
   const profile = profileResult.data;
@@ -111,6 +113,7 @@ export async function getAccountBootstrap(
   const reviews = (reviewsResult.data ?? []) as Array<Record<string, unknown>>;
   const orders = (ordersResult.data ?? []) as Array<Record<string, unknown>>;
   const notifications = (notificationsResult.data ?? []) as Array<Record<string, unknown>>;
+  const loyaltyAccount = loyaltyAccountResult.data;
 
   const savedAddresses: BackendSavedAddress[] =
     addresses.length > 0
@@ -229,7 +232,10 @@ export async function getAccountBootstrap(
         title: String(item.title),
         expiresAt: String(item.expires_at),
       })) as BackendGiftWalletEntry[],
-      rewardPoints: 1280 - redemptions.reduce((sum, item) => sum + Number(item.points_used ?? 0), 0),
+      rewardPoints:
+        loyaltyAccount !== null && loyaltyAccount !== undefined
+          ? Number(loyaltyAccount.current_points ?? 0)
+          : 1280 - redemptions.reduce((sum, item) => sum + Number(item.points_used ?? 0), 0),
       redeemedRewards: redemptions.map((item) => ({
         id: String(item.id),
         rewardId: String(item.reward_id),

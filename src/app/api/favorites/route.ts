@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/server/auth";
 import { fail, ok } from "@/lib/server/http";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const favoriteMutationSchema = z.object({
   dishId: z.string().min(1),
@@ -35,7 +36,13 @@ export async function POST(request: Request) {
     return fail("Unauthorized", 401);
   }
 
-  const parsed = favoriteMutationSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid favorite payload", 400);
+  }
+
+  const parsed = favoriteMutationSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid favorite payload", 400, parsed.error.flatten());

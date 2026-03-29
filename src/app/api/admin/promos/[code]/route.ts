@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
 import { fail, ok } from "@/lib/server/http";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const promoUpdateSchema = z.object({
   title: z.string().min(3).optional(),
@@ -22,7 +23,13 @@ export async function PATCH(
     return admin.response;
   }
 
-  const parsed = promoUpdateSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid promo update", 400);
+  }
+
+  const parsed = promoUpdateSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid promo update", 400, parsed.error.flatten());

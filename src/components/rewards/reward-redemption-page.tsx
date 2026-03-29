@@ -5,6 +5,7 @@ import { Crown, Gift, Sparkles } from "lucide-react";
 import type { AppLocale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { requestJson } from "@/lib/backend/client";
 import { formatPrice } from "@/lib/format";
 import { getRewardOptions, getRewardTierSnapshot } from "@/lib/guest-experience";
 import { useUserStore } from "@/store/user-store";
@@ -70,8 +71,12 @@ const pageText = {
 export function RewardRedemptionPage({ locale }: { locale: AppLocale }) {
   const text = pageText[locale];
   const { toast } = useToast();
+  const authStatus = useUserStore((state) => state.authStatus);
   const rewardPoints = useUserStore((state) => state.rewardPoints);
   const redeemedRewards = useUserStore((state) => state.redeemedRewards);
+  const prependGiftWalletEntry = useUserStore((state) => state.prependGiftWalletEntry);
+  const prependRedeemedReward = useUserStore((state) => state.prependRedeemedReward);
+  const setRewardPoints = useUserStore((state) => state.setRewardPoints);
   const redeemReward = useUserStore((state) => state.redeemReward);
   const rewards = getRewardOptions(locale);
   const snapshot = getRewardTierSnapshot(locale, rewardPoints);
@@ -159,18 +164,70 @@ export function RewardRedemptionPage({ locale }: { locale: AppLocale }) {
                     data-testid={`reward-${reward.id}`}
                     className="button-shine mt-6 h-11 rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
                     onClick={() => {
-                      const result = redeemReward({
-                        rewardId: reward.id,
-                        title: reward.title,
-                        points: reward.points,
-                        walletAmount: reward.walletAmount,
-                      });
+                      void (async () => {
+                        if (authStatus === "member") {
+                          try {
+                            const result = await requestJson<{
+                              ok: boolean;
+                              remainingPoints: number;
+                              giftWalletEntry: {
+                                id: string;
+                                code: string;
+                                amount: number;
+                                title: string;
+                                expiresAt: string;
+                              };
+                              redeemedReward: {
+                                id: string;
+                                rewardId: string;
+                                title: string;
+                                pointsUsed: number;
+                                walletAmount: number;
+                                redeemedAt: string;
+                              };
+                            }>("/api/rewards/redeem", {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                rewardId: reward.id,
+                                locale,
+                              }),
+                            });
 
-                      toast({
-                        title: result.ok ? text.successTitle : text.notEnough,
-                        description: reward.title,
-                        tone: result.ok ? "success" : "error",
-                      });
+                            setRewardPoints(result.remainingPoints);
+                            prependGiftWalletEntry(result.giftWalletEntry);
+                            prependRedeemedReward(result.redeemedReward);
+                            toast({
+                              title: text.successTitle,
+                              description: reward.title,
+                              tone: "success",
+                            });
+                            return;
+                          } catch (error) {
+                            toast({
+                              title: text.notEnough,
+                              description: error instanceof Error ? error.message : reward.title,
+                              tone: "error",
+                            });
+                            return;
+                          }
+                        }
+
+                        const result = redeemReward({
+                          rewardId: reward.id,
+                          title: reward.title,
+                          points: reward.points,
+                          walletAmount: reward.walletAmount,
+                        });
+
+                        toast({
+                          title: result.ok ? text.successTitle : text.notEnough,
+                          description: reward.title,
+                          tone: result.ok ? "success" : "error",
+                        });
+                      })();
                     }}
                   >
                     <Sparkles className="size-4" />

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { requestJson } from "@/lib/backend/client";
 import { formatPrice } from "@/lib/format";
 import { getGiftCardOptions } from "@/lib/guest-experience";
 import { useUserStore } from "@/store/user-store";
@@ -80,12 +81,14 @@ export function GiftCardShowcase({ locale }: { locale: AppLocale }) {
   const text = pageText[locale];
   const cards = getGiftCardOptions(locale);
   const { toast } = useToast();
+  const authStatus = useUserStore((state) => state.authStatus);
   const [selectedId, setSelectedId] = useState(cards[1]?.id ?? cards[0]?.id ?? "");
   const [recipient, setRecipient] = useState("");
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const giftWallet = useUserStore((state) => state.giftWallet);
   const addGiftWalletEntry = useUserStore((state) => state.addGiftWalletEntry);
+  const prependGiftWalletEntry = useUserStore((state) => state.prependGiftWalletEntry);
   const activeCard = cards.find((item) => item.id === selectedId) ?? cards[0];
 
   if (!activeCard) {
@@ -174,20 +177,68 @@ export function GiftCardShowcase({ locale }: { locale: AppLocale }) {
                   data-testid="purchase-gift-card"
                   className="button-shine h-12 rounded-full bg-[#d6b26a] px-6 text-[#1b130f] hover:bg-[#e4c987]"
                   onClick={() => {
-                    addGiftWalletEntry({
-                      code: activeCard.id.toUpperCase(),
-                      amount: activeCard.amount,
-                      title: recipient ? `${activeCard.title} · ${recipient}` : activeCard.title,
-                      expiresAt: "2026-12-31",
-                    });
-                    toast({
-                      title: text.successTitle,
-                      description: recipient || activeCard.title,
-                      tone: "success",
-                    });
-                    setRecipient("");
-                    setEmail("");
-                    setNote("");
+                    void (async () => {
+                      if (authStatus === "member") {
+                        try {
+                          const result = await requestJson<{
+                            ok: boolean;
+                            giftWalletEntry: {
+                              id: string;
+                              code: string;
+                              amount: number;
+                              title: string;
+                              expiresAt: string;
+                              note?: string;
+                            };
+                          }>("/api/gift-cards/purchase", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              cardId: activeCard.id,
+                              locale,
+                              recipient,
+                              recipientEmail: email,
+                              note,
+                            }),
+                          });
+
+                          prependGiftWalletEntry(result.giftWalletEntry);
+                          toast({
+                            title: text.successTitle,
+                            description: recipient || activeCard.title,
+                            tone: "success",
+                          });
+                          setRecipient("");
+                          setEmail("");
+                          setNote("");
+                          return;
+                        } catch (error) {
+                          toast({
+                            title: text.successTitle,
+                            description: error instanceof Error ? error.message : activeCard.title,
+                            tone: "error",
+                          });
+                          return;
+                        }
+                      }
+
+                      addGiftWalletEntry({
+                        code: activeCard.id.toUpperCase(),
+                        amount: activeCard.amount,
+                        title: recipient ? `${activeCard.title} · ${recipient}` : activeCard.title,
+                        expiresAt: "2026-12-31",
+                      });
+                      toast({
+                        title: text.successTitle,
+                        description: recipient || activeCard.title,
+                        tone: "success",
+                      });
+                      setRecipient("");
+                      setEmail("");
+                      setNote("");
+                    })();
                   }}
                 >
                   <Sparkles className="size-4" />

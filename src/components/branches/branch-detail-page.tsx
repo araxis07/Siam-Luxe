@@ -4,7 +4,7 @@ import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { BranchAvailabilityMatrix } from "@/components/branches/branch-availability-matrix";
 import { Button } from "@/components/ui/button";
-import { getLocalizedDishes } from "@/lib/catalog";
+import type { LocalizedMenuDish } from "@/lib/catalog";
 import { getLocalizedBranch } from "@/lib/experience";
 import { getBranchStory } from "@/lib/premium";
 
@@ -49,14 +49,15 @@ const branchDetailText = {
 export function BranchDetailPage({
   locale,
   branchId,
+  highlightedDishes,
 }: {
   locale: AppLocale;
   branchId: "bangrak" | "sukhumvit" | "chiangmai";
+  highlightedDishes: LocalizedMenuDish[];
 }) {
   const text = branchDetailText[locale];
   const branch = getLocalizedBranch(locale, branchId);
   const story = getBranchStory(locale, branchId);
-  const highlightedDishes = getLocalizedDishes(locale).filter((dish) => dish.featured).slice(0, 3);
 
   return (
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">

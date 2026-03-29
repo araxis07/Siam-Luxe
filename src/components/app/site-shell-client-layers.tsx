@@ -34,12 +34,19 @@ const MemberBackendSync = dynamic(
     ssr: false,
   },
 );
+const MenuOperationsSync = dynamic(
+  () => import("@/components/app/menu-operations-sync").then((mod) => mod.MenuOperationsSync),
+  {
+    ssr: false,
+  },
+);
 
 export function SiteShellClientLayers({ locale }: { locale: AppLocale }) {
   return (
     <>
       <AuthSessionSync />
       <MemberBackendSync />
+      <MenuOperationsSync />
       <CartDrawer locale={locale} />
       <MobileCartBar locale={locale} />
       <ToastViewport />

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/server/auth";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { getPromoDiscount, getPromoOffer } from "@/lib/server/promos";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const orderSchema = z.object({
   branchId: z.enum(["bangrak", "sukhumvit", "chiangmai"]),
@@ -99,7 +100,13 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const { supabase, user } = await getCurrentUser();
-  const parsed = orderSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid order payload", 400);
+  }
+
+  const parsed = orderSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid order payload", 400, parsed.error.flatten());

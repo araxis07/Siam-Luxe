@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = false;
+    }
+
+    return config;
+  },
 };
 
 export default withNextIntl(nextConfig);

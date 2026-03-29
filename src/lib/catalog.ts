@@ -106,6 +106,9 @@ export interface LocalizedMenuDish {
   featured: boolean;
   accentClass: string;
   availableToppings: LocalizedTopping[];
+  isAvailable?: boolean;
+  statusId?: "available" | "limited" | "soldOut" | "chefToday" | null;
+  kitchenNote?: string;
 }
 
 const categories: CategoryDefinition[] = [
@@ -1402,6 +1405,9 @@ export function getLocalizedDishes(locale: AppLocale): LocalizedMenuDish[] {
         price: topping.price,
       };
     }),
+    isAvailable: true,
+    statusId: null,
+    kitchenNote: "",
   }));
 }
 

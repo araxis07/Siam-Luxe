@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { getLocalizedDish } from "@/lib/catalog";
+import { useOperationalDishMap } from "@/hooks/use-operational-menu";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { useCartStore } from "@/store/cart-store";
@@ -40,6 +40,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
   const appliedPromoCode = useExperienceStore((state) => state.appliedPromoCode);
+  const dishMap = useOperationalDishMap(locale);
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const totals = getOrderTotals(items, appliedPromoCode);
@@ -90,7 +91,7 @@ export function CartDrawer({ locale }: { locale: AppLocale }) {
               <Separator className="bg-white/8" />
               <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
                 {items.map((item) => {
-                  const dish = getLocalizedDish(locale, item.dishId);
+                  const dish = dishMap.get(item.dishId) ?? null;
 
                   if (!dish) {
                     return null;

@@ -20,7 +20,7 @@ import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedDishReviews } from "@/lib/experience";
 import { getBeveragePairings, getSocialProof } from "@/lib/hospitality";
 import { useToast } from "@/hooks/use-toast";
-import { getDishStatus } from "@/lib/premium";
+import { getDishStatus, getDishStatusById } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
 import { useRecentlyViewedStore } from "@/store/recently-viewed-store";
 
@@ -47,8 +47,8 @@ export function FoodDetailDialog({
   const reviews = getLocalizedDishReviews(locale, dish.id).slice(0, 2);
   const pairings = getBeveragePairings(locale).filter((item) => item.dishIds.includes(dish.id)).slice(0, 2);
   const socialProof = getSocialProof(locale, dish.id);
-  const status = getDishStatus(locale, dish.id);
-  const isSoldOut = status.id === "soldOut";
+  const status = dish.statusId ? getDishStatusById(locale, dish.statusId) : getDishStatus(locale, dish.id);
+  const isSoldOut = !dish.isAvailable || status.id === "soldOut";
   const extraText = {
     th: { pairings: "จับคู่เครื่องดื่ม", share: "แชร์เมนู" },
     en: { pairings: "Pairings", share: "Share dish" },

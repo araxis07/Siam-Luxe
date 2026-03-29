@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 import type { BackendSubmittedReview } from "@/lib/backend/types";
 import { requestJson } from "@/lib/backend/client";
-import { getLocalizedDishes } from "@/lib/catalog";
+import { useOperationalDishes } from "@/hooks/use-operational-menu";
 import { getExperienceCopy, getLocalizedDishReviews, getLocalizedTestimonials } from "@/lib/experience";
 import { useReviewStore } from "@/store/review-store";
 
@@ -145,7 +145,7 @@ export function ReviewCenter({ locale }: { locale: AppLocale }) {
   const copy = getExperienceCopy(locale);
   const text = reviewText[locale];
   const testimonials = getLocalizedTestimonials(locale);
-  const dishes = getLocalizedDishes(locale);
+  const dishes = useOperationalDishes(locale);
   const seededReviews = getLocalizedDishReviews(locale);
   const submittedReviews = useReviewStore((state) => state.submittedReviews);
   const setSubmittedReviews = useReviewStore((state) => state.setSubmittedReviews);

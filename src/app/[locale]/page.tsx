@@ -14,6 +14,8 @@ import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getLocalizedCategories, getLocalizedDishes, getLocalizedPromotions } from "@/lib/catalog";
 import { getPageMetadata, getRestaurantSchema } from "@/lib/page-metadata";
+import { getServerSupabase } from "@/lib/server/auth";
+import { getOperationalLocalizedDishes } from "@/lib/server/menu-operations";
 
 const categoryIconMap = {
   crown: Crown,
@@ -47,7 +49,16 @@ export default async function HomePage({
   const tHome = await getTranslations({ locale: appLocale, namespace: "home" });
   const tCommon = await getTranslations({ locale: appLocale, namespace: "common" });
   const metadata = getPageMetadata(appLocale, "home", `/${locale}`);
-  const featuredDishes = getLocalizedDishes(appLocale).filter((dish) => dish.featured).slice(0, 3);
+  let homepageDishes = getLocalizedDishes(appLocale);
+
+  try {
+    const supabase = await getServerSupabase();
+    homepageDishes = await getOperationalLocalizedDishes(supabase, appLocale);
+  } catch {
+    // Fall back to the bundled catalog when the backend is unavailable.
+  }
+
+  const featuredDishes = homepageDishes.filter((dish) => dish.featured).slice(0, 3);
   const categories = getLocalizedCategories(appLocale);
   const promotions = getLocalizedPromotions(appLocale);
 

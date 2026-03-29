@@ -2,8 +2,8 @@
 
 import type { AppLocale } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
+import { useOperationalDishes } from "@/hooks/use-operational-menu";
 import { useToast } from "@/hooks/use-toast";
-import { getLocalizedDishes } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getUpsellSuggestions } from "@/lib/guest-experience";
 import { useCartStore } from "@/store/cart-store";
@@ -39,7 +39,7 @@ export function SmartUpsellPanel({ locale }: { locale: AppLocale }) {
     locale,
     items.map((item) => item.dishId),
   );
-  const dishes = getLocalizedDishes(locale);
+  const dishes = useOperationalDishes(locale);
   const { toast } = useToast();
 
   if (items.length === 0 || suggestions.length === 0) {

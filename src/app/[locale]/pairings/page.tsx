@@ -5,7 +5,10 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/app/json-ld";
 import { BeveragePairingPage } from "@/components/pairings/beverage-pairing-page";
 import { routing, type AppLocale } from "@/i18n/routing";
+import { getLocalizedDishes } from "@/lib/catalog";
 import { getPageMetadata, getRestaurantSchema } from "@/lib/page-metadata";
+import { getServerSupabase } from "@/lib/server/auth";
+import { getOperationalLocalizedDishes } from "@/lib/server/menu-operations";
 
 export async function generateMetadata({
   params,
@@ -29,6 +32,14 @@ export default async function PairingsPage({
 
   const appLocale = locale as AppLocale;
   const metadata = getPageMetadata(appLocale, "pairings", `/${locale}/pairings`);
+  let dishes = getLocalizedDishes(appLocale);
+
+  try {
+    const supabase = await getServerSupabase();
+    dishes = (await getOperationalLocalizedDishes(supabase, appLocale)).filter((dish) => dish.isAvailable !== false);
+  } catch {
+    // Keep static fallback for SSG and local development without database connectivity.
+  }
 
   return (
     <>
@@ -40,7 +51,7 @@ export default async function PairingsPage({
           metadata.description ?? "",
         )}
       />
-      <BeveragePairingPage locale={appLocale} />
+      <BeveragePairingPage locale={appLocale} dishes={dishes} />
     </>
   );
 }

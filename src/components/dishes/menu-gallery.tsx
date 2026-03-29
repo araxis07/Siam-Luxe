@@ -11,7 +11,7 @@ import { FavoriteButton } from "@/components/dishes/favorite-button";
 import { FoodDetailDialog } from "@/components/dishes/food-detail-dialog";
 import { formatPrice } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
-import { getDishStatus } from "@/lib/premium";
+import { getDishStatus, getDishStatusById } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
 
 const galleryText = {
@@ -48,8 +48,9 @@ export function MenuGallery({ dishes, locale }: { dishes: LocalizedMenuDish[]; l
     <>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {dishes.map((dish, index) => {
-          const status = getDishStatus(locale, dish.id);
+          const status = dish.statusId ? getDishStatusById(locale, dish.statusId) : getDishStatus(locale, dish.id);
           const featuredTile = index % 5 === 0;
+          const isSoldOut = !dish.isAvailable || status.id === "soldOut";
 
           return (
             <article
@@ -107,9 +108,9 @@ export function MenuGallery({ dishes, locale }: { dishes: LocalizedMenuDish[]; l
                   <Button
                     type="button"
                     className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
-                    disabled={status.id === "soldOut"}
+                    disabled={isSoldOut}
                     onClick={() => {
-                      if (status.id === "soldOut") {
+                      if (isSoldOut) {
                         return;
                       }
                       addItem({

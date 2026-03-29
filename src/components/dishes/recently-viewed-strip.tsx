@@ -3,7 +3,7 @@
 import type { AppLocale } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
-import { getLocalizedDishes } from "@/lib/catalog";
+import { useOperationalDishes } from "@/hooks/use-operational-menu";
 import { formatPrice } from "@/lib/format";
 import { useRecentlyViewedStore } from "@/store/recently-viewed-store";
 
@@ -33,7 +33,7 @@ const stripText = {
 export function RecentlyViewedStrip({ locale }: { locale: AppLocale }) {
   const text = stripText[locale];
   const dishIds = useRecentlyViewedStore((state) => state.dishIds);
-  const dishes = getLocalizedDishes(locale).filter((dish) => dishIds.includes(dish.id));
+  const dishes = useOperationalDishes(locale).filter((dish) => dishIds.includes(dish.id));
   const ordered = dishIds
     .map((id) => dishes.find((dish) => dish.id === id))
     .filter((dish): dish is NonNullable<typeof dish> => Boolean(dish));

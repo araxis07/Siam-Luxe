@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { fail, ok } from "@/lib/server/http";
 import { getCurrentUser } from "@/lib/server/auth";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const reviewSchema = z.object({
   guest: z.string().min(2),
@@ -48,7 +49,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const { supabase, user } = await getCurrentUser();
-  const parsed = reviewSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid review payload", 400);
+  }
+
+  const parsed = reviewSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid review payload", 400, parsed.error.flatten());
@@ -69,6 +76,14 @@ export async function POST(request: Request) {
     .select("*")
     .single();
 
+  if (error?.message?.includes("public.reviews")) {
+    return fail(
+      "Unable to submit review",
+      500,
+      "Run migration 202603300002_create_transactional_core.sql first.",
+    );
+  }
+
   if (error) {
     return fail("Unable to submit review", 500, error.message);
   }
@@ -83,4 +98,3 @@ export async function POST(request: Request) {
     locale: data.locale,
   });
 }
-

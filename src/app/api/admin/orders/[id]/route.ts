@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/server/admin";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const orderUpdateSchema = z.object({
   status: z.enum(["pending", "confirmed", "preparing", "ready", "dispatching", "arriving", "completed", "cancelled"]).optional(),
@@ -19,7 +20,13 @@ export async function PATCH(
     return admin.response;
   }
 
-  const parsed = orderUpdateSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid admin order update", 400);
+  }
+
+  const parsed = orderUpdateSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid admin order update", 400, parsed.error.flatten());

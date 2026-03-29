@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/server/auth";
 import { fail, ok } from "@/lib/server/http";
 import { createPaymentAttempt } from "@/lib/server/payments";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const paymentPrepareSchema = z.object({
   orderId: z.string().uuid(),
@@ -10,7 +11,13 @@ const paymentPrepareSchema = z.object({
 
 export async function POST(request: Request) {
   const { supabase, user } = await getCurrentUser();
-  const parsed = paymentPrepareSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid payment preparation payload", 400);
+  }
+
+  const parsed = paymentPrepareSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid payment preparation payload", 400, parsed.error.flatten());

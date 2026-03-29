@@ -333,6 +333,10 @@ export function getFestivals(locale: AppLocale) {
 
 export function getDishStatus(locale: AppLocale, dishId: string) {
   const status = dishStatusMap[dishId] ?? "available";
+  return getDishStatusById(locale, status);
+}
+
+export function getDishStatusById(locale: AppLocale, status: DishStatusId) {
   const descriptor = dishStatusLabels[status];
 
   return {

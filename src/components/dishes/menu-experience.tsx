@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DishCard } from "@/components/dishes/dish-card";
 import type { DietaryTagId } from "@/lib/experience";
 import type { DishStatusId } from "@/lib/premium";
-import { getDishStatus } from "@/lib/premium";
+import { getDishStatus, getDishStatusById } from "@/lib/premium";
 import { useExperienceStore } from "@/store/experience-store";
 
 type SpiceFilter = "all" | "mild" | "medium" | "hot";
@@ -208,8 +208,9 @@ export function MenuExperience({
       const matchesSpice = matchesSpiceFilter(dish.baseSpice, spiceFilter);
       const matchesDietary =
         dietaryFilter === "all" || getDietaryLabels(locale, dish.id).some((item) => item.id === dietaryFilter);
+      const resolvedStatus = dish.statusId ? getDishStatusById(locale, dish.statusId) : getDishStatus(locale, dish.id);
       const matchesStatus =
-        statusFilter === "all" || getDishStatus(locale, dish.id).id === statusFilter;
+        statusFilter === "all" || (!dish.isAvailable ? "soldOut" : resolvedStatus.id) === statusFilter;
       const matchesPrice = matchesPriceFilter(dish.price, priceFilter);
       const matchesPrep = matchesPrepFilter(dish.prepMinutes, prepFilter);
       const matchesOccasion =

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
 import { fail, ok } from "@/lib/server/http";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const promoCreateSchema = z.object({
   code: z.string().min(3),
@@ -40,7 +41,13 @@ export async function POST(request: Request) {
     return admin.response;
   }
 
-  const parsed = promoCreateSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid promo payload", 400);
+  }
+
+  const parsed = promoCreateSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid promo payload", 400, parsed.error.flatten());

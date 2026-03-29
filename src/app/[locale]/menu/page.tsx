@@ -8,6 +8,8 @@ import { MenuExperience } from "@/components/dishes/menu-experience";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getLocalizedCategories, getLocalizedDishes, getLocalizedRegions } from "@/lib/catalog";
 import { getPageMetadata, getRestaurantSchema } from "@/lib/page-metadata";
+import { getServerSupabase } from "@/lib/server/auth";
+import { getOperationalLocalizedDishes } from "@/lib/server/menu-operations";
 
 export async function generateMetadata({
   params,
@@ -39,7 +41,14 @@ export default async function MenuPage({
     zh: "Siam Lux 菜单",
     ko: "Siam Lux 메뉴",
   }[appLocale];
-  const dishes = getLocalizedDishes(appLocale);
+  let dishes = getLocalizedDishes(appLocale);
+
+  try {
+    const supabase = await getServerSupabase();
+    dishes = await getOperationalLocalizedDishes(supabase, appLocale);
+  } catch {
+    // Fall back to the bundled catalog when the backend is unavailable.
+  }
   const categories = getLocalizedCategories(appLocale);
   const regions = getLocalizedRegions(appLocale);
 

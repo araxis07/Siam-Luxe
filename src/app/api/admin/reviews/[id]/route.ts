@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
 import { fail, ok } from "@/lib/server/http";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const reviewAdminUpdateSchema = z.object({
   isPublished: z.boolean(),
@@ -17,7 +18,13 @@ export async function PATCH(
     return admin.response;
   }
 
-  const parsed = reviewAdminUpdateSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid admin review update", 400);
+  }
+
+  const parsed = reviewAdminUpdateSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid admin review update", 400, parsed.error.flatten());

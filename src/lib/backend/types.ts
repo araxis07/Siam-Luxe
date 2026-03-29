@@ -26,6 +26,7 @@ export interface BackendGiftWalletEntry {
   amount: number;
   title: string;
   expiresAt: string;
+  note?: string;
 }
 
 export interface BackendRedeemedRewardEntry {

@@ -5,6 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { AppLocale } from "@/i18n/routing";
 import type { BranchId } from "@/lib/experience";
+import { BranchOperationsPanel } from "@/components/admin/branch-operations-panel";
+import { EmailOutboxPanel } from "@/components/admin/email-outbox-panel";
+import { LoyaltyOperationsPanel } from "@/components/admin/loyalty-operations-panel";
+import { MenuOperationsPanel } from "@/components/admin/menu-operations-panel";
 import { reservationTimeSlots } from "@/lib/reservation-capacity";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1284,6 +1288,16 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <BranchOperationsPanel locale={locale} />
+          <LoyaltyOperationsPanel locale={locale} />
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <MenuOperationsPanel locale={locale} />
+          <EmailOutboxPanel locale={locale} />
         </div>
       </div>
     </section>

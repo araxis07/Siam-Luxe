@@ -1,7 +1,7 @@
 import { Wine } from "lucide-react";
 
 import type { AppLocale } from "@/i18n/routing";
-import { getLocalizedDish } from "@/lib/catalog";
+import type { LocalizedMenuDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getBeveragePairings } from "@/lib/hospitality";
 
@@ -33,9 +33,16 @@ const pairingText = {
   },
 } as const;
 
-export function BeveragePairingPage({ locale }: { locale: AppLocale }) {
+export function BeveragePairingPage({
+  locale,
+  dishes,
+}: {
+  locale: AppLocale;
+  dishes: LocalizedMenuDish[];
+}) {
   const text = pairingText[locale];
   const pairings = getBeveragePairings(locale);
+  const dishMap = new Map(dishes.map((dish) => [dish.id, dish]));
 
   return (
     <section className="scene-section px-4 pt-10 pb-24 sm:px-6 lg:px-8">
@@ -66,7 +73,7 @@ export function BeveragePairingPage({ locale }: { locale: AppLocale }) {
               </div>
               <div className="mt-5 space-y-3">
                 {pairing.dishIds.map((dishId) => {
-                  const dish = getLocalizedDish(locale, dishId);
+                  const dish = dishMap.get(dishId) ?? null;
 
                   if (!dish) {
                     return null;

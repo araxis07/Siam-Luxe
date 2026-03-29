@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { DishCard } from "@/components/dishes/dish-card";
 import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { getLocalizedDishes } from "@/lib/catalog";
+import { useOperationalDishes } from "@/hooks/use-operational-menu";
 import { getExperienceCopy, getFeatureLinks } from "@/lib/experience";
 import { useFavoritesStore } from "@/store/favorites-store";
 
@@ -14,7 +14,7 @@ export function FavoritesPage({ locale }: { locale: AppLocale }) {
   const favoriteDishIds = useFavoritesStore((state) => state.favoriteDishIds);
   const feature = getFeatureLinks(locale).find((item) => item.id === "favorites");
   const copy = getExperienceCopy(locale);
-  const dishes = getLocalizedDishes(locale).filter((dish) => favoriteDishIds.includes(dish.id));
+  const dishes = useOperationalDishes(locale).filter((dish) => favoriteDishIds.includes(dish.id));
 
   if (!hydrated) {
     return <div className="h-[420px] animate-pulse rounded-[2rem] bg-white/5" />;

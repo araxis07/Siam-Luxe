@@ -3,6 +3,7 @@ import { z } from "zod";
 import { fail, ok } from "@/lib/server/http";
 import { getServerSupabase } from "@/lib/server/auth";
 import { getPromoDiscount, getPromoOffer } from "@/lib/server/promos";
+import { readJsonBody } from "@/lib/server/request-body";
 
 const promoSchema = z.object({
   code: z.string().min(1),
@@ -11,7 +12,13 @@ const promoSchema = z.object({
 
 export async function POST(request: Request) {
   const supabase = await getServerSupabase();
-  const parsed = promoSchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+
+  if (!body.ok) {
+    return fail("Invalid promo payload", 400);
+  }
+
+  const parsed = promoSchema.safeParse(body.data);
 
   if (!parsed.success) {
     return fail("Invalid promo payload", 400, parsed.error.flatten());

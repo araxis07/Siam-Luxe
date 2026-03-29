@@ -19,11 +19,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { useOperationalDishMap } from "@/hooks/use-operational-menu";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 import type { BackendNotification, BackendOrder } from "@/lib/backend/types";
 import { requestJson } from "@/lib/backend/client";
-import { getLocalizedDish } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { getAuthPanel } from "@/lib/hospitality";
@@ -198,6 +198,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const selectedBranchId = useExperienceStore((state) => state.selectedBranchId);
   const serviceMode = useExperienceStore((state) => state.serviceMode);
   const appliedPromoCode = useExperienceStore((state) => state.appliedPromoCode);
+  const dishMap = useOperationalDishMap(locale);
   const authStatus = useUserStore((state) => state.authStatus);
   const email = useUserStore((state) => state.email);
   const fullName = useUserStore((state) => state.fullName);
@@ -436,7 +437,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                 const invoiceEmail = invoiceProfile.email || email || getBillingEmailFallback(locale);
                 const orderItems = items
                   .map((item) => {
-                    const dish = getLocalizedDish(locale, item.dishId);
+                    const dish = dishMap.get(item.dishId) ?? null;
 
                     return {
                       dishId: item.dishId,
@@ -816,7 +817,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
 
           <div className="mt-6 space-y-4">
             {items.map((item) => {
-              const dish = getLocalizedDish(locale, item.dishId);
+              const dish = dishMap.get(item.dishId) ?? null;
 
               if (!dish) {
                 return null;

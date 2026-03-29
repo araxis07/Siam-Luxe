@@ -18,7 +18,7 @@ import { trackEvent } from "@/lib/analytics";
 import { formatPrice } from "@/lib/format";
 import { getSocialProof } from "@/lib/hospitality";
 import { useToast } from "@/hooks/use-toast";
-import { getDishStatus } from "@/lib/premium";
+import { getDishStatus, getDishStatusById } from "@/lib/premium";
 import { useCartStore } from "@/store/cart-store";
 import { FoodDetailDialog } from "@/components/dishes/food-detail-dialog";
 
@@ -37,9 +37,9 @@ export function DishCard({
   const openCart = useCartStore((state) => state.openCart);
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const status = getDishStatus(locale, dish.id);
+  const status = dish.statusId ? getDishStatusById(locale, dish.statusId) : getDishStatus(locale, dish.id);
   const socialProof = getSocialProof(locale, dish.id);
-  const isSoldOut = status.id === "soldOut";
+  const isSoldOut = !dish.isAvailable || status.id === "soldOut";
   const extraText = {
     th: { pairings: "จับคู่เครื่องดื่ม", share: "แชร์เมนู" },
     en: { pairings: "Pairings", share: "Share dish" },
