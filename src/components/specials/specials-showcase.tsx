@@ -17,7 +17,7 @@ const specialsText = {
   en: {
     subtitle: "Curated tasting sets and seasonal Thai collections designed for sharing, date nights, and premium dinners.",
     addSet: "Add this set to cart",
-    sideBody: "Pairing tasting menus with reservations makes the frontend feel like a complete restaurant product, not only a menu.",
+    sideBody: "Pairing tasting menus with reservations makes the experience feel like a complete restaurant journey, not only a menu.",
   },
   ja: {
     subtitle: "シェアにも特別な夜にも合うセットメニューと季節コレクションをまとめました。",
@@ -27,7 +27,7 @@ const specialsText = {
   zh: {
     subtitle: "整理了适合分享与特别晚餐的品鉴套餐与季节限定组合。",
     addSet: "将此套餐加入购物车",
-    sideBody: "把套餐与预约流程组合在一起，会让前端更像完整餐厅产品，而不只是菜单页。",
+    sideBody: "把套餐与预约流程组合在一起，会让整体体验更像完整餐厅产品，而不只是菜单页。",
   },
   ko: {
     subtitle: "공유 식사와 특별한 저녁을 위한 테이스팅 세트와 시즌 컬렉션을 모았습니다.",

@@ -4,6 +4,9 @@ import type { GiftWalletEntry, SavedAddress, SavedPaymentMethod } from "@/store/
 const userDisplayText = {
   th: {
     defaultGuest: "",
+    guestProfileEmail: "guest@siamlux.com",
+    billingEmail: "billing@siamlux.com",
+    invoiceCompany: "Siam Lux Hospitality",
     home: "บ้าน",
     primary: "หลัก",
     studio: "สตูดิโอ",
@@ -16,6 +19,9 @@ const userDisplayText = {
   },
   en: {
     defaultGuest: "",
+    guestProfileEmail: "guest@siamlux.com",
+    billingEmail: "billing@siamlux.com",
+    invoiceCompany: "Siam Lux Hospitality",
     home: "Home",
     primary: "Primary",
     studio: "Studio",
@@ -28,6 +34,9 @@ const userDisplayText = {
   },
   ja: {
     defaultGuest: "",
+    guestProfileEmail: "guest@siamlux.com",
+    billingEmail: "billing@siamlux.com",
+    invoiceCompany: "Siam Lux Hospitality",
     home: "自宅",
     primary: "メイン",
     studio: "スタジオ",
@@ -40,6 +49,9 @@ const userDisplayText = {
   },
   zh: {
     defaultGuest: "",
+    guestProfileEmail: "guest@siamlux.com",
+    billingEmail: "billing@siamlux.com",
+    invoiceCompany: "Siam Lux Hospitality",
     home: "家",
     primary: "主要",
     studio: "工作室",
@@ -52,6 +64,9 @@ const userDisplayText = {
   },
   ko: {
     defaultGuest: "",
+    guestProfileEmail: "guest@siamlux.com",
+    billingEmail: "billing@siamlux.com",
+    invoiceCompany: "Siam Lux Hospitality",
     home: "집",
     primary: "기본",
     studio: "스튜디오",
@@ -74,6 +89,18 @@ function matchesAny(value: string, candidates: string[]) {
 
 export function normalizeSeedGuestName(value: string) {
   return value === "Siam Lux Guest" ? "" : value;
+}
+
+export function getGuestProfileEmailFallback(locale: AppLocale) {
+  return userDisplayText[locale].guestProfileEmail;
+}
+
+export function getBillingEmailFallback(locale: AppLocale) {
+  return userDisplayText[locale].billingEmail;
+}
+
+export function getInvoiceCompanyFallback(locale: AppLocale) {
+  return userDisplayText[locale].invoiceCompany;
 }
 
 export function getLocalizedAddressLabel(locale: AppLocale, address: SavedAddress) {

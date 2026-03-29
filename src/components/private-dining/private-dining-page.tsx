@@ -18,14 +18,14 @@ const pageText = {
   th: {
     eyebrow: "ห้องส่วนตัวและจัดเลี้ยง",
     title: "ฟอร์มสำหรับห้องส่วนตัว งานฉลอง และรับรองลูกค้า",
-    body: "หน้านี้ถูกออกแบบให้เป็นฟอร์มคุณภาพสูงฝั่งหน้าเว็บ สำหรับสอบถามงานอีเวนต์ เหมาปิดเชฟเทเบิล และดินเนอร์มูลค่าสูง",
+    body: "หน้านี้ถูกออกแบบให้เป็นฟอร์มคุณภาพสูง สำหรับสอบถามงานอีเวนต์ เหมาปิดเชฟเทเบิล และดินเนอร์มูลค่าสูง",
     bullets: [
       "รองรับห้องส่วนตัว 8-18 ท่าน",
       "รับงานเลี้ยงกลางวันองค์กรและมื้อรับรองลูกค้า",
       "มีลำดับชุดชิมเมนูและเมนูฉลอง",
     ],
     successTitle: "ส่งคำขอจัดเลี้ยงแล้ว",
-    successBody: "ทีมหน้าบ้านสามารถเชื่อมหน้า UI นี้เข้ากับ CRM ขั้นตอนงานอีเวนต์ และตารางความพร้อมของแต่ละสาขาได้ภายหลัง",
+    successBody: "ทีมร้านได้รับคำขอของคุณแล้ว และสามารถติดตามต่อในขั้นตอนงานอีเวนต์ของแต่ละสาขาได้",
     submit: "ส่งคำขอ",
     catering: "เปิด Catering Builder",
     fields: {
@@ -41,7 +41,7 @@ const pageText = {
   en: {
     eyebrow: "Private dining & catering",
     title: "Inquiry flow for private rooms, celebrations, and corporate hosting",
-    body: "This page is designed as a lead-quality frontend for events, chef table buyouts, and high-value booking requests.",
+    body: "This page is designed for event inquiries, chef table buyouts, and high-value booking requests.",
     bullets: [
       "Private dining for 8-18 guests",
       "Corporate lunch and hosted dinners",
@@ -94,7 +94,7 @@ const pageText = {
       "庆典菜单与品鉴流程",
     ],
     successTitle: "咨询请求已发送",
-    successBody: "这套前端后续可连接 CRM、宴会流程和分店档期系统。",
+    successBody: "我们已收到你的咨询请求，接下来可继续安排 CRM、宴会流程与分店档期确认。",
     submit: "提交咨询",
     catering: "打开宴会构建器",
     fields: {
@@ -110,7 +110,7 @@ const pageText = {
   ko: {
     eyebrow: "프라이빗 다이닝",
     title: "프라이빗 룸, 기념 행사, 비즈니스 호스팅 문의 흐름",
-    body: "이 페이지는 이벤트 문의, 셰프 테이블 대관, 고가 예약 요청을 위한 리드 품질 프런트엔드로 설계되었습니다.",
+    body: "이 페이지는 이벤트 문의, 셰프 테이블 대관, 고가 예약 요청을 정교하게 접수하기 위해 설계되었습니다.",
     bullets: [
       "8-18인 프라이빗 다이닝",
       "기업 런치와 호스팅 디너",

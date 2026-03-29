@@ -29,18 +29,18 @@ export type PageMetadataKey =
 const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: LocalizedText }> = {
   home: {
     title: {
-      th: "Siam Lux | แพลตฟอร์มสั่งอาหารไทยพรีเมียม",
-      en: "Siam Lux | Premium Thai Ordering Frontend",
-      ja: "Siam Lux | 上質なタイ料理オーダーフロントエンド",
-      zh: "Siam Lux | 高级泰式点餐前端",
-      ko: "Siam Lux | 프리미엄 태국 요리 주문 프런트엔드",
+      th: "Siam Lux | ประสบการณ์สั่งอาหารไทยพรีเมียม",
+      en: "Siam Lux | Premium Thai Ordering Atelier",
+      ja: "Siam Lux | 上質なタイ料理オーダー体験",
+      zh: "Siam Lux | 高级泰式点餐体验",
+      ko: "Siam Lux | 프리미엄 태국 요리 주문 경험",
     },
     description: {
       th: "สั่งอาหารไทยพรีเมียมหลายภูมิภาค พร้อมจองโต๊ะ ติดตามออเดอร์ รีวิว ของขวัญ และประสบการณ์ร้านแบบครบหน้าเว็บ",
-      en: "A premium Thai ordering frontend with regional menus, reservations, tracking, reviews, gifting, and rich guest flows.",
-      ja: "地域別メニュー、予約、追跡、レビュー、ギフトまで備えたタイ料理の上質なフロントエンド体験。",
-      zh: "集区域菜单、预订、追踪、点评与礼卡于一体的高级泰式点餐前端体验。",
-      ko: "지역 메뉴, 예약, 추적, 리뷰, 기프트까지 갖춘 프리미엄 태국 요리 프런트엔드 경험.",
+      en: "A premium Thai ordering experience with regional menus, reservations, tracking, reviews, gifting, and rich guest flows.",
+      ja: "地域別メニュー、予約、追跡、レビュー、ギフトまで備えたタイ料理の上質な注文体験。",
+      zh: "集区域菜单、预订、追踪、点评与礼卡于一体的高级泰式点餐体验。",
+      ko: "지역 메뉴, 예약, 추적, 리뷰, 기프트까지 갖춘 프리미엄 태국 요리 주문 경험.",
     },
   },
   menu: {
@@ -69,9 +69,9 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
     },
     description: {
       th: "ดูปฏิทินจองโต๊ะ แผนผังที่นั่ง โซนของแต่ละสาขา และลำดับคิวรอแบบร้านจริง",
-      en: "Explore reservation heatmaps, seat maps, branch zones, and waitlist flows in one polished frontend.",
+      en: "Explore reservation heatmaps, seat maps, branch zones, and waitlist flows in one elevated reservation experience.",
       ja: "予約ヒートマップ、席マップ、支店別ゾーン、ウェイトリストまで備えた予約体験です。",
-      zh: "在一个完整前端里查看预约热度、座位图、分店区域与候补流程。",
+      zh: "在一个完整预约体验中查看预约热度、座位图、分店区域与候补流程。",
       ko: "예약 히트맵, 좌석 맵, 지점별 존, 웨이트리스트 흐름까지 담은 예약 경험입니다.",
     },
   },
@@ -84,11 +84,11 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
       ko: "주문 추적 및 딜리버리 맵 | Siam Lux",
     },
     description: {
-      th: "ติดตามสถานะออเดอร์ด้วยเส้นเวลาสถานะและแผนที่ส่งอาหารจำลองแบบพรีเมียม",
-      en: "Track progress with an elevated order timeline, route map mock, and reorder shortcuts.",
-      ja: "上質な進行タイムライン、配送マップ、再注文導線をまとめた追跡画面です。",
-      zh: "结合时间线、配送路线模拟与再次下单入口的高质感追踪体验。",
-      ko: "타임라인, 배달 경로 모형, 재주문 흐름을 결합한 프리미엄 추적 화면입니다.",
+      th: "ติดตามสถานะออเดอร์ด้วยเส้นเวลาสถานะ แผนที่เส้นทางจัดส่ง และทางลัดสำหรับสั่งซ้ำ",
+      en: "Track progress with an elevated order timeline, delivery route map, and reorder shortcuts.",
+      ja: "上質な進行タイムライン、配送ルートマップ、再注文導線をまとめた追跡画面です。",
+      zh: "结合时间线、配送路线地图与再次下单入口的高质感追踪体验。",
+      ko: "타임라인, 배달 경로 맵, 재주문 흐름을 결합한 프리미엄 추적 화면입니다.",
     },
   },
   reviews: {
@@ -101,9 +101,9 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
     },
     description: {
       th: "ดูรีวิวเมนูจริงและส่งความคิดเห็นใหม่พร้อมให้คะแนนในรูปแบบพร้อมใช้งานฝั่งหน้าเว็บ",
-      en: "Browse guest reviews and submit new dish feedback with a polished frontend-only review flow.",
+      en: "Browse guest reviews and submit new dish feedback in one polished review journey.",
       ja: "既存レビューの閲覧と新規投稿を両立したレビュー体験です。",
-      zh: "查看菜品点评并通过精致的前端流程提交新评价。",
+      zh: "查看菜品点评并通过精致流畅的流程提交新评价。",
       ko: "기존 리뷰 열람과 새 후기 제출을 함께 제공하는 리뷰 경험입니다.",
     },
   },
@@ -309,7 +309,7 @@ const pageCopy: Record<PageMetadataKey, { title: LocalizedText; description: Loc
     },
     description: {
       th: "รวม privacy, terms และคำอธิบายการเก็บสถานะบนอุปกรณ์สำหรับเว็บร้านอาหารที่พร้อม production มากขึ้น",
-      en: "A clear legal hub for privacy, terms, and device storage guidance across the restaurant frontend.",
+      en: "A clear legal hub for privacy, terms, and device storage guidance across the restaurant experience.",
       ja: "プライバシー、利用規約、端末保存に関する案内をまとめた法務ページです。",
       zh: "集中展示隐私、条款与设备存储说明的法律页面。",
       ko: "개인정보, 이용약관, 기기 저장소 안내를 모아 둔 정책 허브입니다.",

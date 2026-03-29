@@ -9,27 +9,27 @@ const pairingText = {
   th: {
     eyebrow: "เครื่องดื่มจับคู่",
     title: "จับคู่เครื่องดื่มกับอาหารไทยให้หน้าร้านดูครบและพรีเมียมขึ้น",
-    body: "แม้เว็บนี้ยังเป็น frontend-only แต่หน้าจับคู่เครื่องดื่มช่วยเล่าอารมณ์ของเมนูและเพิ่ม layer ของประสบการณ์ร้านจริงได้ชัดขึ้น",
+    body: "หน้าจับคู่เครื่องดื่มช่วยขยายอารมณ์ของเมนูและทำให้ประสบการณ์ร้านดูสมบูรณ์ขึ้น",
   },
   en: {
     eyebrow: "Beverage pairings",
     title: "Pair drinks with Thai dishes to complete the house experience",
-    body: "Even in a frontend-only build, pairings add a stronger sense of hospitality, menu storytelling, and premium dining guidance.",
+    body: "Pairings deepen menu storytelling and give the dining journey a more complete house feel.",
   },
   ja: {
     eyebrow: "ペアリング",
     title: "料理に合わせた飲み物提案で体験を一段引き上げます",
-    body: "フロントエンドのみでも、ペアリングの導線があるとレストランらしい体験と世界観が強く伝わります。",
+    body: "ペアリング導線があることで、料理の世界観と食体験の完成度が高まります。",
   },
   zh: {
     eyebrow: "饮品搭配",
     title: "用饮品搭配把餐厅体验补完整",
-    body: "即使当前仍是 frontend-only，搭配页也能显著增强餐厅感、菜单叙事与高端引导。",
+    body: "饮品搭配能进一步强化菜单叙事，并让整段用餐旅程更完整。",
   },
   ko: {
     eyebrow: "페어링",
     title: "음료 페어링으로 레스토랑 경험을 한 단계 더 완성합니다",
-    body: "프런트엔드 전용 빌드여도 페어링 페이지는 호스피탈리티와 메뉴 스토리텔링을 크게 강화합니다.",
+    body: "음료 페어링은 메뉴 스토리텔링과 호스피탈리티의 완성도를 한층 높여 줍니다.",
   },
 } as const;
 

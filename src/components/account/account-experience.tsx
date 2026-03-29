@@ -36,6 +36,9 @@ import {
   getLocalizedOrders,
 } from "@/lib/experience";
 import {
+  getBillingEmailFallback,
+  getGuestProfileEmailFallback,
+  getInvoiceCompanyFallback,
   getLocalizedAddressLabel,
   getLocalizedPaymentLabel,
   getLocalizedWalletTitle,
@@ -502,7 +505,7 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                 </div>
                 <p className="mt-4 text-sm leading-7 text-[#d1c4b2]">{authPanel.body}</p>
                 <div className="mt-5 rounded-[1.5rem] border border-white/10 bg-black/15 p-4">
-                  <p className="text-white">{email || "guest@siamlux.test"}</p>
+                  <p className="text-white">{email || getGuestProfileEmailFallback(locale)}</p>
                   <p className="mt-1 text-sm text-[#bcae9b]">{authPanel.highlights[0]?.value}</p>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-3">
@@ -1076,10 +1079,10 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                 </div>
                 <div className="mt-5 space-y-3">
                   <div className="rounded-[1.5rem] border border-white/10 bg-white/4 p-4">
-                    <p className="text-white">{invoiceProfile.email || email || "billing@siamlux.test"}</p>
+                    <p className="text-white">{invoiceProfile.email || email || getBillingEmailFallback(locale)}</p>
                     <p className="mt-1 text-sm text-[#bcae9b]">
                       {invoiceProfile.taxInvoice
-                        ? invoiceProfile.companyName || "Siam Lux Hospitality Co."
+                        ? invoiceProfile.companyName || getInvoiceCompanyFallback(locale)
                         : labels.receiptEnabled}
                     </p>
                   </div>
@@ -1109,9 +1112,9 @@ export function AccountExperience({ locale }: { locale: AppLocale }) {
                       onClick={() =>
                         updateInvoiceProfile({
                           taxInvoice: !invoiceProfile.taxInvoice,
-                          companyName: invoiceProfile.companyName || "Siam Lux Hospitality Co.",
+                          companyName: invoiceProfile.companyName || getInvoiceCompanyFallback(locale),
                           taxId: invoiceProfile.taxId || "0105559001234",
-                          email: invoiceProfile.email || email || "billing@siamlux.test",
+                          email: invoiceProfile.email || email || getBillingEmailFallback(locale),
                         })
                       }
                     >

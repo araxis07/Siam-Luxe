@@ -14,8 +14,8 @@ type Dietary = "none" | "vegetarian" | "seafood" | "containsNuts" | "spicy" | "h
 const quizText = {
   th: {
     eyebrow: "ตัวช่วยเลือกเมนู",
-    title: "ให้หน้าเว็บช่วยจัดสำรับไทยให้คุณ",
-    body: "quiz นี้ถูกออกแบบให้ต่อกับ personalization, member profile และ campaign recommendation ได้ในภายหลัง",
+    title: "ให้ระบบช่วยจัดสำรับไทยให้คุณ",
+    body: "เลือกอารมณ์ของมื้ออาหารและเงื่อนไขด้านอาหาร เพื่อรับชุดเมนูที่เหมาะกับรสนิยมของคุณ",
     mood: "1. อารมณ์ของมื้อนี้",
     dietary: "2. เงื่อนไขด้านอาหาร",
     moodLabels: {
@@ -36,8 +36,8 @@ const quizText = {
   },
   en: {
     eyebrow: "Recommendation quiz",
-    title: "Let the frontend curate your Thai table",
-    body: "This premium quiz mock can later connect to personalization, customer profiles, and campaign recommendations.",
+    title: "Let us curate your Thai table",
+    body: "Choose your dining mood and dietary focus to receive a tighter Thai recommendation set.",
     mood: "1. Mood",
     dietary: "2. Dietary focus",
     moodLabels: {
@@ -59,7 +59,7 @@ const quizText = {
   ja: {
     eyebrow: "おすすめ案内",
     title: "気分に合わせてタイ料理を絞り込みます",
-    body: "このクイズは将来的にパーソナライズや会員プロフィール連携へ拡張しやすい構成です。",
+    body: "食べたい気分と食事条件を選ぶと、相性のよいタイ料理を絞り込みます。",
     mood: "1. 気分",
     dietary: "2. 食事条件",
     moodLabels: {
@@ -80,8 +80,8 @@ const quizText = {
   },
   zh: {
     eyebrow: "推荐测验",
-    title: "让前端为你搭配一桌泰式风味",
-    body: "这个测验页后续可以继续连接个性化、会员资料与活动推荐逻辑。",
+    title: "让系统为你搭配一桌泰式风味",
+    body: "选择当下口味心情与饮食偏好，即可得到更贴合的泰式菜单建议。",
     mood: "1. 当前口味心情",
     dietary: "2. 饮食偏好",
     moodLabels: {
@@ -102,8 +102,8 @@ const quizText = {
   },
   ko: {
     eyebrow: "추천 퀴즈",
-    title: "프런트엔드가 태국 식탁을 골라 드립니다",
-    body: "이 퀴즈는 이후 개인화, 멤버 프로필, 캠페인 추천과 연결하기 쉽게 설계되었습니다.",
+    title: "취향에 맞는 태국 식탁을 골라 드립니다",
+    body: "지금의 식사 기분과 식단 조건을 고르면 더 잘 맞는 태국 메뉴를 추천합니다.",
     mood: "1. 지금의 식사 기분",
     dietary: "2. 식단 조건",
     moodLabels: {

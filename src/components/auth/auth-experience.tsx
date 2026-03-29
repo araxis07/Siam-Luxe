@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/lib/analytics";
 import { getAuthPanel } from "@/lib/hospitality";
+import { normalizeSeedGuestName } from "@/lib/user-display";
 import { useUserStore } from "@/store/user-store";
 
 const authText = {
@@ -20,7 +21,7 @@ const authText = {
     name: "ชื่อสำหรับบัญชี",
     email: "อีเมล",
     phone: "เบอร์โทรศัพท์",
-    signIn: "เข้าสู่ระบบสมาชิกจำลอง",
+    signIn: "เข้าสู่บัญชีสมาชิก",
     continueGuest: "ใช้โหมดแขก",
     signedIn: "อัปเดตบัญชีสมาชิกแล้ว",
     guestMode: "เปลี่ยนกลับเป็นโหมดแขกแล้ว",
@@ -33,9 +34,9 @@ const authText = {
     name: "Profile name",
     email: "Email",
     phone: "Phone",
-    signIn: "Use mock member sign-in",
+    signIn: "Continue with member profile",
     continueGuest: "Use guest mode",
-    signedIn: "Member-ready profile updated",
+    signedIn: "Member profile updated",
     guestMode: "Switched back to guest mode",
     account: "Open account dashboard",
     checkout: "Go to checkout",
@@ -46,7 +47,7 @@ const authText = {
     name: "プロフィール名",
     email: "メール",
     phone: "電話番号",
-    signIn: "モック会員として入る",
+    signIn: "会員プロフィールで続ける",
     continueGuest: "ゲストモードを使う",
     signedIn: "会員プロフィールを更新しました",
     guestMode: "ゲストモードへ戻しました",
@@ -59,7 +60,7 @@ const authText = {
     name: "档案姓名",
     email: "邮箱",
     phone: "电话",
-    signIn: "使用模拟会员登录",
+    signIn: "以会员档案继续",
     continueGuest: "使用游客模式",
     signedIn: "会员档案已更新",
     guestMode: "已切换回游客模式",
@@ -72,7 +73,7 @@ const authText = {
     name: "프로필 이름",
     email: "이메일",
     phone: "전화번호",
-    signIn: "목업 멤버로 로그인",
+    signIn: "멤버 프로필로 계속",
     continueGuest: "게스트 모드 사용",
     signedIn: "멤버 프로필을 업데이트했습니다",
     guestMode: "게스트 모드로 전환했습니다",
@@ -91,7 +92,7 @@ export function AuthExperience({ locale }: { locale: AppLocale }) {
   const phone = useUserStore((state) => state.phone);
   const signInMember = useUserStore((state) => state.signInMember);
   const continueAsGuest = useUserStore((state) => state.continueAsGuest);
-  const [draftName, setDraftName] = useState(fullName === "Siam Lux Guest" ? "" : fullName);
+  const [draftName, setDraftName] = useState(normalizeSeedGuestName(fullName));
   const [draftEmail, setDraftEmail] = useState(email);
   const [draftPhone, setDraftPhone] = useState(phone);
   const statusCopy = {
@@ -210,7 +211,7 @@ export function AuthExperience({ locale }: { locale: AppLocale }) {
                 className="button-shine rounded-full bg-[#d6b26a] text-[#1b130f] hover:bg-[#e4c987]"
                 onClick={() => {
                   signInMember({
-                    fullName: draftName || "Siam Lux Guest",
+                    fullName: draftName.trim() || "Siam Lux Guest",
                     email: draftEmail,
                     phone: draftPhone,
                   });

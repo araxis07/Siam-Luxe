@@ -26,6 +26,7 @@ import { formatPrice } from "@/lib/format";
 import { getExperienceCopy, getLocalizedBranch, getOrderTotals } from "@/lib/experience";
 import { getAuthPanel } from "@/lib/hospitality";
 import {
+  getBillingEmailFallback,
   getLocalizedAddressLabel,
   getLocalizedPaymentLabel,
   normalizeSeedGuestName,
@@ -348,7 +349,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                 </div>
                 <div>
                   <p className="text-[0.66rem] uppercase tracking-[0.18em] text-[#cdb37d]">{text.invoiceTitle}</p>
-                  <p className="mt-1 text-white">{invoiceProfile.email || email || "billing@siamlux.test"}</p>
+                  <p className="mt-1 text-white">{invoiceProfile.email || email || getBillingEmailFallback(locale)}</p>
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">

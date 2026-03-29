@@ -5,12 +5,12 @@ const policyText = {
   th: {
     eyebrow: "กฎหมายและการใช้งาน",
     title: "หน้ากฎหมายและนโยบายหลักสำหรับเว็บร้านอาหาร",
-    body: "เพื่อให้ frontend พร้อม production มากขึ้น ควรมีทั้ง privacy, terms และ device storage guidance ที่มองเห็นได้ชัดจากหน้าเว็บ",
+    body: "หน้าเว็บร้านอาหารที่ดีควรมีทั้ง privacy, terms และ device storage guidance ที่มองเห็นได้ชัดจากหน้าเว็บ",
   },
   en: {
     eyebrow: "Legal pages",
-    title: "Core policies that make the restaurant frontend feel production-ready",
-    body: "A polished restaurant frontend needs visible privacy, terms, and device-storage guidance rather than hiding them behind missing links.",
+    title: "Core policies that complete the restaurant experience",
+    body: "A polished restaurant site needs visible privacy, terms, and device-storage guidance rather than hiding them behind missing links.",
   },
   ja: {
     eyebrow: "法務ページ",
@@ -19,13 +19,13 @@ const policyText = {
   },
   zh: {
     eyebrow: "法律页面",
-    title: "让餐饮前端更像真实产品的核心政策页",
-    body: "清晰可见的隐私、条款与设备存储说明，会让整个前端更接近 production-ready。",
+    title: "让餐厅网站体验更完整的核心政策页",
+    body: "清晰可见的隐私、条款与设备存储说明，会让整个网站更值得信任。",
   },
   ko: {
     eyebrow: "정책 페이지",
-    title: "프로덕션 느낌을 완성하는 핵심 법률/정책 페이지",
-    body: "개인정보, 이용약관, 기기 저장소 안내가 눈에 띄게 제공되어야 프런트엔드가 더 신뢰감 있게 보입니다.",
+    title: "레스토랑 경험을 완성하는 핵심 법률/정책 페이지",
+    body: "개인정보, 이용약관, 기기 저장소 안내가 눈에 띄게 제공되어야 사이트 전체가 더 신뢰감 있게 보입니다.",
   },
 } as const;
 

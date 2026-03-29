@@ -17,7 +17,7 @@ const festivalText = {
   en: {
     eyebrow: "Festivals",
     title: "Seasonal landing pages for Thai celebrations",
-    body: "These campaigns are designed as premium seasonal frontends that can later connect to promotions, bookings, and set menus.",
+    body: "These campaigns are designed as premium seasonal experiences that can extend into promotions, bookings, and set menus.",
     viewSpecials: "View seasonal specials",
     bookTable: "Book festival table",
   },
@@ -38,7 +38,7 @@ const festivalText = {
   ko: {
     eyebrow: "페스티벌",
     title: "태국 축제를 위한 시즌 랜딩 페이지",
-    body: "이 페이지들은 이후 프로모션, 예약, 세트 메뉴와 쉽게 연결할 수 있도록 설계된 프리미엄 시즌 프런트엔드입니다.",
+    body: "이 페이지들은 프로모션, 예약, 세트 메뉴로 자연스럽게 이어질 수 있는 프리미엄 시즌 경험입니다.",
     viewSpecials: "시즌 스페셜 보기",
     bookTable: "축제 시즌 예약하기",
   },

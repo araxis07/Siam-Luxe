@@ -40,7 +40,7 @@ const reservationText = {
     branchTitle: "บรรยากาศของสาขา",
     summaryTitle: "สิ่งที่ลูกค้าจะได้",
     successTitle: "รับคำขอจองโต๊ะแล้ว",
-    successBody: "หน้าเว็บได้จำลองขั้นตอนการจองสำเร็จ พร้อมต่อระบบหลังบ้านและตารางที่ว่างจริงในภายหลัง",
+    successBody: "ทีมร้านได้รับคำขอของคุณแล้ว และพร้อมยืนยันโต๊ะกับช่วงเวลาจากขั้นตอนถัดไป",
     viewContact: "ดูข้อมูลสาขา",
     browseMenu: "กลับไปดูเมนู",
     occasions: {
@@ -83,7 +83,7 @@ const reservationText = {
     branchTitle: "Branch atmosphere",
     summaryTitle: "What the flow covers",
     successTitle: "Reservation request captured",
-    successBody: "The frontend reservation flow is complete and structured for real availability and backend integration later.",
+    successBody: "Your request has been captured and is ready to be confirmed against the house schedule.",
     viewContact: "View locations",
     browseMenu: "Browse menu",
     occasions: {
@@ -126,7 +126,7 @@ const reservationText = {
     branchTitle: "店舗の雰囲気",
     summaryTitle: "このフローでできること",
     successTitle: "予約リクエストを受け付けました",
-    successBody: "フロントエンドの予約導線は完成しており、後から実在庫や API を接続しやすい構成です。",
+    successBody: "ご予約内容を受け付けました。続いて店舗側のスケジュールに合わせて確認できます。",
     viewContact: "店舗案内を見る",
     browseMenu: "メニューを見る",
     occasions: {
@@ -169,7 +169,7 @@ const reservationText = {
     branchTitle: "门店氛围",
     summaryTitle: "本流程涵盖",
     successTitle: "预约请求已记录",
-    successBody: "前端预约流程已就绪，后续可以平滑连接真实库存与后端接口。",
+    successBody: "我们已收到你的预订请求，接下来可按门店档期继续确认安排。",
     viewContact: "查看门店信息",
     browseMenu: "浏览菜单",
     occasions: {
@@ -212,7 +212,7 @@ const reservationText = {
     branchTitle: "지점 분위기",
     summaryTitle: "이 흐름에 포함된 내용",
     successTitle: "예약 요청이 접수되었습니다",
-    successBody: "프런트엔드 예약 흐름이 준비되어 있어 이후 실제 예약 가능 여부와 API를 쉽게 연결할 수 있습니다.",
+    successBody: "예약 요청이 접수되었으며, 다음 단계에서 매장 일정에 맞춰 확인할 수 있습니다.",
     viewContact: "지점 정보 보기",
     browseMenu: "메뉴 보기",
     occasions: {

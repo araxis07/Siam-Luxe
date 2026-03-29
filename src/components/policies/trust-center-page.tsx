@@ -10,7 +10,7 @@ const trustText = {
   en: {
     eyebrow: "Trust center",
     title: "The policies guests should see before ordering or reserving",
-    body: "This page gathers allergen, delivery, pickup, refund, and reservation guidance into a single clear frontend surface.",
+    body: "This page gathers allergen, delivery, pickup, refund, and reservation guidance into one clear guest reference.",
   },
   ja: {
     eyebrow: "信頼センター",

@@ -54,7 +54,7 @@ const authPanels: Record<AppLocale, AuthPanel> = {
   th: {
     eyebrow: "เข้าสู่ระบบและโปรไฟล์แขก",
     title: "สลับระหว่างแขกทั่วไปและสมาชิกประจำของร้าน",
-    body: "หน้าเว็บนี้จำลองทั้งการซื้อแบบ guest checkout และการเข้าใช้สิทธิ์ของสมาชิก เพื่อให้พร้อมต่อระบบยืนยันตัวตนจริงในภายหลังโดยไม่ต้อง refactor ใหญ่",
+    body: "หน้าเว็บนี้รองรับทั้งการสั่งแบบแขกและการกลับมาของสมาชิก เพื่อให้สลับการใช้งานได้ลื่นไหลในทุกอุปกรณ์",
     memberBenefits: [
       "บันทึกที่อยู่และวิธีชำระเงินหลายชุด",
       "เก็บสิทธิ์สะสมแต้มและบัตรของขวัญไว้ในบัญชีเดียว",
@@ -66,15 +66,15 @@ const authPanels: Record<AppLocale, AuthPanel> = {
       "พร้อมแปลงเป็นสมาชิกภายหลังโดยไม่เสียข้อมูลเดิม",
     ],
     highlights: [
-      { label: "สมาชิกจำลอง", value: "Siam Society" },
-      { label: "สถานะบัญชี", value: "พร้อมต่อ auth จริง" },
+      { label: "บัญชีสมาชิก", value: "Siam Society" },
+      { label: "สถานะบัญชี", value: "พร้อมใช้งาน" },
       { label: "ข้อมูลที่ซิงก์", value: "ที่อยู่ · แต้ม · การจอง" },
     ],
   },
   en: {
     eyebrow: "Sign in and guest profile",
     title: "Switch between guest checkout and a returning member account",
-    body: "This frontend now covers both guest checkout and member-ready profile flows so real authentication can connect later without a major rewrite.",
+    body: "This experience supports both guest checkout and returning member profiles for a smooth handoff across devices.",
     memberBenefits: [
       "Save multiple addresses and payment methods",
       "Keep rewards, vouchers, and gift balances in one account",
@@ -86,15 +86,15 @@ const authPanels: Record<AppLocale, AuthPanel> = {
       "Upgrade into a member profile later without losing the order context",
     ],
     highlights: [
-      { label: "Mock membership", value: "Siam Society" },
-      { label: "Account state", value: "Auth-ready frontend" },
+      { label: "Member profile", value: "Siam Society" },
+      { label: "Account state", value: "Ready to continue" },
       { label: "Synced surfaces", value: "Address · rewards · bookings" },
     ],
   },
   ja: {
     eyebrow: "サインインとゲストプロフィール",
     title: "ゲスト購入と会員アカウントを切り替えられる設計",
-    body: "このフロントエンドはゲスト購入と会員利用の両方を想定しており、後から本番の認証基盤をつないでも大きな改修を避けられます。",
+    body: "ゲスト購入と会員利用の両方を想定しており、どの端末でも自然に使い分けられる構成です。",
     memberBenefits: [
       "複数の住所と支払い方法を保存",
       "特典、ギフト残高、バウチャーを一元管理",
@@ -107,14 +107,14 @@ const authPanels: Record<AppLocale, AuthPanel> = {
     ],
     highlights: [
       { label: "会員モデル", value: "Siam Society" },
-      { label: "画面状態", value: "認証接続待ち" },
+      { label: "画面状態", value: "利用準備完了" },
       { label: "連携対象", value: "住所・特典・予約" },
     ],
   },
   zh: {
     eyebrow: "登录与宾客档案",
     title: "同时支持游客结账与会员账户体验",
-    body: "当前前端已同时覆盖游客结账和会员档案流程，后续接入真实认证系统时无需大规模重构。",
+    body: "当前体验已同时覆盖游客结账与会员档案流程，让不同来访方式之间的切换更加顺滑。",
     memberBenefits: [
       "保存多个地址与支付方式",
       "统一管理积分、礼品卡与券包",
@@ -126,15 +126,15 @@ const authPanels: Record<AppLocale, AuthPanel> = {
       "后续升级成会员时不丢失当前上下文",
     ],
     highlights: [
-      { label: "模拟会员", value: "Siam Society" },
-      { label: "账户状态", value: "前端已可接 auth" },
+      { label: "会员档案", value: "Siam Society" },
+      { label: "账户状态", value: "随时可继续" },
       { label: "同步范围", value: "地址 · 积分 · 预订" },
     ],
   },
   ko: {
     eyebrow: "로그인과 게스트 프로필",
     title: "게스트 체크아웃과 멤버 계정을 모두 지원하는 흐름",
-    body: "이 프런트엔드는 비회원 주문과 멤버 계정 흐름을 모두 갖추고 있어 이후 실제 인증 시스템을 붙여도 큰 리팩터링이 필요하지 않습니다.",
+    body: "비회원 주문과 멤버 계정 흐름을 모두 담아 어떤 기기에서도 자연스럽게 이어서 사용할 수 있습니다.",
     memberBenefits: [
       "여러 주소와 결제 수단 저장",
       "리워드, 바우처, 기프트 밸런스를 한 계정에서 관리",
@@ -146,8 +146,8 @@ const authPanels: Record<AppLocale, AuthPanel> = {
       "나중에 멤버 전환 시 현재 주문 문맥 유지",
     ],
     highlights: [
-      { label: "멤버십 예시", value: "Siam Society" },
-      { label: "계정 상태", value: "실 auth 연결 준비" },
+      { label: "멤버 프로필", value: "Siam Society" },
+      { label: "계정 상태", value: "바로 이어서 이용 가능" },
       { label: "동기화 범위", value: "주소 · 리워드 · 예약" },
     ],
   },
@@ -447,7 +447,7 @@ const legalSections = [
       th: "อธิบายการเก็บข้อมูลเพื่อคำสั่งซื้อ การจอง และการสื่อสารทางการตลาดในระดับหน้าบ้านพร้อมต่อระบบจริง",
       en: "Explains how guest information is prepared for ordering, reservations, and optional marketing communication.",
       ja: "注文、予約、任意のマーケティング連絡に向けた情報の取り扱いを説明します。",
-      zh: "说明前端如何准备与订单、预订及可选营销沟通相关的数据。",
+      zh: "说明与订单、预订及可选营销沟通相关的信息将如何被使用与管理。",
       ko: "주문, 예약, 선택적 마케팅 커뮤니케이션을 위한 정보 취급 방식을 설명합니다.",
     },
     bullets: {
@@ -468,18 +468,18 @@ const legalSections = [
       ko: "이용약관",
     },
     body: {
-      th: "กำหนดขอบเขตของบริการ frontend, promo, gift card, reservation request และเนื้อหาหลายภาษา",
-      en: "Defines the scope of frontend ordering, promos, gift balances, reservation requests, and multilingual content.",
+      th: "กำหนดขอบเขตของการสั่งอาหาร โปรโมชัน บัตรของขวัญ การจอง และเนื้อหาหลายภาษา",
+      en: "Defines the scope of ordering, promos, gift balances, reservation requests, and multilingual content.",
       ja: "注文 UI、特典、ギフト残高、予約リクエスト、多言語表記の取り扱い範囲を定めます。",
-      zh: "规定前端点餐、优惠、礼卡余额、预约请求与多语言内容的使用范围。",
+      zh: "规定点餐、优惠、礼卡余额、预约请求与多语言内容的使用范围。",
       ko: "주문 UI, 프로모션, 기프트 밸런스, 예약 요청, 다국어 콘텐츠의 이용 범위를 정의합니다.",
     },
     bullets: {
-      th: ["ราคาและเวลาเป็นข้อมูลจำลองพร้อมต่อ backend จริง", "เมนูบางรายการอาจถูกจำกัดตามสาขาหรือช่วงเวลา", "การจองผ่านหน้าเว็บเป็น request flow จนกว่าจะเชื่อม availability จริง"],
-      en: ["Prices and timings are frontend-ready values intended for backend connection", "Some items can be limited by branch or service window", "Reservation capture remains request-based until live availability is connected"],
-      ja: ["価格と時間はバックエンド接続を前提にしたフロント表示値", "一部メニューは店舗や時間帯で制限される場合がある", "予約は実在庫接続までリクエスト方式で扱う"],
-      zh: ["价格与时段信息为前端预留值，待后端接入", "部分菜品会因门店或时段受限", "在接入实时库存前，预约仍为请求型流程"],
-      ko: ["가격과 시간은 백엔드 연결을 염두에 둔 프런트 값", "일부 메뉴는 지점이나 시간대에 따라 제한될 수 있음", "실시간 재고 연결 전까지 예약은 요청 기반으로 처리됨"],
+      th: ["ราคาและเวลาอาจปรับตามสาขาหรือช่วงเวลา", "เมนูบางรายการอาจถูกจำกัดตามบริการหรือช่วงเวลา", "การจองจะยืนยันตามความพร้อมของสาขา"],
+      en: ["Prices and timings may vary by branch or service window", "Some items can be limited by service mode or timing", "Reservations are confirmed against branch availability"],
+      ja: ["価格と時間は店舗や時間帯により変動する場合があります", "一部メニューは受取方法や時間帯で制限される場合があります", "予約は店舗の空き状況に応じて確定されます"],
+      zh: ["价格与时段会因门店或服务时段而调整", "部分菜品会因服务方式或时间段受限", "预订将以门店档期为准进行确认"],
+      ko: ["가격과 시간은 지점이나 운영 시간대에 따라 달라질 수 있습니다", "일부 메뉴는 서비스 방식이나 시간대에 따라 제한될 수 있습니다", "예약은 지점 가능 일정에 맞춰 확정됩니다"],
     },
   },
   {
@@ -492,7 +492,7 @@ const legalSections = [
       ko: "쿠키 및 기기 저장소",
     },
     body: {
-      th: "อธิบายการใช้ local storage เพื่อเก็บตะกร้า รายการโปรด ภาษา และข้อมูลโปรไฟล์จำลอง",
+      th: "อธิบายการใช้ local storage เพื่อเก็บตะกร้า รายการโปรด ภาษา และข้อมูลที่ช่วยให้กลับมาใช้งานต่อได้สะดวก",
       en: "Covers local storage for cart, favorites, language, and guest convenience data.",
       ja: "カート、お気に入り、言語、ゲスト補助情報に使うローカル保存を説明します。",
       zh: "说明购物车、收藏、语言与宾客便捷资料使用的本地存储。",
@@ -502,7 +502,7 @@ const legalSections = [
       th: ["ลบสถานะได้ด้วยการล้าง storage ของเบราว์เซอร์", "ยังไม่มี third-party tracker ภายนอก", "analytics รอบนี้เป็น client event พร้อมต่อ provider ภายหลัง"],
       en: ["State can be cleared through browser storage reset", "No third-party external tracker is required today", "Analytics events are prepared client-side for later provider wiring"],
       ja: ["ブラウザ保存の消去で状態をリセット可能", "現時点で外部サードパーティ追跡は必須ではない", "分析イベントは後続連携向けにクライアント側で準備済み"],
-      zh: ["可通过清除浏览器存储重置状态", "当前不依赖第三方外部追踪器", "分析事件已在前端预留，后续可接入 provider"],
+      zh: ["可通过清除浏览器存储重置状态", "当前不依赖第三方外部追踪器", "分析事件可在后续接入合适的 provider"],
       ko: ["브라우저 저장소 초기화로 상태를 지울 수 있음", "현재 외부 서드파티 추적기가 필수는 아님", "분석 이벤트는 나중에 provider 연결 가능하도록 클라이언트 측에 준비됨"],
     },
   },
@@ -550,11 +550,11 @@ const trustSections = [
       ko: "지점별 배달 시간대와 픽업 대응 범위를 정리합니다.",
     },
     bullets: {
-      th: ["มี branch selector และ availability matrix แล้ว", "checkout แสดงสาขาและ service mode ชัดเจน", "tracking มี live delivery map mock สำหรับต่อระบบจริง"],
-      en: ["Branch selector and availability matrix are already integrated", "Checkout shows branch and service mode clearly", "Tracking includes a live delivery map mock for later integration"],
-      ja: ["店舗選択と availability matrix を実装済み", "checkout で店舗と受取方式を明確に表示", "tracking に配送マップのモックを搭載"],
-      zh: ["已集成门店选择器与可用矩阵", "结账页会明确显示门店与服务方式", "追踪页已提供配送地图 mock"],
-      ko: ["지점 선택기와 availability matrix를 이미 통합", "체크아웃에서 지점과 서비스 모드를 명확히 표시", "추적 화면에 라이브 배달 맵 목업 제공"],
+      th: ["มี branch selector และ availability matrix แล้ว", "checkout แสดงสาขาและ service mode ชัดเจน", "tracking มีแผนที่เส้นทางจัดส่งและลำดับสถานะครบ"],
+      en: ["Branch selector and availability matrix are already integrated", "Checkout shows branch and service mode clearly", "Tracking includes a delivery route map and full order milestones"],
+      ja: ["店舗選択と availability matrix を実装済み", "checkout で店舗と受取方式を明確に表示", "tracking で配送ルートと進行状況を確認可能"],
+      zh: ["已集成门店选择器与可用矩阵", "结账页会明确显示门店与服务方式", "追踪页已提供配送路线地图与完整阶段进度"],
+      ko: ["지점 선택기와 availability matrix를 이미 통합", "체크아웃에서 지점과 서비스 모드를 명확히 표시", "추적 화면에서 배달 경로와 전체 진행 단계를 확인 가능"],
     },
   },
   {

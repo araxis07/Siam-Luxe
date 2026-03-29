@@ -116,18 +116,18 @@ export const messages = {
     checkout: {
       title: "ชำระเงิน",
       subtitle:
-        "ฟอร์มพร้อม validation สำหรับที่อยู่และการชำระเงิน ออกแบบให้เชื่อม backend จริงได้โดยไม่ต้องรื้อ UI",
+        "กรอกที่อยู่และเลือกการชำระเงินในฟอร์มที่ตรวจสอบข้อมูลครบแล้ว",
       emptyTitle: "ยังไม่มีรายการสำหรับชำระเงิน",
       emptyBody: "เลือกเมนูจากหน้าร้านก่อน แล้วกลับมาที่นี่เพื่อยืนยันคำสั่งซื้อ",
       backToMenu: "กลับไปเลือกเมนู",
       summaryTitle: "สรุปคำสั่งซื้อ",
-      summarySubtitle: "ยอดรวมคำนวณแบบ frontend-ready",
+      summarySubtitle: "สรุปยอดรวมสำหรับคำสั่งซื้อของคุณ",
       deliveryDetails: "ข้อมูลจัดส่ง",
       paymentTitle: "วิธีชำระเงิน",
       submit: "ยืนยันคำสั่งซื้อ",
-      successTitle: "คำสั่งซื้อถูกจำลองเรียบร้อย",
+      successTitle: "ยืนยันคำสั่งซื้อเรียบร้อย",
       successBody:
-        "ระบบหน้าเว็บได้บันทึกข้อมูลการจัดส่งและล้างตะกร้าแล้ว พร้อมต่อ backend จริงในลำดับถัดไป",
+        "ระบบได้บันทึกข้อมูลการจัดส่งและล้างตะกร้าแล้ว เตรียมพร้อมสำหรับขั้นตอนถัดไป",
       orderAgain: "สั่งเมนูเพิ่มเติม",
       fields: {
         fullName: "ชื่อผู้รับ",
@@ -264,7 +264,7 @@ export const messages = {
       open: "Open cart",
       title: "Cart Drawer",
       subtitle:
-        "This demo keeps cart state on the frontend so the UI is ready to connect to a real backend later.",
+        "Review cart items, adjust quantities, and move into checkout from one place.",
       items: "{count} items",
       emptyTitle: "Your cart is empty",
       emptyBody: "Add a plate from the menu and come back here to edit quantities any time.",
@@ -281,18 +281,18 @@ export const messages = {
     checkout: {
       title: "Checkout",
       subtitle:
-        "Validated address and payment UI, designed to be frontend-complete and backend-ready without reworking the flow.",
+        "Complete delivery details and payment selection in a validated, polished checkout flow.",
       emptyTitle: "There is nothing to check out yet",
       emptyBody: "Choose dishes from the menu first, then return here to confirm the order.",
       backToMenu: "Back to Menu",
       summaryTitle: "Order Summary",
-      summarySubtitle: "Totals calculated in a frontend-ready flow",
+      summarySubtitle: "A clear total for your current order",
       deliveryDetails: "Delivery Details",
       paymentTitle: "Payment Method",
       submit: "Place Order",
-      successTitle: "Order simulated successfully",
+      successTitle: "Order confirmed",
       successBody:
-        "The frontend saved the delivery profile, cleared the cart, and is structured to connect to a backend next.",
+        "The delivery profile has been saved and the cart has been cleared for the next step.",
       orderAgain: "Order More",
       fields: {
         fullName: "Full name",
@@ -429,7 +429,7 @@ export const messages = {
       open: "カートを開く",
       title: "カート",
       subtitle:
-        "このデモではカート状態をフロントエンドで保持し、後から本番バックエンドへ接続しやすくしています。",
+        "カート内容を見直し、数量を調整し、そのまま決済へ進めます。",
       items: "{count} 点",
       emptyTitle: "カートは空です",
       emptyBody: "メニューから料理を追加すると、ここで数量を調整できます。",
@@ -446,18 +446,18 @@ export const messages = {
     checkout: {
       title: "決済",
       subtitle:
-        "住所入力と支払い UI はバリデーション済み。バックエンド接続時にも大きな作り直しが不要です。",
+        "住所入力と支払い方法の選択を、整った決済フローで完了できます。",
       emptyTitle: "まだ決済する商品がありません",
       emptyBody: "先にメニューで料理を選び、そのあとここで注文内容を確定してください。",
       backToMenu: "メニューへ戻る",
       summaryTitle: "注文内容",
-      summarySubtitle: "フロントエンドで合計を計算",
+      summarySubtitle: "現在の注文合計をわかりやすく表示",
       deliveryDetails: "配送情報",
       paymentTitle: "支払い方法",
       submit: "注文を確定",
-      successTitle: "注文のシミュレーションが完了しました",
+      successTitle: "注文を受け付けました",
       successBody:
-        "配送情報を保存し、カートをクリアしました。次の段階でバックエンド接続しやすい構成です。",
+        "配送情報を保存し、カートをクリアしました。次の案内へそのまま進めます。",
       orderAgain: "さらに注文する",
       fields: {
         fullName: "受取人名",
@@ -519,7 +519,7 @@ export const messages = {
         eyebrow: "Thai culinary atelier",
         title: "现代泰式奢享点餐体验",
         description:
-          "为高品质泰餐打造的前端点餐界面，兼顾移动端体验、细腻视觉和后端接入准备度。",
+          "为高品质泰餐打造的点餐体验，兼顾移动端体验、细腻视觉与完整服务流程。",
         primaryCta: "查看推荐菜品",
         secondaryCta: "预览结账页",
         ratingLabel: "招牌菜平均评分 4.9",
@@ -592,7 +592,7 @@ export const messages = {
     cart: {
       open: "打开购物车",
       title: "购物车抽屉",
-      subtitle: "此演示在前端保存购物车状态，方便后续无痛接入真实后端。",
+      subtitle: "在这里查看菜品、调整数量，并顺畅进入结账流程。",
       items: "{count} 件商品",
       emptyTitle: "购物车还是空的",
       emptyBody: "先从菜单添加喜欢的菜品，再回来修改数量。",
@@ -609,17 +609,17 @@ export const messages = {
     checkout: {
       title: "结账",
       subtitle:
-        "地址表单与支付界面均已完成验证逻辑，后续接入后端时无需大幅重构。",
+        "在这套结账流程中完成地址填写与支付方式选择，界面已具备完整校验。",
       emptyTitle: "暂时没有可结账内容",
       emptyBody: "请先在菜单页选择菜品，再回到这里确认订单。",
       backToMenu: "返回菜单",
       summaryTitle: "订单摘要",
-      summarySubtitle: "总价在前端完成计算",
+      summarySubtitle: "清晰查看当前订单总额",
       deliveryDetails: "配送信息",
       paymentTitle: "支付方式",
       submit: "提交订单",
-      successTitle: "订单模拟已完成",
-      successBody: "前端已保存配送资料并清空购物车，下一步即可接入真实后端。",
+      successTitle: "订单已确认",
+      successBody: "配送资料已保存，购物车也已清空，可继续进入下一步安排。",
       orderAgain: "继续点餐",
       fields: {
         fullName: "收货人姓名",
@@ -681,7 +681,7 @@ export const messages = {
         eyebrow: "Thai culinary atelier",
         title: "고급스럽고 현대적인 태국 음식 주문 경험",
         description:
-          "프리미엄 태국 요리를 위한 프런트엔드 앱으로, 모바일 사용성과 세련된 시각 톤, 백엔드 연결 준비성을 함께 갖췄습니다.",
+          "프리미엄 태국 요리를 위한 주문 경험으로, 모바일 사용성과 세련된 시각 톤, 완성도 높은 서비스 흐름을 함께 갖췄습니다.",
         primaryCta: "추천 메뉴 보기",
         secondaryCta: "결제 화면 보기",
         ratingLabel: "시그니처 메뉴 평균 평점 4.9",
@@ -755,7 +755,7 @@ export const messages = {
       open: "장바구니 열기",
       title: "장바구니",
       subtitle:
-        "이 데모는 장바구니 상태를 프런트엔드에 저장해 실제 백엔드 연결을 쉽게 준비할 수 있도록 만들었습니다.",
+        "장바구니를 확인하고 수량을 조정한 뒤 바로 결제로 이어갈 수 있습니다.",
       items: "{count}개 항목",
       emptyTitle: "장바구니가 비어 있습니다",
       emptyBody: "메뉴에서 요리를 추가한 뒤 여기서 수량을 조절해 보세요.",
@@ -772,18 +772,18 @@ export const messages = {
     checkout: {
       title: "결제",
       subtitle:
-        "주소 입력과 결제 UI는 이미 검증 로직까지 구성되어 있어 백엔드 연결 시 큰 구조 변경이 필요 없습니다.",
+        "정리된 결제 흐름 안에서 배송 정보와 결제 수단을 차분하게 마무리할 수 있습니다.",
       emptyTitle: "결제할 항목이 아직 없습니다",
       emptyBody: "먼저 메뉴에서 요리를 고른 다음 이곳에서 주문을 확인하세요.",
       backToMenu: "메뉴로 돌아가기",
       summaryTitle: "주문 요약",
-      summarySubtitle: "합계는 프런트엔드에서 계산됩니다",
+      summarySubtitle: "현재 주문 합계를 한눈에 확인합니다",
       deliveryDetails: "배송 정보",
       paymentTitle: "결제 방법",
       submit: "주문 확정",
-      successTitle: "주문 시뮬레이션이 완료되었습니다",
+      successTitle: "주문이 접수되었습니다",
       successBody:
-        "배송 정보가 저장되고 장바구니가 비워졌습니다. 다음 단계에서 실제 백엔드와 연결하기 쉬운 구조입니다.",
+        "배송 정보가 저장되고 장바구니가 비워졌습니다. 다음 안내로 바로 이어질 수 있습니다.",
       orderAgain: "다시 주문하기",
       fields: {
         fullName: "받는 분 이름",

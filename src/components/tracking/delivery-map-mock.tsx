@@ -3,23 +3,23 @@ import { getDeliveryMapStops } from "@/lib/guest-experience";
 
 const mapText = {
   th: {
-    title: "แผนที่เส้นทางจำลอง",
-    subtitle: "แสดงจังหวะจากครัว สู่ไรเดอร์ และถึงจุดส่งแบบ frontend mock",
+    title: "แผนที่เส้นทางจัดส่ง",
+    subtitle: "แสดงจังหวะจากครัว จุดรับของ และปลายทางของคำสั่งซื้ออย่างต่อเนื่อง",
   },
   en: {
-    title: "Live delivery map mock",
-    subtitle: "A frontend route mock from kitchen pacing to rider handoff and delivery.",
+    title: "Delivery route map",
+    subtitle: "Follow the route from kitchen pacing to rider handoff and final delivery.",
   },
   ja: {
-    title: "配送マップモック",
+    title: "配送ルートマップ",
     subtitle: "キッチンからライダー、配達先までの流れを視覚化します。",
   },
   zh: {
-    title: "配送路线模拟",
+    title: "配送路线地图",
     subtitle: "以可视化方式呈现后厨、骑手与送达节奏。",
   },
   ko: {
-    title: "딜리버리 맵 모형",
+    title: "딜리버리 경로 맵",
     subtitle: "주방, 라이더, 도착지까지의 흐름을 시각화합니다.",
   },
 } as const;
