@@ -1,119 +1,144 @@
-# 🇹🇭 Thai Food Ordering Web App (Next.js)
+# Siam Lux
 
-A modern, premium Thai food ordering web application built with the latest frontend technologies.
-This project focuses on delivering a seamless user experience, multi-language support, and an elegant Thai-inspired design.
+Premium multilingual Thai ordering platform built with `Next.js`, `TypeScript`, `Supabase`, and `PostgreSQL`.
 
----
+## Status
 
-## ✨ Features
+The project is now a real `full-stack` application, not just a frontend demo.
 
-* 🍜 Browse authentic Thai dishes with rich visuals
-* 🛒 Add to cart with customizable options (spice level, toppings)
-* 💳 Smooth checkout experience with multiple payment methods
-* 📦 Real-time order tracking interface
-* 👤 User profile and order history
-* ❤️ Favorites / wishlist system
-* ⭐ Reviews and ratings
-* 🎁 Promotions and discount system
-* 🔐 Authentication (Login / Register / Guest checkout)
-* 🌍 Multi-language support:
+What is already in place:
+- multi-language guest-facing frontend: `th`, `en`, `ja`, `zh`, `ko`
+- auth and member profile sync with `Supabase Auth`
+- transactional backend for `orders`, `reservations`, `reviews`, `favorites`
+- loyalty, gift wallet, promos, notifications, payment attempts, email outbox
+- admin operations for orders, reservations, reviews, promos, menu operations, loyalty, audit logs
+- health and ops endpoints
+- Playwright E2E coverage and CI workflow
 
-  * Thai (default)
-  * English
-  * Japanese
-  * Chinese
-  * Korean
+What is still external/provider-dependent:
+- live payment provider keys
+- live email provider keys
+- cron/background scheduling in deployment
+- production deployment envs and monitoring
 
----
-
-## 🎨 Design
-
-* Inspired by Thai luxury aesthetics (red, gold, black tones)
-* Subtle Thai cultural patterns and modern UI
-* Mobile-first responsive design
-* Smooth animations and micro-interactions
-
----
-
-## 🧱 Tech Stack
+## Stack
 
 ### Frontend
+- `Next.js 16`
+- `React 19`
+- `TypeScript`
+- `Tailwind CSS 4`
+- `next-intl`
+- `Zustand`
+- `React Hook Form`
+- `Zod`
+- `Framer Motion`
 
-* Next.js (App Router)
-* React 18+
+### Backend
+- `Next.js App Router` route handlers
+- `Supabase Auth`
+- `Supabase Postgres`
+- `Supabase SSR`
+- SQL migrations in [supabase/migrations](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations)
 
-### Styling & UI
+### Testing
+- `Playwright`
+- `ESLint`
+- GitHub Actions CI in [.github/workflows/ci.yml](/Users/tundergod/Project-Coding/Siam-Lux/.github/workflows/ci.yml)
 
-* Tailwind CSS
-* shadcn/ui
+## Key Routes
 
-### State Management
+### Guest / Customer
+- `/[locale]`
+- `/[locale]/menu`
+- `/[locale]/checkout`
+- `/[locale]/reservation`
+- `/[locale]/tracking`
+- `/[locale]/reviews`
+- `/[locale]/gift-cards`
+- `/[locale]/rewards`
+- `/[locale]/auth`
 
-* Zustand
+### Admin
+- `/[locale]/admin`
 
-### Internationalization
+### API
+- `/api/health`
+- `/api/orders`
+- `/api/reservations`
+- `/api/reviews`
+- `/api/promos/validate`
+- `/api/payments/prepare`
+- `/api/payments/confirm`
+- `/api/internal/cron/email-outbox`
+- `/api/internal/cron/reservations`
 
-* next-intl
+## Local Setup
 
-### Forms & Validation
+1. Install dependencies
+```bash
+npm ci
+```
 
-* React Hook Form
-* Zod
+2. Copy env values into [`.env.local`](/Users/tundergod/Project-Coding/Siam-Lux/.env.local)
+Required base values:
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
 
-### Animation
+Optional live integrations:
+```env
+APP_URL=http://localhost:3000
+SUPABASE_SERVICE_ROLE_KEY=
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+PAYMENT_PROVIDER_NAME=manual-card
+STRIPE_SECRET_KEY=
+PAYMENT_WEBHOOK_SECRET=
+INTERNAL_CRON_SECRET=
+```
 
-* Framer Motion
+3. Run Supabase migrations in order
+- [202603300001_create_profiles.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300001_create_profiles.sql)
+- [202603300002_create_transactional_core.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300002_create_transactional_core.sql)
+- [202603300003_add_payment_and_outbox.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300003_add_payment_and_outbox.sql)
+- [202603300004_add_loyalty_and_menu_operations.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300004_add_loyalty_and_menu_operations.sql)
+- [202603300005_add_operational_controls.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300005_add_operational_controls.sql)
+- [202603300006_add_provider_delivery_hardening.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300006_add_provider_delivery_hardening.sql)
 
-### API & Data
+4. Start the app
+```bash
+npm run dev
+```
 
-* Fetch API / Axios
-* Server Actions (Next.js)
+## Verification
 
-### Assets & Optimization
+Run the standard checks:
+```bash
+npm run lint -- --quiet
+npm run build
+npm run test:e2e:list
+npm run test:e2e:api
+```
 
-* Next.js Image Optimization
-* Lazy loading & code splitting
+## Admin Access
 
----
+Mark your account as admin in Supabase:
+```sql
+update public.profiles
+set role = 'admin'
+where email = 'your-email@example.com';
+```
 
-## 📱 Core Pages
+## Remaining Work
 
-* Homepage
-* Menu / Food Listing
-* Food Detail (Customization)
-* Cart Drawer
-* Checkout
-* Order Tracking
-* User Profile
-* Order History
-* Favorites
-* Promotions
-* Reviews
-* Authentication
-* Settings (Language & Theme)
+The codebase is close to feature-complete. The remaining tasks are mostly operational:
+- configure live payment provider
+- configure live email sending
+- configure cron/background jobs
+- deploy production envs
+- add monitoring and alerting
 
----
-
-## ⚙️ Key Highlights
-
-* ⚡ High performance with modern React architecture
-* 🌐 Fully scalable multi-language system
-* 📱 Mobile-first UX optimized for real-world usage
-* 🧩 Component-based and reusable architecture
-* 🎯 Production-ready frontend structure
-
----
-
-## 🚀 Future Improvements
-
-* Real-time order updates (WebSocket)
-* Admin dashboard for restaurant management
-* AI-based food recommendations
-* Integration with payment gateways (Stripe / PromptPay)
-
----
-
-## 📌 Goal
-
-To build a scalable and production-ready food ordering platform
-with a strong focus on user experience, performance, and cultural design identity.
+Detailed checklist:
+- [docs/production-checklist.md](/Users/tundergod/Project-Coding/Siam-Lux/docs/production-checklist.md)
