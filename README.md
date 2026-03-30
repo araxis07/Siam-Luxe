@@ -1,144 +1,125 @@
-# Siam Lux
+# ✨ Siam Lux
 
-Premium multilingual Thai ordering platform built with `Next.js`, `TypeScript`, `Supabase`, and `PostgreSQL`.
+Siam Lux is a premium multilingual Thai food ordering platform designed to feel elegant, immersive, and production-ready.
 
-## Status
+It combines a polished guest-facing experience with a real full-stack foundation for authentication, ordering, reservations, reviews, loyalty, and admin operations.
 
-The project is now a real `full-stack` application, not just a frontend demo.
+## 🌏 Highlights
 
-What is already in place:
-- multi-language guest-facing frontend: `th`, `en`, `ja`, `zh`, `ko`
-- auth and member profile sync with `Supabase Auth`
-- transactional backend for `orders`, `reservations`, `reviews`, `favorites`
-- loyalty, gift wallet, promos, notifications, payment attempts, email outbox
-- admin operations for orders, reservations, reviews, promos, menu operations, loyalty, audit logs
-- health and ops endpoints
-- Playwright E2E coverage and CI workflow
+- 🍽️ Premium Thai dining and ordering experience
+- 🌐 Multi-language support
+- 🛒 Cart, checkout, and order tracking
+- 📅 Reservations and guest management
+- 🎁 Rewards, gift cards, and promotions
+- 👤 Member accounts and profile sync
+- ⭐ Reviews and favorites
+- 🛠️ Admin and operational tooling
 
-What is still external/provider-dependent:
-- live payment provider keys
-- live email provider keys
-- cron/background scheduling in deployment
-- production deployment envs and monitoring
-
-## Stack
+## 🧱 Tech Stack
 
 ### Frontend
-- `Next.js 16`
-- `React 19`
-- `TypeScript`
-- `Tailwind CSS 4`
-- `next-intl`
-- `Zustand`
-- `React Hook Form`
-- `Zod`
-- `Framer Motion`
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- next-intl
+- Zustand
+- React Hook Form
+- Zod
+- Framer Motion
 
 ### Backend
-- `Next.js App Router` route handlers
-- `Supabase Auth`
-- `Supabase Postgres`
-- `Supabase SSR`
-- SQL migrations in [`supabase/migrations`](./supabase/migrations)
+- Next.js route handlers
+- Supabase Auth
+- PostgreSQL via Supabase
+- SQL migrations
 
-### Testing
-- `Playwright`
-- `ESLint`
-- GitHub Actions CI in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
+### Quality
+- ESLint
+- Playwright
+- GitHub Actions
 
-## Key Routes
+## 🗂️ What The Project Includes
 
-### Guest / Customer
-- `/[locale]`
-- `/[locale]/menu`
-- `/[locale]/checkout`
-- `/[locale]/reservation`
-- `/[locale]/tracking`
-- `/[locale]/reviews`
-- `/[locale]/gift-cards`
-- `/[locale]/rewards`
-- `/[locale]/auth`
+- A premium guest-facing storefront
+- Multi-locale content and navigation
+- Account, loyalty, and saved preferences
+- Reservation and order flows
+- Admin-facing operational controls
+- Database-backed business logic
+- Testing and CI foundations
 
-### Admin
-- `/[locale]/admin`
-
-### API
-- `/api/health`
-- `/api/orders`
-- `/api/reservations`
-- `/api/reviews`
-- `/api/promos/validate`
-- `/api/payments/prepare`
-- `/api/payments/confirm`
-- `/api/internal/cron/email-outbox`
-- `/api/internal/cron/reservations`
-
-## Local Setup
+## 🚀 Local Setup
 
 1. Install dependencies
+
 ```bash
 npm ci
 ```
 
-2. Copy env values into `.env.local`
-Required base values:
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-```
+2. Create your local environment file
 
-Optional live integrations:
-```env
-APP_URL=http://localhost:3000
-SUPABASE_SERVICE_ROLE_KEY=
-RESEND_API_KEY=
-RESEND_FROM_EMAIL=
-PAYMENT_PROVIDER_NAME=manual-card
-STRIPE_SECRET_KEY=
-PAYMENT_WEBHOOK_SECRET=
-INTERNAL_CRON_SECRET=
-```
+Use `.env.example` as the template for `.env.local`, then fill in your own local values.
 
-3. Run Supabase migrations in order
-- [`202603300001_create_profiles.sql`](./supabase/migrations/202603300001_create_profiles.sql)
-- [`202603300002_create_transactional_core.sql`](./supabase/migrations/202603300002_create_transactional_core.sql)
-- [`202603300003_add_payment_and_outbox.sql`](./supabase/migrations/202603300003_add_payment_and_outbox.sql)
-- [`202603300004_add_loyalty_and_menu_operations.sql`](./supabase/migrations/202603300004_add_loyalty_and_menu_operations.sql)
-- [`202603300005_add_operational_controls.sql`](./supabase/migrations/202603300005_add_operational_controls.sql)
-- [`202603300006_add_provider_delivery_hardening.sql`](./supabase/migrations/202603300006_add_provider_delivery_hardening.sql)
+Important:
+- Never commit `.env.local`
+- Never put real credentials directly into documentation
 
-4. Start the app
+3. Apply the database migrations
+
+Run the SQL files inside `supabase/migrations` against your own Supabase project in order.
+
+4. Start the development server
+
 ```bash
 npm run dev
 ```
 
-## Verification
+## ✅ Verification
 
-Run the standard checks:
+Run the main checks:
+
 ```bash
 npm run lint -- --quiet
 npm run build
 npm run test:e2e:list
+```
+
+If you also want the backend API check:
+
+```bash
 npm run test:e2e:api
 ```
 
-## Admin Access
+## 🎯 Current Project Status
 
-Mark your account as admin in Supabase:
-```sql
-update public.profiles
-set role = 'admin'
-where email = 'your-email@example.com';
-```
+This project is already beyond a frontend prototype.
 
-## Remaining Work
+It now has:
+- a substantial frontend experience
+- a working full-stack backend foundation
+- real authentication and database integration
+- operational admin tooling
+- production-oriented QA and hardening work
 
-The codebase is close to feature-complete. The remaining tasks are mostly operational:
-- configure live payment provider
-- configure live email sending
-- configure cron/background jobs
-- deploy production envs
-- add monitoring and alerting
+## 🔐 Security Note
 
-Detailed checklist:
-- [`docs/production-checklist.md`](./docs/production-checklist.md)
+This repository should only contain code, templates, and placeholder configuration.
+
+Do not place any of the following directly into public-facing docs:
+- real API keys
+- database credentials
+- service role secrets
+- private webhook secrets
+- personal production data
+
+## 📌 Notes
+
+Siam Lux is best treated as a serious full-stack product foundation.
+
+At this stage, the main work left is usually:
+- connecting live providers
+- deployment setup
+- monitoring and production operations
+
+Not large missing frontend feature work.
