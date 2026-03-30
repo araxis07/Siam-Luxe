@@ -39,12 +39,12 @@ What is still external/provider-dependent:
 - `Supabase Auth`
 - `Supabase Postgres`
 - `Supabase SSR`
-- SQL migrations in [supabase/migrations](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations)
+- SQL migrations in [`supabase/migrations`](./supabase/migrations)
 
 ### Testing
 - `Playwright`
 - `ESLint`
-- GitHub Actions CI in [.github/workflows/ci.yml](/Users/tundergod/Project-Coding/Siam-Lux/.github/workflows/ci.yml)
+- GitHub Actions CI in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)
 
 ## Key Routes
 
@@ -80,7 +80,7 @@ What is still external/provider-dependent:
 npm ci
 ```
 
-2. Copy env values into [`.env.local`](/Users/tundergod/Project-Coding/Siam-Lux/.env.local)
+2. Copy env values into `.env.local`
 Required base values:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
@@ -100,12 +100,12 @@ INTERNAL_CRON_SECRET=
 ```
 
 3. Run Supabase migrations in order
-- [202603300001_create_profiles.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300001_create_profiles.sql)
-- [202603300002_create_transactional_core.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300002_create_transactional_core.sql)
-- [202603300003_add_payment_and_outbox.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300003_add_payment_and_outbox.sql)
-- [202603300004_add_loyalty_and_menu_operations.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300004_add_loyalty_and_menu_operations.sql)
-- [202603300005_add_operational_controls.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300005_add_operational_controls.sql)
-- [202603300006_add_provider_delivery_hardening.sql](/Users/tundergod/Project-Coding/Siam-Lux/supabase/migrations/202603300006_add_provider_delivery_hardening.sql)
+- [`202603300001_create_profiles.sql`](./supabase/migrations/202603300001_create_profiles.sql)
+- [`202603300002_create_transactional_core.sql`](./supabase/migrations/202603300002_create_transactional_core.sql)
+- [`202603300003_add_payment_and_outbox.sql`](./supabase/migrations/202603300003_add_payment_and_outbox.sql)
+- [`202603300004_add_loyalty_and_menu_operations.sql`](./supabase/migrations/202603300004_add_loyalty_and_menu_operations.sql)
+- [`202603300005_add_operational_controls.sql`](./supabase/migrations/202603300005_add_operational_controls.sql)
+- [`202603300006_add_provider_delivery_hardening.sql`](./supabase/migrations/202603300006_add_provider_delivery_hardening.sql)
 
 4. Start the app
 ```bash
@@ -141,4 +141,4 @@ The codebase is close to feature-complete. The remaining tasks are mostly operat
 - add monitoring and alerting
 
 Detailed checklist:
-- [docs/production-checklist.md](/Users/tundergod/Project-Coding/Siam-Lux/docs/production-checklist.md)
+- [`docs/production-checklist.md`](./docs/production-checklist.md)
