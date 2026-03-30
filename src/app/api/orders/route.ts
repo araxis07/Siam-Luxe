@@ -1,9 +1,11 @@
+import { randomUUID } from "crypto";
 import { z } from "zod";
 
 import { getCurrentUser } from "@/lib/server/auth";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { getPromoDiscount, getPromoOffer } from "@/lib/server/promos";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 
 const orderSchema = z.object({
@@ -43,7 +45,7 @@ function buildOrderCode() {
   const date = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, "0")}${String(
     now.getUTCDate(),
   ).padStart(2, "0")}`;
-  const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
+  const suffix = randomUUID().slice(0, 4).toUpperCase();
 
   return `SLX-${date}-${suffix}`;
 }
@@ -99,6 +101,16 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "orders-create",
+    limit: 8,
+    windowMs: 10 * 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const { supabase, user } = await getCurrentUser();
   const body = await readJsonBody(request);
 
@@ -213,31 +225,36 @@ export async function POST(request: Request) {
     }
   }
 
-  return ok({
-    id: order.id,
-    code: order.code,
-    branchId: order.branch_id,
-    serviceMode: order.service_mode,
-    status: order.status,
-    paymentStatus: order.payment_status,
-    placedAt: order.created_at,
-    etaMinutes: order.eta_minutes,
-    total: Number(order.total ?? 0),
-    items: payload.items.map((item, index) => ({
-      id: `${order.id}-item-${index}`,
-      dishId: item.dishId,
-      dishName: item.dishName,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      spiceLevel: item.spiceLevel,
-      toppings: item.toppings,
-    })),
-    stages: [
-      {
-        id: stage.id,
-        status: stage.status,
-        occurredAt: stage.occurred_at,
-      },
-    ],
-  });
+  return ok(
+    {
+      id: order.id,
+      code: order.code,
+      branchId: order.branch_id,
+      serviceMode: order.service_mode,
+      status: order.status,
+      paymentStatus: order.payment_status,
+      placedAt: order.created_at,
+      etaMinutes: order.eta_minutes,
+      total: Number(order.total ?? 0),
+      items: payload.items.map((item, index) => ({
+        id: `${order.id}-item-${index}`,
+        dishId: item.dishId,
+        dishName: item.dishName,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        spiceLevel: item.spiceLevel,
+        toppings: item.toppings,
+      })),
+      stages: [
+        {
+          id: stage.id,
+          status: stage.status,
+          occurredAt: stage.occurred_at,
+        },
+      ],
+    },
+    {
+      headers: limit.headers,
+    },
+  );
 }

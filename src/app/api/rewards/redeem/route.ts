@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/server/auth";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { ensureLoyaltyAccount, getRewardDefinitionById } from "@/lib/server/loyalty";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 
 const rewardRedeemSchema = z.object({
@@ -13,6 +14,16 @@ const rewardRedeemSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "rewards-redeem",
+    limit: 10,
+    windowMs: 10 * 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const { supabase, user } = await getCurrentUser();
 
   if (!user) {
@@ -108,25 +119,30 @@ export async function POST(request: Request) {
       });
     }
 
-    return ok({
-      ok: true,
-      remainingPoints,
-      giftWalletEntry: {
-        id: walletEntryId,
-        code: reward.id.toUpperCase(),
-        amount: reward.walletAmount,
-        title: reward.title,
-        expiresAt,
+    return ok(
+      {
+        ok: true,
+        remainingPoints,
+        giftWalletEntry: {
+          id: walletEntryId,
+          code: reward.id.toUpperCase(),
+          amount: reward.walletAmount,
+          title: reward.title,
+          expiresAt,
+        },
+        redeemedReward: {
+          id: redemptionId,
+          rewardId: reward.id,
+          title: reward.title,
+          pointsUsed: reward.points,
+          walletAmount: reward.walletAmount,
+          redeemedAt,
+        },
       },
-      redeemedReward: {
-        id: redemptionId,
-        rewardId: reward.id,
-        title: reward.title,
-        pointsUsed: reward.points,
-        walletAmount: reward.walletAmount,
-        redeemedAt,
+      {
+        headers: limit.headers,
       },
-    });
+    );
   } catch (error) {
     return fail("Unable to redeem reward", 500, error instanceof Error ? error.message : null);
   }

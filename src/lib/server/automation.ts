@@ -30,10 +30,12 @@ export async function dispatchQueuedEmailsBatch(
   },
 ) {
   const limit = Math.max(1, Math.min(payload?.limit ?? 25, 100));
+  const nowIso = new Date().toISOString();
   const { data: entries, error } = await supabase
     .from("email_outbox")
-    .select("id, to_email, subject, html_body")
-    .eq("status", "queued")
+    .select("id, to_email, subject, html_body, attempt_count")
+    .in("status", ["queued", "failed"])
+    .lte("next_attempt_at", nowIso)
     .order("created_at", { ascending: true })
     .limit(limit);
 
@@ -46,6 +48,7 @@ export async function dispatchQueuedEmailsBatch(
     sent: 0,
     failed: 0,
     skipped: 0,
+    retriableFailures: 0,
     remainingQueued: 0,
   };
 
@@ -59,6 +62,10 @@ export async function dispatchQueuedEmailsBatch(
       summary.skipped += 1;
     } else {
       summary.failed += 1;
+
+      if (result.nextAttemptAt) {
+        summary.retriableFailures += 1;
+      }
     }
   }
 

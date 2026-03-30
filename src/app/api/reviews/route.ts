@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { fail, ok } from "@/lib/server/http";
 import { getCurrentUser } from "@/lib/server/auth";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 
 const reviewSchema = z.object({
@@ -48,6 +49,16 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "reviews-submit",
+    limit: 6,
+    windowMs: 10 * 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const { supabase, user } = await getCurrentUser();
   const body = await readJsonBody(request);
 
@@ -88,13 +99,18 @@ export async function POST(request: Request) {
     return fail("Unable to submit review", 500, error.message);
   }
 
-  return ok({
-    id: data.id,
-    dishId: data.dish_id,
-    guest: data.guest,
-    region: data.region,
-    body: data.body,
-    rating: data.rating,
-    locale: data.locale,
-  });
+  return ok(
+    {
+      id: data.id,
+      dishId: data.dish_id,
+      guest: data.guest,
+      region: data.region,
+      body: data.body,
+      rating: data.rating,
+      locale: data.locale,
+    },
+    {
+      headers: limit.headers,
+    },
+  );
 }

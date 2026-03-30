@@ -3,6 +3,7 @@ import { z } from "zod";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { getCurrentUser } from "@/lib/server/auth";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 import { resolveReservationStatus } from "@/lib/server/reservation-service";
 
@@ -55,6 +56,16 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "reservations-create",
+    limit: 8,
+    windowMs: 10 * 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const { supabase, user } = await getCurrentUser();
   const body = await readJsonBody(request);
 
@@ -127,17 +138,22 @@ export async function POST(request: Request) {
     }
   }
 
-  return ok({
-    id: data.id,
-    branchId: data.branch_id,
-    guestCount: data.guest_count,
-    date: data.reservation_date,
-    timeSlot: data.time_slot,
-    seating: data.seating,
-    occasion: data.occasion,
-    contactName: data.contact_name,
-    phone: data.phone,
-    notes: data.notes,
-    status: data.status,
-  });
+  return ok(
+    {
+      id: data.id,
+      branchId: data.branch_id,
+      guestCount: data.guest_count,
+      date: data.reservation_date,
+      timeSlot: data.time_slot,
+      seating: data.seating,
+      occasion: data.occasion,
+      contactName: data.contact_name,
+      phone: data.phone,
+      notes: data.notes,
+      status: data.status,
+    },
+    {
+      headers: limit.headers,
+    },
+  );
 }

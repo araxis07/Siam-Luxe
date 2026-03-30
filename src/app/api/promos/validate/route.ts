@@ -3,6 +3,7 @@ import { z } from "zod";
 import { fail, ok } from "@/lib/server/http";
 import { getServerSupabase } from "@/lib/server/auth";
 import { getPromoDiscount, getPromoOffer } from "@/lib/server/promos";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 
 const promoSchema = z.object({
@@ -11,6 +12,16 @@ const promoSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "promos-validate",
+    limit: 8,
+    windowMs: 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const supabase = await getServerSupabase();
   const body = await readJsonBody(request);
 
@@ -27,15 +38,25 @@ export async function POST(request: Request) {
   const offer = await getPromoOffer(supabase, parsed.data.code);
 
   if (!offer) {
-    return ok({ valid: false, discount: 0, minimumSubtotal: 0 });
+    return ok(
+      { valid: false, discount: 0, minimumSubtotal: 0 },
+      {
+        headers: limit.headers,
+      },
+    );
   }
 
-  return ok({
-    valid: offer.isActive && parsed.data.subtotal >= offer.minimumSubtotal,
-    discount: getPromoDiscount(parsed.data.subtotal, offer),
-    minimumSubtotal: offer.minimumSubtotal,
-    kind: offer.kind,
-    value: offer.value,
-    code: offer.code,
-  });
+  return ok(
+    {
+      valid: offer.isActive && parsed.data.subtotal >= offer.minimumSubtotal,
+      discount: getPromoDiscount(parsed.data.subtotal, offer),
+      minimumSubtotal: offer.minimumSubtotal,
+      kind: offer.kind,
+      value: offer.value,
+      code: offer.code,
+    },
+    {
+      headers: limit.headers,
+    },
+  );
 }

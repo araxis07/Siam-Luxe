@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
+    "test:e2e:api": "playwright test tests/e2e/backend-api.spec.ts --project=chromium",
     "test:e2e:list": "playwright test --list",
     "test:e2e:visual": "playwright test tests/e2e/visual-smoke.spec.ts --update-snapshots"
   },

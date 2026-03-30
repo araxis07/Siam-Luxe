@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/server/auth";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { getGiftCardDefinitionById } from "@/lib/server/loyalty";
+import { enforceRateLimit } from "@/lib/server/rate-limit";
 import { readJsonBody } from "@/lib/server/request-body";
 
 const purchaseGiftCardSchema = z.object({
@@ -16,6 +17,16 @@ const purchaseGiftCardSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const limit = enforceRateLimit(request, {
+    scope: "gift-cards-purchase",
+    limit: 10,
+    windowMs: 10 * 60_000,
+  });
+
+  if (!limit.ok) {
+    return limit.response;
+  }
+
   const { supabase, user } = await getCurrentUser();
 
   if (!user) {
@@ -80,15 +91,20 @@ export async function POST(request: Request) {
     });
   }
 
-  return ok({
-    ok: true,
-    giftWalletEntry: {
-      id: entryId,
-      code: card.id.toUpperCase(),
-      amount: card.amount,
-      title,
-      expiresAt,
-      note: parsed.data.note,
+  return ok(
+    {
+      ok: true,
+      giftWalletEntry: {
+        id: entryId,
+        code: card.id.toUpperCase(),
+        amount: card.amount,
+        title,
+        expiresAt,
+        note: parsed.data.note,
+      },
     },
-  });
+    {
+      headers: limit.headers,
+    },
+  );
 }

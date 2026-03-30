@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle2, ReceiptText, ShieldCheck, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -59,6 +60,9 @@ const checkoutEnhancementText = {
     invoiceEmail: "อีเมลสำหรับเอกสาร",
     paymentPreparedTitle: "เตรียมการชำระเงินแล้ว",
     paymentPreparationError: "สร้างขั้นตอนการชำระเงินต่อไม่ได้ในตอนนี้ แต่คำสั่งซื้อถูกบันทึกแล้ว",
+    continuePayment: "ไปชำระเงินต่อ",
+    paymentConfirmed: "ยืนยันการชำระเงินแล้ว",
+    paymentCancelled: "การชำระเงินยังไม่เสร็จ ระบบยังเก็บออเดอร์ไว้ให้",
     submitError: "ยังสร้างคำสั่งซื้อไม่ได้ในตอนนี้",
     submitting: "กำลังยืนยันออเดอร์",
   },
@@ -82,6 +86,9 @@ const checkoutEnhancementText = {
     invoiceEmail: "Billing email",
     paymentPreparedTitle: "Payment instructions ready",
     paymentPreparationError: "The order was placed, but the payment step could not be prepared right now.",
+    continuePayment: "Continue to payment",
+    paymentConfirmed: "Payment confirmed",
+    paymentCancelled: "Payment was not completed yet, but the order is still saved.",
     submitError: "Unable to place the order right now.",
     submitting: "Placing order",
   },
@@ -105,6 +112,9 @@ const checkoutEnhancementText = {
     invoiceEmail: "請求先メール",
     paymentPreparedTitle: "支払い案内を準備しました",
     paymentPreparationError: "注文は完了しましたが、支払い案内を今は準備できませんでした。",
+    continuePayment: "支払いを続ける",
+    paymentConfirmed: "支払いを確認しました",
+    paymentCancelled: "支払いはまだ完了していませんが、注文は保存されています。",
     submitError: "現在注文を確定できません。",
     submitting: "注文を確定しています",
   },
@@ -128,6 +138,9 @@ const checkoutEnhancementText = {
     invoiceEmail: "账单邮箱",
     paymentPreparedTitle: "支付说明已准备好",
     paymentPreparationError: "订单已创建，但暂时无法生成支付步骤。",
+    continuePayment: "继续支付",
+    paymentConfirmed: "支付已确认",
+    paymentCancelled: "支付尚未完成，但订单仍已保留。",
     submitError: "当前无法提交订单。",
     submitting: "正在提交订单",
   },
@@ -151,6 +164,9 @@ const checkoutEnhancementText = {
     invoiceEmail: "청구 이메일",
     paymentPreparedTitle: "결제 안내가 준비되었습니다",
     paymentPreparationError: "주문은 생성되었지만 결제 단계를 지금 준비할 수 없습니다.",
+    continuePayment: "결제 계속하기",
+    paymentConfirmed: "결제가 확인되었습니다",
+    paymentCancelled: "결제는 아직 완료되지 않았지만 주문은 보존되어 있습니다.",
     submitError: "지금은 주문을 접수할 수 없습니다.",
     submitting: "주문을 접수하는 중",
   },
@@ -180,12 +196,15 @@ interface PaymentAttemptPreview {
   status: string;
   instructions: string;
   clientSecret: string;
+  checkoutUrl?: string | null;
+  requiresRedirect?: boolean;
 }
 
 export function CheckoutExperience({ locale }: { locale: AppLocale }) {
   const t = useTranslations("checkout");
   const tCart = useTranslations("cart");
   const tDish = useTranslations("dish");
+  const searchParams = useSearchParams();
   const hydrated = useHydrated();
   const [isPending, startOrderTransition] = useTransition();
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -281,6 +300,104 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
     seedName,
   ]);
 
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    const paymentState = searchParams.get("payment");
+    const sessionId = searchParams.get("session_id");
+    const orderId = searchParams.get("orderId");
+
+    if (!paymentState) {
+      return;
+    }
+
+    const clearPaymentParams = () => {
+      window.history.replaceState({}, "", window.location.pathname);
+    };
+
+    if (paymentState === "cancelled") {
+      toast({
+        title: text.paymentPreparedTitle,
+        description: text.paymentCancelled,
+        tone: "info",
+      });
+      clearPaymentParams();
+      return;
+    }
+
+    if (paymentState !== "success" || !sessionId || !orderId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const confirmation = await requestJson<{
+          confirmed: boolean;
+          paymentStatus: string;
+          reference: string;
+        }>("/api/payments/confirm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderId,
+            sessionId,
+          }),
+        });
+
+        if (cancelled) {
+          return;
+        }
+
+        if (confirmation.confirmed) {
+          setPaymentNotice({
+            id: `confirmed-${orderId}`,
+            reference: confirmation.reference,
+            provider: "stripe-checkout",
+            status: confirmation.paymentStatus,
+            instructions: text.paymentConfirmed,
+            clientSecret: sessionId,
+          });
+          setOrderPlaced(true);
+          toast({
+            title: text.paymentPreparedTitle,
+            description: `${text.paymentConfirmed} · ${confirmation.reference}`,
+            tone: "success",
+          });
+        } else {
+          toast({
+            title: text.paymentPreparedTitle,
+            description: text.paymentCancelled,
+            tone: "info",
+          });
+        }
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        toast({
+          title: text.paymentPreparedTitle,
+          description: error instanceof Error ? error.message : text.paymentPreparationError,
+          tone: "error",
+        });
+      } finally {
+        if (!cancelled) {
+          clearPaymentParams();
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, searchParams, text.paymentCancelled, text.paymentConfirmed, text.paymentPreparedTitle, text.paymentPreparationError, toast]);
+
   if (!hydrated) {
     return <div className="h-[520px] animate-pulse rounded-[2rem] bg-white/5" />;
   }
@@ -301,6 +418,15 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
           </div>
         ) : null}
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          {paymentNotice?.checkoutUrl ? (
+            <Button
+              type="button"
+              className="button-shine rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
+              render={<a href={paymentNotice.checkoutUrl} />}
+            >
+              {text.continuePayment}
+            </Button>
+          ) : null}
           <Button
             type="button"
             className="button-shine rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
@@ -501,6 +627,7 @@ export function CheckoutExperience({ locale }: { locale: AppLocale }) {
                         },
                         body: JSON.stringify({
                           orderId: createdOrder.id,
+                          locale,
                         }),
                       });
                     } catch (paymentError) {
