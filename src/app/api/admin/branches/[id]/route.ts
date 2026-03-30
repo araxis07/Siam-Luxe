@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { fail, ok } from "@/lib/server/http";
 import { readJsonBody } from "@/lib/server/request-body";
 
@@ -56,6 +57,15 @@ export async function PATCH(
   if (error || !data) {
     return fail("Unable to update branch", 500, error?.message);
   }
+
+  await recordAdminAudit(admin.context, {
+    scope: "admin.branches",
+    action: "update",
+    targetTable: "branches",
+    targetId: id,
+    summary: `${data.name} branch updated`,
+    metadata: parsed.data,
+  });
 
   return ok(data);
 }

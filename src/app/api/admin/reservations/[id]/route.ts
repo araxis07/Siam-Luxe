@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { readJsonBody } from "@/lib/server/request-body";
@@ -9,6 +10,10 @@ import { resolveReservationStatus } from "@/lib/server/reservation-service";
 const reservationAdminUpdateSchema = z.object({
   timeSlot: z.string().min(1).optional(),
   status: z.enum(["confirmed", "waitlist", "cancelled"]).optional(),
+  tableAssignment: z.string().optional(),
+  internalNote: z.string().optional(),
+  markCheckedIn: z.boolean().optional(),
+  markNoShow: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -60,6 +65,13 @@ export async function PATCH(
     .update({
       ...(parsed.data.timeSlot ? { time_slot: parsed.data.timeSlot } : {}),
       status: nextStatus,
+      ...(currentReservation.status === "waitlist" && nextStatus === "confirmed"
+        ? { waitlist_promoted_at: new Date().toISOString() }
+        : {}),
+      ...(parsed.data.tableAssignment !== undefined ? { table_assignment: parsed.data.tableAssignment } : {}),
+      ...(parsed.data.internalNote !== undefined ? { internal_note: parsed.data.internalNote } : {}),
+      ...(parsed.data.markCheckedIn ? { checked_in_at: new Date().toISOString() } : {}),
+      ...(parsed.data.markNoShow ? { no_show_at: new Date().toISOString() } : {}),
     })
     .eq("id", id)
     .select("*")
@@ -94,6 +106,15 @@ export async function PATCH(
       });
     }
   }
+
+  await recordAdminAudit(admin.context, {
+    scope: "admin.reservations",
+    action: "update",
+    targetTable: "reservations",
+    targetId: id,
+    summary: `${data.contact_name} → ${data.status}`,
+    metadata: parsed.data,
+  });
 
   return ok(data);
 }

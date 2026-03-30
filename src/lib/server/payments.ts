@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import type { ServerSupabase } from "@/lib/server/shared";
 
 function getPaymentProviderName(method: "cash" | "card" | "promptpay") {
@@ -13,7 +15,7 @@ function getPaymentProviderName(method: "cash" | "card" | "promptpay") {
 }
 
 function buildPaymentReference(orderCode: string) {
-  return `${orderCode}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+  return `${orderCode}-${randomUUID().slice(0, 8).toUpperCase()}`;
 }
 
 export async function createPaymentAttempt(

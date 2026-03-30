@@ -10,13 +10,13 @@ export async function GET() {
 
   const { supabase } = admin.context;
   const { data, error } = await supabase
-    .from("reservations")
-    .select("id, user_id, branch_id, reservation_date, time_slot, seating, occasion, contact_name, phone, guest_count, status, notes, internal_note, table_assignment, reminder_sent_at, waitlist_promoted_at, checked_in_at, no_show_at, created_at")
+    .from("audit_logs")
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(50);
 
   if (error) {
-    return fail("Unable to load admin reservations", 500, error.message);
+    return fail("Unable to load audit activity", 500, error.message);
   }
 
   return ok(data ?? []);

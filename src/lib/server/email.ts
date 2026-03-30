@@ -61,7 +61,10 @@ export async function dispatchEmailOutboxEntry(
         error_message: "Resend is not configured",
       })
       .eq("id", entry.id);
-    return entry;
+    return {
+      status: "skipped" as const,
+      providerMessageId: null,
+    };
   }
 
   try {
@@ -89,7 +92,10 @@ export async function dispatchEmailOutboxEntry(
           error_message: payload.message ?? "Email dispatch failed",
         })
         .eq("id", entry.id);
-      return null;
+      return {
+        status: "failed" as const,
+        providerMessageId: null,
+      };
     }
 
     await supabase
@@ -102,7 +108,10 @@ export async function dispatchEmailOutboxEntry(
       })
       .eq("id", entry.id);
 
-    return payload;
+    return {
+      status: "sent" as const,
+      providerMessageId: payload.id ?? null,
+    };
   } catch (error) {
     await supabase
       .from("email_outbox")
@@ -111,7 +120,10 @@ export async function dispatchEmailOutboxEntry(
         error_message: error instanceof Error ? error.message : "Email dispatch failed",
       })
       .eq("id", entry.id);
-    return null;
+    return {
+      status: "failed" as const,
+      providerMessageId: null,
+    };
   }
 }
 

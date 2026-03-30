@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { fail, ok } from "@/lib/server/http";
 import { ensureLoyaltyAccount } from "@/lib/server/loyalty";
 import { readJsonBody } from "@/lib/server/request-body";
@@ -97,6 +98,15 @@ export async function PATCH(
     if (walletEntries.error) {
       return fail("Unable to reload wallet credits", 500, walletEntries.error.message);
     }
+
+    await recordAdminAudit(admin.context, {
+      scope: "admin.loyalty",
+      action: "update",
+      targetTable: "loyalty_accounts",
+      targetId: userId,
+      summary: `Loyalty updated for ${userId}`,
+      metadata: parsed.data,
+    });
 
     return ok({
       account: nextAccount.data,

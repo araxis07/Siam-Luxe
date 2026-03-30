@@ -1,5 +1,6 @@
 import { getLocalizedDishes, type LocalizedMenuDish } from "@/lib/catalog";
 import type { AppLocale } from "@/i18n/routing";
+import { getLocalizedMenuCatalogFromDb } from "@/lib/server/menu-catalog";
 import type { ServerSupabase } from "@/lib/server/shared";
 
 export interface DishOperationRecord {
@@ -98,5 +99,6 @@ export async function getOperationalLocalizedDishes(
   locale: AppLocale,
 ) {
   const operations = await getDishOperations(supabase);
-  return applyDishOperations(getLocalizedDishes(locale), operations);
+  const baseDishes = (await getLocalizedMenuCatalogFromDb(supabase, locale)) ?? getLocalizedDishes(locale);
+  return applyDishOperations(baseDishes, operations);
 }

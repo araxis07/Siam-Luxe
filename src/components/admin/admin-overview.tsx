@@ -9,6 +9,10 @@ import { BranchOperationsPanel } from "@/components/admin/branch-operations-pane
 import { EmailOutboxPanel } from "@/components/admin/email-outbox-panel";
 import { LoyaltyOperationsPanel } from "@/components/admin/loyalty-operations-panel";
 import { MenuOperationsPanel } from "@/components/admin/menu-operations-panel";
+import { MenuCatalogPanel } from "@/components/admin/menu-catalog-panel";
+import { TeamOperationsPanel } from "@/components/admin/team-operations-panel";
+import { AutomationOperationsPanel } from "@/components/admin/automation-operations-panel";
+import { AuditLogPanel } from "@/components/admin/audit-log-panel";
 import { reservationTimeSlots } from "@/lib/reservation-capacity";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -421,6 +425,11 @@ type AdminOrder = {
   created_at: string;
   contact_name: string;
   phone: string;
+  cancel_reason: string;
+  staff_note: string;
+  kitchen_note: string;
+  dispatch_note: string;
+  refunded_amount: number;
   order_items?: Array<{
     id: string;
     dish_name: string;
@@ -440,6 +449,10 @@ type AdminReservation = {
   guest_count: number;
   status: string;
   notes: string;
+  internal_note: string;
+  table_assignment: string;
+  checked_in_at: string | null;
+  no_show_at: string | null;
   created_at: string;
 };
 
@@ -465,6 +478,83 @@ type AdminPromo = {
   is_active: boolean;
 };
 
+type OrderDraft = {
+  status: string;
+  paymentStatus: string;
+  cancelReason: string;
+  staffNote: string;
+  kitchenNote: string;
+  dispatchNote: string;
+  refundedAmount: string;
+};
+
+type ReservationDraft = {
+  timeSlot: string;
+  status: string;
+  tableAssignment: string;
+  internalNote: string;
+  markCheckedIn: boolean;
+  markNoShow: boolean;
+};
+
+const opsText = {
+  th: {
+    cancelReason: "เหตุผลการยกเลิก",
+    staffNote: "หมายเหตุทีมบริการ",
+    kitchenNote: "หมายเหตุครัว",
+    dispatchNote: "หมายเหตุจัดส่ง",
+    refundedAmount: "ยอดคืนเงิน",
+    tableAssignment: "โต๊ะ / โซนจริง",
+    internalNote: "หมายเหตุภายใน",
+    checkIn: "เช็กอินแล้ว",
+    noShow: "ทำเครื่องหมาย no-show",
+  },
+  en: {
+    cancelReason: "Cancel reason",
+    staffNote: "Staff note",
+    kitchenNote: "Kitchen note",
+    dispatchNote: "Dispatch note",
+    refundedAmount: "Refunded amount",
+    tableAssignment: "Table assignment",
+    internalNote: "Internal note",
+    checkIn: "Checked in",
+    noShow: "Mark no-show",
+  },
+  ja: {
+    cancelReason: "キャンセル理由",
+    staffNote: "サービスメモ",
+    kitchenNote: "厨房メモ",
+    dispatchNote: "配送メモ",
+    refundedAmount: "返金額",
+    tableAssignment: "テーブル割当",
+    internalNote: "内部メモ",
+    checkIn: "来店済み",
+    noShow: "no-show にする",
+  },
+  zh: {
+    cancelReason: "取消原因",
+    staffNote: "服务备注",
+    kitchenNote: "后厨备注",
+    dispatchNote: "配送备注",
+    refundedAmount: "退款金额",
+    tableAssignment: "桌位分配",
+    internalNote: "内部备注",
+    checkIn: "已到店",
+    noShow: "标记 no-show",
+  },
+  ko: {
+    cancelReason: "취소 사유",
+    staffNote: "서비스 메모",
+    kitchenNote: "주방 메모",
+    dispatchNote: "배송 메모",
+    refundedAmount: "환불 금액",
+    tableAssignment: "테이블 배정",
+    internalNote: "내부 메모",
+    checkIn: "체크인 완료",
+    noShow: "no-show 표시",
+  },
+} as const;
+
 function formatDateLabel(locale: AppLocale, value: string) {
   try {
     return new Intl.DateTimeFormat(locale, {
@@ -482,14 +572,15 @@ function branchName(locale: AppLocale, branchId: string) {
 
 export function AdminOverview({ locale }: { locale: AppLocale }) {
   const text = adminText[locale];
+  const ops = opsText[locale];
   const { toast } = useToast();
   const [overview, setOverview] = useState<AdminOverviewPayload | null>(null);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [reservations, setReservations] = useState<AdminReservation[]>([]);
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [promos, setPromos] = useState<AdminPromo[]>([]);
-  const [orderDrafts, setOrderDrafts] = useState<Record<string, { status: string; paymentStatus: string }>>({});
-  const [reservationDrafts, setReservationDrafts] = useState<Record<string, { timeSlot: string; status: string }>>({});
+  const [orderDrafts, setOrderDrafts] = useState<Record<string, OrderDraft>>({});
+  const [reservationDrafts, setReservationDrafts] = useState<Record<string, ReservationDraft>>({});
   const [errorState, setErrorState] = useState<"forbidden" | "error" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -555,6 +646,11 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         nextDrafts[item.id] = {
           status: current[item.id]?.status ?? item.status,
           paymentStatus: current[item.id]?.paymentStatus ?? item.payment_status,
+          cancelReason: current[item.id]?.cancelReason ?? item.cancel_reason ?? "",
+          staffNote: current[item.id]?.staffNote ?? item.staff_note ?? "",
+          kitchenNote: current[item.id]?.kitchenNote ?? item.kitchen_note ?? "",
+          dispatchNote: current[item.id]?.dispatchNote ?? item.dispatch_note ?? "",
+          refundedAmount: current[item.id]?.refundedAmount ?? String(item.refunded_amount ?? 0),
         };
       });
 
@@ -567,6 +663,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         nextDrafts[item.id] = {
           timeSlot: current[item.id]?.timeSlot ?? item.time_slot,
           status: current[item.id]?.status ?? item.status,
+          tableAssignment: current[item.id]?.tableAssignment ?? item.table_assignment ?? "",
+          internalNote: current[item.id]?.internalNote ?? item.internal_note ?? "",
+          markCheckedIn: current[item.id]?.markCheckedIn ?? Boolean(item.checked_in_at),
+          markNoShow: current[item.id]?.markNoShow ?? Boolean(item.no_show_at),
         };
       });
 
@@ -634,10 +734,27 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         body: JSON.stringify({
           status: draft.status,
           paymentStatus: draft.paymentStatus,
+          cancelReason: draft.cancelReason,
+          staffNote: draft.staffNote,
+          kitchenNote: draft.kitchenNote,
+          dispatchNote: draft.dispatchNote,
+          refundedAmount: Number(draft.refundedAmount || 0),
         }),
       });
 
       setOrders((current) => current.map((item) => (item.id === orderId ? { ...item, ...updated } : item)));
+      setOrderDrafts((current) => ({
+        ...current,
+        [orderId]: {
+          status: updated.status,
+          paymentStatus: updated.payment_status,
+          cancelReason: updated.cancel_reason ?? "",
+          staffNote: updated.staff_note ?? "",
+          kitchenNote: updated.kitchen_note ?? "",
+          dispatchNote: updated.dispatch_note ?? "",
+          refundedAmount: String(updated.refunded_amount ?? 0),
+        },
+      }));
       toast({
         title: text.orderUpdated,
         description: `${updated.code} · ${text.statusLabels[updated.status as keyof typeof text.statusLabels] ?? updated.status}`,
@@ -672,6 +789,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         body: JSON.stringify({
           timeSlot: draft.timeSlot,
           status: draft.status,
+          tableAssignment: draft.tableAssignment,
+          internalNote: draft.internalNote,
+          markCheckedIn: draft.markCheckedIn,
+          markNoShow: draft.markNoShow,
         }),
       });
 
@@ -683,6 +804,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         [reservationId]: {
           timeSlot: updated.time_slot,
           status: updated.status,
+          tableAssignment: updated.table_assignment ?? "",
+          internalNote: updated.internal_note ?? "",
+          markCheckedIn: Boolean(updated.checked_in_at),
+          markNoShow: Boolean(updated.no_show_at),
         },
       }));
       toast({
@@ -898,6 +1023,11 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                   const draft = orderDrafts[item.id] ?? {
                     status: item.status,
                     paymentStatus: item.payment_status,
+                    cancelReason: item.cancel_reason ?? "",
+                    staffNote: item.staff_note ?? "",
+                    kitchenNote: item.kitchen_note ?? "",
+                    dispatchNote: item.dispatch_note ?? "",
+                    refundedAmount: String(item.refunded_amount ?? 0),
                   };
 
                   return (
@@ -936,6 +1066,11 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                                 [item.id]: {
                                   status: value,
                                   paymentStatus: current[item.id]?.paymentStatus ?? draft.paymentStatus,
+                                  cancelReason: current[item.id]?.cancelReason ?? draft.cancelReason,
+                                  staffNote: current[item.id]?.staffNote ?? draft.staffNote,
+                                  kitchenNote: current[item.id]?.kitchenNote ?? draft.kitchenNote,
+                                  dispatchNote: current[item.id]?.dispatchNote ?? draft.dispatchNote,
+                                  refundedAmount: current[item.id]?.refundedAmount ?? draft.refundedAmount,
                                 },
                               }));
                             }}
@@ -967,6 +1102,11 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                                 [item.id]: {
                                   status: current[item.id]?.status ?? draft.status,
                                   paymentStatus: value,
+                                  cancelReason: current[item.id]?.cancelReason ?? draft.cancelReason,
+                                  staffNote: current[item.id]?.staffNote ?? draft.staffNote,
+                                  kitchenNote: current[item.id]?.kitchenNote ?? draft.kitchenNote,
+                                  dispatchNote: current[item.id]?.dispatchNote ?? draft.dispatchNote,
+                                  refundedAmount: current[item.id]?.refundedAmount ?? draft.refundedAmount,
                                 },
                               }));
                             }}
@@ -995,6 +1135,119 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                           {actionKey === `order:${item.id}` ? text.saving : text.save}
                         </Button>
                       </div>
+
+                      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.refundedAmount}</Label>
+                          <Input
+                            value={draft.refundedAmount}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setOrderDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  refundedAmount: nextValue,
+                                },
+                              }));
+                            }}
+                            className="h-11 rounded-2xl border-white/10 bg-white/4 px-4 text-white"
+                            inputMode="decimal"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.cancelReason}</Label>
+                          <Input
+                            value={draft.cancelReason}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setOrderDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  cancelReason: nextValue,
+                                },
+                              }));
+                            }}
+                            className="h-11 rounded-2xl border-white/10 bg-white/4 px-4 text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.staffNote}</Label>
+                          <Textarea
+                            value={draft.staffNote}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setOrderDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  staffNote: nextValue,
+                                },
+                              }));
+                            }}
+                            className="min-h-[6rem] rounded-[1.5rem] border-white/10 bg-white/4 px-4 py-3 text-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.kitchenNote}</Label>
+                          <Textarea
+                            value={draft.kitchenNote}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setOrderDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  kitchenNote: nextValue,
+                                },
+                              }));
+                            }}
+                            className="min-h-[6rem] rounded-[1.5rem] border-white/10 bg-white/4 px-4 py-3 text-white"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.dispatchNote}</Label>
+                          <Textarea
+                            value={draft.dispatchNote}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setOrderDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  dispatchNote: nextValue,
+                                },
+                              }));
+                            }}
+                            className="min-h-[6rem] rounded-[1.5rem] border-white/10 bg-white/4 px-4 py-3 text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex justify-end">
+                        <Button
+                          type="button"
+                          className="button-shine rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
+                          disabled={actionKey === `order:${item.id}`}
+                          onClick={() => {
+                            void updateOrder(item.id);
+                          }}
+                        >
+                          {actionKey === `order:${item.id}` ? text.saving : text.save}
+                        </Button>
+                      </div>
                     </div>
                   );
                 })
@@ -1015,6 +1268,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                   const draft = reservationDrafts[item.id] ?? {
                     timeSlot: item.time_slot,
                     status: item.status,
+                    tableAssignment: item.table_assignment ?? "",
+                    internalNote: item.internal_note ?? "",
+                    markCheckedIn: Boolean(item.checked_in_at),
+                    markNoShow: Boolean(item.no_show_at),
                   };
 
                   return (
@@ -1048,6 +1305,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                                 [item.id]: {
                                   timeSlot: value,
                                   status: current[item.id]?.status ?? draft.status,
+                                  tableAssignment: current[item.id]?.tableAssignment ?? draft.tableAssignment,
+                                  internalNote: current[item.id]?.internalNote ?? draft.internalNote,
+                                  markCheckedIn: current[item.id]?.markCheckedIn ?? draft.markCheckedIn,
+                                  markNoShow: current[item.id]?.markNoShow ?? draft.markNoShow,
                                 },
                               }));
                             }}
@@ -1079,6 +1340,10 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                                 [item.id]: {
                                   timeSlot: current[item.id]?.timeSlot ?? draft.timeSlot,
                                   status: value,
+                                  tableAssignment: current[item.id]?.tableAssignment ?? draft.tableAssignment,
+                                  internalNote: current[item.id]?.internalNote ?? draft.internalNote,
+                                  markCheckedIn: current[item.id]?.markCheckedIn ?? draft.markCheckedIn,
+                                  markNoShow: current[item.id]?.markNoShow ?? draft.markNoShow,
                                 },
                               }));
                             }}
@@ -1099,6 +1364,104 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
                         <Button
                           type="button"
                           className="button-shine self-end rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
+                          disabled={actionKey === `reservation:${item.id}`}
+                          onClick={() => {
+                            void updateReservation(item.id);
+                          }}
+                        >
+                          {actionKey === `reservation:${item.id}` ? text.saving : text.save}
+                        </Button>
+                      </div>
+
+                      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label className="text-[#d9ccbb]">{ops.tableAssignment}</Label>
+                          <Input
+                            value={draft.tableAssignment}
+                            onChange={(event) => {
+                              const nextValue = event.target.value;
+                              setReservationDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  tableAssignment: nextValue,
+                                },
+                              }));
+                            }}
+                            className="h-11 rounded-2xl border-white/10 bg-white/4 px-4 text-white"
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap items-end gap-2">
+                          <Button
+                            type="button"
+                            variant={draft.markCheckedIn ? "default" : "outline"}
+                            className={
+                              draft.markCheckedIn
+                                ? "button-shine rounded-full bg-[#d6b26a] px-4 text-[#1b130f] hover:bg-[#e4c987]"
+                                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                            }
+                            onClick={() => {
+                              setReservationDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  markCheckedIn: !draft.markCheckedIn,
+                                },
+                              }));
+                            }}
+                          >
+                            {ops.checkIn}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant={draft.markNoShow ? "default" : "outline"}
+                            className={
+                              draft.markNoShow
+                                ? "button-shine rounded-full bg-[#d6b26a] px-4 text-[#1b130f] hover:bg-[#e4c987]"
+                                : "rounded-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                            }
+                            onClick={() => {
+                              setReservationDrafts((current) => ({
+                                ...current,
+                                [item.id]: {
+                                  ...draft,
+                                  ...current[item.id],
+                                  markNoShow: !draft.markNoShow,
+                                },
+                              }));
+                            }}
+                          >
+                            {ops.noShow}
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 space-y-2">
+                        <Label className="text-[#d9ccbb]">{ops.internalNote}</Label>
+                        <Textarea
+                          value={draft.internalNote}
+                          onChange={(event) => {
+                            const nextValue = event.target.value;
+                            setReservationDrafts((current) => ({
+                              ...current,
+                              [item.id]: {
+                                ...draft,
+                                ...current[item.id],
+                                internalNote: nextValue,
+                              },
+                            }));
+                          }}
+                          className="min-h-[6rem] rounded-[1.5rem] border-white/10 bg-white/4 px-4 py-3 text-white"
+                        />
+                      </div>
+
+                      <div className="mt-4 flex justify-end">
+                        <Button
+                          type="button"
+                          className="button-shine rounded-full bg-[#d6b26a] px-5 text-[#1b130f] hover:bg-[#e4c987]"
                           disabled={actionKey === `reservation:${item.id}`}
                           onClick={() => {
                             void updateReservation(item.id);
@@ -1298,6 +1661,16 @@ export function AdminOverview({ locale }: { locale: AppLocale }) {
         <div className="grid gap-6 xl:grid-cols-2">
           <MenuOperationsPanel locale={locale} />
           <EmailOutboxPanel locale={locale} />
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <MenuCatalogPanel locale={locale} />
+          <TeamOperationsPanel locale={locale} />
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <AutomationOperationsPanel locale={locale} />
+          <AuditLogPanel locale={locale} />
         </div>
       </div>
     </section>

@@ -1,6 +1,6 @@
 import type { AppLocale } from "@/i18n/routing";
 
-type LocalizedText = Record<AppLocale, string>;
+export type LocalizedText = Record<AppLocale, string>;
 
 export type CategoryId =
   | "signature"
@@ -20,26 +20,26 @@ export type ToppingId =
   | "coconutFoam"
   | "stickyRice";
 
-interface CategoryDefinition {
+export interface CategoryDefinition {
   id: CategoryId;
   label: LocalizedText;
   description: LocalizedText;
   icon: "crown" | "leaf" | "flame" | "bowl" | "sparkles";
 }
 
-interface RegionDefinition {
+export interface RegionDefinition {
   id: RegionId;
   label: LocalizedText;
   description: LocalizedText;
 }
 
-interface ToppingDefinition {
+export interface ToppingDefinition {
   id: ToppingId;
   label: LocalizedText;
   price: number;
 }
 
-interface PromotionDefinition {
+export interface PromotionDefinition {
   id: string;
   code: string;
   title: LocalizedText;
@@ -47,7 +47,7 @@ interface PromotionDefinition {
   accentClass: string;
 }
 
-interface DishDefinition {
+export interface DishDefinition {
   id: string;
   category: CategoryId;
   region: RegionId;
@@ -1423,4 +1423,14 @@ export function getDishById(id: string) {
 
 export function getLocalizedDish(locale: AppLocale, id: string) {
   return getLocalizedDishes(locale).find((dish) => dish.id === id) ?? null;
+}
+
+export function getCatalogDataset() {
+  return {
+    categories,
+    regions,
+    toppings,
+    promotions,
+    dishes,
+  };
 }

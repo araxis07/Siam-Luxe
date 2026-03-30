@@ -4,6 +4,7 @@ import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { applyPaymentWebhook } from "@/lib/server/payments";
 import { readJsonBody } from "@/lib/server/request-body";
+import { matchesSecret } from "@/lib/server/security";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const webhookSchema = z.object({
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
   const secret = process.env.PAYMENT_WEBHOOK_SECRET;
   const headerSecret = request.headers.get("x-payment-webhook-secret");
 
-  if (!secret || headerSecret !== secret) {
+  if (!matchesSecret(headerSecret, secret)) {
     return fail("Unauthorized", 401);
   }
 

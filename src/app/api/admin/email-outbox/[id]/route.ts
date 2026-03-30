@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { dispatchEmailOutboxEntry } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { readJsonBody } from "@/lib/server/request-body";
@@ -49,6 +50,15 @@ export async function PATCH(
       return fail("Unable to skip email entry", 500, error?.message);
     }
 
+    await recordAdminAudit(admin.context, {
+      scope: "admin.email",
+      action: "skip-entry",
+      targetTable: "email_outbox",
+      targetId: id,
+      summary: `Email ${id} skipped`,
+      metadata: parsed.data,
+    });
+
     return ok(data);
   }
 
@@ -73,6 +83,15 @@ export async function PATCH(
   if (refreshError || !refreshed) {
     return fail("Unable to reload email entry", 500, refreshError?.message);
   }
+
+  await recordAdminAudit(admin.context, {
+    scope: "admin.email",
+    action: "dispatch-entry",
+    targetTable: "email_outbox",
+    targetId: id,
+    summary: `Email ${id} dispatched`,
+    metadata: parsed.data,
+  });
 
   return ok(refreshed);
 }

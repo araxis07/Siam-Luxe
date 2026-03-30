@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { fail, ok } from "@/lib/server/http";
 import { readJsonBody } from "@/lib/server/request-body";
 
@@ -54,6 +55,15 @@ export async function PATCH(
   if (error || !data) {
     return fail("Unable to update promo code", 500, error?.message);
   }
+
+  await recordAdminAudit(admin.context, {
+    scope: "admin.promos",
+    action: "update",
+    targetTable: "promo_codes",
+    targetId: data.code,
+    summary: `${data.code} active=${data.is_active}`,
+    metadata: parsed.data,
+  });
 
   return ok(data);
 }

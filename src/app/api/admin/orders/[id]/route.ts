@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/server/admin";
+import { recordAdminAudit } from "@/lib/server/audit";
 import { enqueueAndDispatchEmail } from "@/lib/server/email";
 import { fail, ok } from "@/lib/server/http";
 import { readJsonBody } from "@/lib/server/request-body";
@@ -8,6 +9,11 @@ import { readJsonBody } from "@/lib/server/request-body";
 const orderUpdateSchema = z.object({
   status: z.enum(["pending", "confirmed", "preparing", "ready", "dispatching", "arriving", "completed", "cancelled"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "failed", "refunded"]).optional(),
+  cancelReason: z.string().optional(),
+  staffNote: z.string().optional(),
+  kitchenNote: z.string().optional(),
+  dispatchNote: z.string().optional(),
+  refundedAmount: z.number().nonnegative().optional(),
 });
 
 export async function PATCH(
@@ -50,6 +56,11 @@ export async function PATCH(
       ...(parsed.data.status ? { status: parsed.data.status } : {}),
       ...(parsed.data.paymentStatus ? { payment_status: parsed.data.paymentStatus } : {}),
       ...(parsed.data.paymentStatus === "paid" ? { paid_at: new Date().toISOString() } : {}),
+      ...(parsed.data.cancelReason !== undefined ? { cancel_reason: parsed.data.cancelReason } : {}),
+      ...(parsed.data.staffNote !== undefined ? { staff_note: parsed.data.staffNote } : {}),
+      ...(parsed.data.kitchenNote !== undefined ? { kitchen_note: parsed.data.kitchenNote } : {}),
+      ...(parsed.data.dispatchNote !== undefined ? { dispatch_note: parsed.data.dispatchNote } : {}),
+      ...(parsed.data.refundedAmount !== undefined ? { refunded_amount: parsed.data.refundedAmount } : {}),
     })
     .eq("id", id)
     .select("*")
@@ -91,6 +102,15 @@ export async function PATCH(
       });
     }
   }
+
+  await recordAdminAudit(admin.context, {
+    scope: "admin.orders",
+    action: "update",
+    targetTable: "orders",
+    targetId: id,
+    summary: `${data.code} → ${data.status}/${data.payment_status}`,
+    metadata: parsed.data,
+  });
 
   return ok(data);
 }
