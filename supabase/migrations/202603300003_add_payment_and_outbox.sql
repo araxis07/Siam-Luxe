@@ -95,6 +95,7 @@ using (public.is_admin())
 with check (public.is_admin());
 
 drop policy if exists "Admins manage email outbox" on public.email_outbox;
+drop policy if exists "Owners and admins manage email outbox" on public.email_outbox;
 create policy "Owners and admins manage email outbox"
 on public.email_outbox
 for all
